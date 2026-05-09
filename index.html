@@ -1,533 +1,595 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>For Guddu 🌸</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guddu's Night</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html{
-    scroll-behavior:smooth;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
 body{
-    font-family:'Poppins',sans-serif;
-    overflow-x:hidden;
-    min-height:100vh;
-    background:linear-gradient(135deg,#fff5ef,#ffe8ee,#fff3dc);
-    color:#5f5157;
-    position:relative;
+  overflow:hidden;
+  font-family:'Poppins',sans-serif;
+  background:#06101d;
 }
 
-/* Floating Lights */
-
-.bg-lights{
-    position:fixed;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    top:0;
-    left:0;
-    z-index:-1;
+.scene{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:
+  radial-gradient(circle at top,#17365c 0%,#08101c 45%,#02060c 100%);
 }
 
-.light{
-    position:absolute;
-    border-radius:50%;
-    background:rgba(255,255,255,0.8);
-    animation:float 8s infinite ease-in-out;
-}
-
-@keyframes float{
-    0%{
-        transform:translateY(0px);
-        opacity:0.3;
-    }
-    50%{
-        transform:translateY(-40px);
-        opacity:1;
-    }
-    100%{
-        transform:translateY(0px);
-        opacity:0.3;
-    }
-}
-
-/* Container */
-
-.container{
-    width:100%;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:25px;
-}
-
-.card{
-    width:100%;
-    max-width:760px;
-    background:rgba(255,255,255,0.35);
-    border:1px solid rgba(255,255,255,0.4);
-    backdrop-filter:blur(18px);
-    border-radius:35px;
-    padding:45px 35px;
-    text-align:center;
-    box-shadow:0 10px 40px rgba(0,0,0,0.08);
-    animation:fadeIn 1.3s ease;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(30px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-/* Rabbits */
-
-.rabbit-circle{
-    width:190px;
-    height:190px;
-    border-radius:50%;
-    margin:auto;
-    overflow:hidden;
-    box-shadow:0 0 35px rgba(255,192,203,0.55);
-    animation:glow 3s infinite alternate;
-    margin-bottom:25px;
-}
-
-@keyframes glow{
-    from{
-        box-shadow:0 0 20px rgba(255,182,193,0.4);
-    }
-    to{
-        box-shadow:0 0 40px rgba(255,182,193,0.8);
-    }
-}
-
-.rabbit-circle img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-/* Typography */
-
-h1{
-    font-family:'Dancing Script',cursive;
-    font-size:clamp(2.7rem,5vw,4rem);
-    color:#ff7f9f;
-    margin-bottom:18px;
-}
-
-.message{
-    font-size:clamp(1rem,2vw,1.15rem);
-    line-height:1.9;
-    color:#6a5960;
-}
-
-/* Buttons */
-
-button{
-    margin-top:35px;
-    padding:15px 35px;
-    border:none;
-    border-radius:50px;
-    font-size:1rem;
-    cursor:pointer;
-    background:linear-gradient(135deg,#ffb7c5,#ffd7a8);
-    color:white;
-    transition:0.4s;
-    box-shadow:0 8px 25px rgba(255,182,193,0.4);
-}
-
-button:hover{
-    transform:translateY(-4px) scale(1.03);
-    box-shadow:0 12px 28px rgba(255,182,193,0.65);
-}
-
-/* Hidden */
-
-.hidden{
-    display:none;
-}
-
-/* Main */
-
-.main{
-    padding:90px 20px 100px;
-    text-align:center;
-    animation:fadeIn 1.5s ease;
-}
-
-.section-title{
-    font-family:'Dancing Script',cursive;
-    font-size:clamp(2.5rem,5vw,4rem);
-    color:#ff7f9f;
-    margin-bottom:50px;
-}
-
-/* Cards */
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:25px;
-    max-width:1100px;
-    margin:auto;
-}
-
-.special-card{
-    background:rgba(255,255,255,0.38);
-    backdrop-filter:blur(12px);
-    border-radius:28px;
-    padding:30px 24px;
-    transition:0.4s;
-    box-shadow:0 8px 25px rgba(0,0,0,0.05);
-}
-
-.special-card:hover{
-    transform:translateY(-10px);
-}
-
-.special-card h3{
-    color:#ff8fab;
-    margin-bottom:14px;
-    font-size:1.2rem;
-}
-
-.special-card p{
-    line-height:1.8;
-}
-
-/* Hidden Stars */
-
-.star-zone{
-    margin-top:110px;
-}
+/* STARS */
 
 .stars{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:22px;
-    margin-top:35px;
+  position:absolute;
+  inset:0;
 }
 
 .star{
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.4);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    cursor:pointer;
-    font-size:28px;
-    transition:0.4s;
-    box-shadow:0 5px 18px rgba(0,0,0,0.08);
+  position:absolute;
+  background:white;
+  border-radius:50%;
+  opacity:.7;
+  animation:twinkle infinite ease-in-out;
 }
 
-.star:hover{
-    transform:scale(1.15) rotate(8deg);
+@keyframes twinkle{
+  0%,100%{opacity:.2;transform:scale(.8)}
+  50%{opacity:1;transform:scale(1.2)}
 }
 
-.secret-message{
-    margin-top:35px;
-    font-size:1.1rem;
-    line-height:1.9;
-    max-width:700px;
-    margin-left:auto;
-    margin-right:auto;
-    color:#6a5960;
-    display:none;
-    animation:fadeIn 1s ease;
+/* MOON */
+
+.moon{
+  position:absolute;
+  top:70px;
+  right:90px;
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  background:#fff8d7;
+  box-shadow:0 0 80px rgba(255,248,210,.7);
 }
 
-/* Final Section */
+/* CLOUDS */
 
-.final-section{
-    margin-top:120px;
+.cloud{
+  position:absolute;
+  width:260px;
+  height:70px;
+  background:rgba(255,255,255,.05);
+  filter:blur(10px);
+  border-radius:100px;
+  animation:cloudMove linear infinite;
 }
 
-.final-message{
-    max-width:750px;
-    margin:auto;
-    line-height:2.1;
-    font-size:1.15rem;
+.cloud:nth-child(1){
+  top:120px;
+  left:-300px;
+  animation-duration:40s;
 }
 
-.footer{
-    margin-top:60px;
-    font-family:'Dancing Script',cursive;
-    font-size:clamp(2.7rem,5vw,4.2rem);
-    color:#ff7f9f;
+.cloud:nth-child(2){
+  top:220px;
+  left:-350px;
+  animation-duration:60s;
 }
 
-/* Small Note */
-
-.note{
-    margin-top:60px;
-    font-size:0.95rem;
-    opacity:0.75;
+@keyframes cloudMove{
+  from{transform:translateX(0)}
+  to{transform:translateX(160vw)}
 }
 
-/* Responsive */
+/* CLOCK */
+
+.clock-box{
+  position:absolute;
+  top:40px;
+  left:40px;
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.4);
+  backdrop-filter:blur(8px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  z-index:30;
+}
+
+.clock{
+  font-size:28px;
+  font-weight:300;
+  letter-spacing:2px;
+}
+
+/* GROUND */
+
+.ground{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:230px;
+  background:linear-gradient(to top,#091017,#11202e);
+}
+
+/* HOUSE */
+
+.house{
+  position:absolute;
+  bottom:120px;
+  left:50%;
+  transform:translateX(-50%);
+  width:460px;
+  height:260px;
+  transition:3s;
+}
+
+.house-body{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:180px;
+  background:#1d2430;
+  border-radius:12px;
+  box-shadow:0 0 40px rgba(0,0,0,.4);
+}
+
+.roof{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:230px solid transparent;
+  border-right:230px solid transparent;
+  border-bottom:110px solid #2a3240;
+}
+
+/* WINDOW */
+
+.window{
+  position:absolute;
+  top:55px;
+  left:50%;
+  transform:translateX(-50%);
+  width:130px;
+  height:100px;
+  background:#f6c57a;
+  border:7px solid #4a3528;
+  border-radius:8px;
+  box-shadow:0 0 25px rgba(255,198,122,.6);
+}
+
+.window::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:5px;
+  height:100%;
+  background:#4a3528;
+}
+
+.window::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:0;
+  transform:translateY(-50%);
+  width:100%;
+  height:5px;
+  background:#4a3528;
+}
+
+/* DOOR */
+
+.door{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:95px;
+  height:140px;
+  border-radius:12px 12px 0 0;
+  background:#734d33;
+  box-shadow:0 0 25px rgba(255,208,140,.15);
+  cursor:pointer;
+  transition:1.5s;
+  z-index:20;
+}
+
+.door::before{
+  content:"";
+  position:absolute;
+  right:15px;
+  top:50%;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ffdba5;
+}
+
+.door.open{
+  transform:translateX(-50%) rotateY(70deg);
+  transform-origin:left;
+}
+
+/* RABBIT */
+
+.rabbit{
+  position:absolute;
+  width:90px;
+  left:50%;
+  bottom:185px;
+  transform:translateX(-50%);
+  z-index:10;
+  transition:3s ease-in-out;
+  animation:breath 3s infinite ease-in-out;
+}
+
+@keyframes breath{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(-5px)}
+}
+
+.rabbit img{
+  width:100%;
+  filter:drop-shadow(0 0 15px rgba(255,255,255,.15));
+}
+
+.rabbit.runFront{
+  left:52%;
+  bottom:90px;
+  transform:translateX(-50%) scale(2.2);
+}
+
+.rabbit.runBack{
+  left:50%;
+  bottom:80px;
+  transform:translateX(-50%) scale(.8);
+}
+
+/* MESSAGE */
+
+.message-box{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:90%;
+  max-width:650px;
+  text-align:center;
+  color:white;
+  z-index:50;
+  opacity:0;
+  transition:1s;
+}
+
+.message-box.show{
+  opacity:1;
+}
+
+.message{
+  font-size:clamp(1.2rem,2vw,1.8rem);
+  line-height:2;
+  font-family:'Patrick Hand',cursive;
+  text-shadow:0 0 15px rgba(255,255,255,.15);
+}
+
+.next-btn{
+  margin-top:28px;
+  padding:14px 32px;
+  border:none;
+  border-radius:50px;
+  background:rgba(255,255,255,.15);
+  color:white;
+  backdrop-filter:blur(8px);
+  cursor:pointer;
+  transition:.4s;
+  display:none;
+}
+
+.next-btn:hover{
+  transform:scale(1.06);
+  background:rgba(255,255,255,.25);
+}
+
+/* LIGHTS */
+
+.lantern{
+  position:absolute;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#ffd690;
+  box-shadow:0 0 15px #ffd690;
+  animation:flicker 2s infinite;
+}
+
+@keyframes flicker{
+  0%,100%{opacity:.6}
+  50%{opacity:1}
+}
+
+/* ZOOM */
+
+.zoom-house{
+  animation:zoomInHouse 4s forwards;
+}
+
+@keyframes zoomInHouse{
+  from{
+    transform:translateX(-50%) scale(1);
+  }
+  to{
+    transform:translateX(-50%) scale(2.4);
+  }
+}
+
+.fade-overlay{
+  position:absolute;
+  inset:0;
+  background:black;
+  opacity:0;
+  pointer-events:none;
+  transition:2s;
+  z-index:100;
+}
+
+.fade-overlay.show{
+  opacity:1;
+}
+
+/* MOBILE */
 
 @media(max-width:768px){
 
-    .card{
-        padding:35px 22px;
-    }
+  .moon{
+    width:90px;
+    height:90px;
+    right:25px;
+  }
 
-    .rabbit-circle{
-        width:160px;
-        height:160px;
-    }
+  .clock-box{
+    width:90px;
+    height:90px;
+    left:20px;
+    top:20px;
+  }
 
-    .star{
-        width:60px;
-        height:60px;
-    }
+  .clock{
+    font-size:18px;
+  }
+
+  .house{
+    width:90%;
+  }
+
+  .roof{
+    border-left:45vw solid transparent;
+    border-right:45vw solid transparent;
+  }
+
+  .rabbit{
+    width:65px;
+  }
 
 }
 
 </style>
 </head>
-
 <body>
 
-<div class="bg-lights"></div>
+<div class="scene">
 
-<!-- FIRST SCREEN -->
+  <div class="stars" id="stars"></div>
 
-<div class="container" id="page1">
+  <div class="cloud"></div>
+  <div class="cloud"></div>
 
-    <div class="card">
+  <div class="moon"></div>
 
-        <div class="rabbit-circle">
-            <img src="https://i.pinimg.com/736x/70/f4/e7/70f4e7cce0d1eeb0e7b4dcb8d37c5d89.jpg">
-        </div>
+  <div class="clock-box">
+    <div class="clock" id="clock">11:59</div>
+  </div>
 
-        <h1>Hi Guddu 🌸</h1>
+  <div class="house" id="house">
 
-        <p class="message">
-            I wanted to make something a little different for your birthday this year.
-            <br><br>
-            So... this tiny warm corner of the internet is just for you today ✨
-        </p>
+    <div class="roof"></div>
 
-        <button onclick="nextPage()">Next ✨</button>
+    <div class="house-body">
 
-    </div>
+      <div class="window"></div>
 
-</div>
-
-<!-- SECOND SCREEN -->
-
-<div class="container hidden" id="page2">
-
-    <div class="card">
-
-        <div class="rabbit-circle">
-            <img src="https://i.pinimg.com/736x/29/6d/18/296d181eb0d87cf4cf9e9e2fbcf4e1a8.jpg">
-        </div>
-
-        <h1>A Small Surprise ☁️</h1>
-
-        <p class="message">
-            We may not have talked much...
-            but some people still leave a soft impression somehow.
-            <br><br>
-            And honestly, you seem like one of those people 🌸
-        </p>
-
-        <button onclick="startSite()">Let's Start 💖</button>
+      <div class="door" id="door"></div>
 
     </div>
 
-</div>
+  </div>
 
-<!-- MAIN SITE -->
+  <div class="rabbit" id="rabbit">
+    <img src="https://cdn-icons-png.flaticon.com/512/3069/3069172.png">
+  </div>
 
-<div class="main hidden" id="main">
+  <div class="ground"></div>
 
-    <h2 class="section-title">Little Things ✨</h2>
+  <div class="message-box" id="messageBox">
+    <div class="message" id="message"></div>
+    <button class="next-btn" id="nextBtn">Come with me ✨</button>
+  </div>
 
-    <div class="cards">
-
-        <div class="special-card">
-            <h3>Your Smile 🌸</h3>
-            <p>
-                Even the little moments I’ve seen of you felt genuinely warm.
-            </p>
-        </div>
-
-        <div class="special-card">
-            <h3>Your Presence ☁️</h3>
-            <p>
-                Some people naturally leave a soft impression without trying.
-            </p>
-        </div>
-
-        <div class="special-card">
-            <h3>Your Vibe ✨</h3>
-            <p>
-                There’s something calm and comforting about your energy.
-            </p>
-        </div>
-
-        <div class="special-card">
-            <h3>This Day 🎂</h3>
-            <p>
-                I just wanted to make your birthday feel a little more special today.
-            </p>
-        </div>
-
-    </div>
-
-    <!-- Hidden Messages -->
-
-    <div class="star-zone">
-
-        <h2 class="section-title">Tiny Hidden Messages 🌙</h2>
-
-        <p class="message">
-            Click the stars slowly ✨
-        </p>
-
-        <div class="stars">
-
-            <div class="star" onclick="showMessage(0)">⭐</div>
-            <div class="star" onclick="showMessage(1)">🌸</div>
-            <div class="star" onclick="showMessage(2)">☁️</div>
-            <div class="star" onclick="showMessage(3)">🐇</div>
-
-        </div>
-
-        <div class="secret-message" id="secretMessage"></div>
-
-    </div>
-
-    <!-- Final -->
-
-    <div class="final-section">
-
-        <h2 class="section-title">One Last Thing 🌌</h2>
-
-        <div class="final-message">
-
-            I didn’t really know what kind of gift to give...
-            so I thought maybe making something myself would feel more genuine.
-            <br><br>
-
-            Not every effort needs a reason.
-            Sometimes making someone smile feels enough 🌸
-            <br><br>
-
-            I hope this year brings you peaceful moments,
-            beautiful memories and lots of happiness.
-
-        </div>
-
-        <div class="note">
-            Made patiently for one special birthday ✨
-        </div>
-
-        <div class="footer">
-            Happy Birthday Guddu 🎂
-        </div>
-
-    </div>
+  <div class="fade-overlay" id="fade"></div>
 
 </div>
 
 <script>
 
-/* Floating Lights */
+/* STARS */
 
-const bg = document.querySelector('.bg-lights');
+const stars = document.getElementById('stars');
 
-for(let i=0;i<45;i++){
+for(let i=0;i<160;i++){
 
-    const light = document.createElement('div');
+  const star = document.createElement('div');
 
-    light.classList.add('light');
+  star.classList.add('star');
 
-    const size = Math.random()*6 + 4;
+  const size = Math.random()*3 + 1;
 
-    light.style.width = size + 'px';
-    light.style.height = size + 'px';
+  star.style.width = size + 'px';
+  star.style.height = size + 'px';
 
-    light.style.left = Math.random()*100 + '%';
-    light.style.top = Math.random()*100 + '%';
+  star.style.left = Math.random()*100 + '%';
+  star.style.top = Math.random()*100 + '%';
 
-    light.style.animationDuration = (Math.random()*5 + 4) + 's';
+  star.style.animationDuration = (Math.random()*4 + 2) + 's';
 
-    bg.appendChild(light);
-
+  stars.appendChild(star);
 }
 
-/* Pages */
+/* LANTERNS */
 
-function nextPage(){
+for(let i=0;i<18;i++){
 
-    document.getElementById('page1').classList.add('hidden');
-    document.getElementById('page2').classList.remove('hidden');
+  const lantern = document.createElement('div');
 
+  lantern.classList.add('lantern');
+
+  lantern.style.left = Math.random()*100 + '%';
+  lantern.style.bottom = (Math.random()*120 + 20) + 'px';
+
+  document.querySelector('.scene').appendChild(lantern);
 }
 
-function startSite(){
+/* CLOCK */
 
-    document.getElementById('page2').classList.add('hidden');
-    document.getElementById('main').classList.remove('hidden');
+const clock = document.getElementById('clock');
 
-    window.scrollTo({
-        top:0,
-        behavior:'smooth'
-    });
+setTimeout(()=>{
+  clock.innerHTML = '12:00';
+},2500);
 
+/* RABBIT SEQUENCE */
+
+const rabbit = document.getElementById('rabbit');
+const messageBox = document.getElementById('messageBox');
+const message = document.getElementById('message');
+const nextBtn = document.getElementById('nextBtn');
+const house = document.getElementById('house');
+const door = document.getElementById('door');
+const fade = document.getElementById('fade');
+
+setTimeout(()=>{
+
+  rabbit.classList.add('runFront');
+
+},4500);
+
+setTimeout(()=>{
+
+  messageBox.classList.add('show');
+
+  typeWriter(
+`Happy Birthday Guddu.\n\nI'm Chunnu 🐇\n\nSomeone made this because\nyou're really special to them.\n\nCome with me ✨`
+
+  );
+
+},7200);
+
+/* TYPEWRITER */
+
+function typeWriter(text){
+
+  let i = 0;
+
+  function typing(){
+
+    if(i < text.length){
+
+      if(text.charAt(i) === '\n'){
+        message.innerHTML += '<br>';
+      }
+      else{
+        message.innerHTML += text.charAt(i);
+      }
+
+      i++;
+
+      setTimeout(typing,45);
+    }
+    else{
+      nextBtn.style.display = 'inline-block';
+    }
+  }
+
+  typing();
 }
 
-/* Secret Messages */
+/* NEXT */
 
-const messages = [
+nextBtn.addEventListener('click',()=>{
 
-"🌸 You seem like someone who deserves gentle and genuine happiness.",
+  messageBox.classList.remove('show');
 
-"☁️ This site was made slowly and patiently just for today.",
+  rabbit.classList.remove('runFront');
+  rabbit.classList.add('runBack');
 
-"✨ Sometimes even small efforts carry sincere feelings behind them.",
+  setTimeout(()=>{
 
-"🐇 You found the hidden rabbit message... that deserves an extra smile."
+    house.classList.add('zoom-house');
 
-];
+  },1500);
 
-function showMessage(index){
+});
 
-    const box = document.getElementById('secretMessage');
+/* DOOR */
 
-    box.style.display = "block";
+let opened = false;
 
-    box.innerHTML = messages[index];
+setTimeout(()=>{
 
-}
+  door.addEventListener('click',()=>{
+
+    if(opened) return;
+
+    opened = true;
+
+    door.classList.add('open');
+
+    setTimeout(()=>{
+
+      fade.classList.add('show');
+
+      setTimeout(()=>{
+
+        alert('Inside house scene will continue here ✨');
+
+      },2000);
+
+    },1200);
+
+  });
+
+},12000);
 
 </script>
-
 </body>
 </html>
+```
