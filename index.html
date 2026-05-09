@@ -15,33 +15,35 @@
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     font-family:'Poppins',sans-serif;
     overflow-x:hidden;
-    background:linear-gradient(135deg,#fff4ec,#ffe5ec,#fff0d9);
     min-height:100vh;
-    color:#5c4b51;
+    background:linear-gradient(135deg,#fff5ef,#ffe8ee,#fff3dc);
+    color:#5f5157;
+    position:relative;
 }
 
 /* Floating Lights */
 
-.stars{
+.bg-lights{
     position:fixed;
     width:100%;
     height:100%;
+    overflow:hidden;
     top:0;
     left:0;
-    overflow:hidden;
     z-index:-1;
 }
 
-.star{
+.light{
     position:absolute;
-    width:6px;
-    height:6px;
-    background:white;
     border-radius:50%;
-    opacity:0.6;
+    background:rgba(255,255,255,0.8);
     animation:float 8s infinite ease-in-out;
 }
 
@@ -51,7 +53,7 @@ body{
         opacity:0.3;
     }
     50%{
-        transform:translateY(-30px);
+        transform:translateY(-40px);
         opacity:1;
     }
     100%{
@@ -60,7 +62,7 @@ body{
     }
 }
 
-/* Main Container */
+/* Container */
 
 .container{
     width:100%;
@@ -68,26 +70,26 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:20px;
+    padding:25px;
 }
 
 .card{
-    width:90%;
-    max-width:700px;
+    width:100%;
+    max-width:760px;
     background:rgba(255,255,255,0.35);
-    backdrop-filter:blur(15px);
     border:1px solid rgba(255,255,255,0.4);
-    border-radius:30px;
-    padding:40px 30px;
+    backdrop-filter:blur(18px);
+    border-radius:35px;
+    padding:45px 35px;
     text-align:center;
     box-shadow:0 10px 40px rgba(0,0,0,0.08);
-    animation:fadeIn 1.5s ease;
+    animation:fadeIn 1.3s ease;
 }
 
 @keyframes fadeIn{
     from{
         opacity:0;
-        transform:translateY(20px);
+        transform:translateY(30px);
     }
     to{
         opacity:1;
@@ -95,19 +97,17 @@ body{
     }
 }
 
+/* Rabbits */
+
 .rabbit-circle{
-    width:180px;
-    height:180px;
-    margin:auto;
+    width:190px;
+    height:190px;
     border-radius:50%;
-    background:linear-gradient(135deg,#fff6f0,#ffe8ef);
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    margin:auto;
     overflow:hidden;
-    box-shadow:0 0 30px rgba(255,182,193,0.5);
-    margin-bottom:25px;
+    box-shadow:0 0 35px rgba(255,192,203,0.55);
     animation:glow 3s infinite alternate;
+    margin-bottom:25px;
 }
 
 @keyframes glow{
@@ -125,72 +125,79 @@ body{
     object-fit:cover;
 }
 
+/* Typography */
+
 h1{
     font-family:'Dancing Script',cursive;
-    font-size:52px;
+    font-size:clamp(2.7rem,5vw,4rem);
     color:#ff7f9f;
-    margin-bottom:15px;
+    margin-bottom:18px;
 }
 
 .message{
-    font-size:18px;
-    line-height:1.8;
-    margin-top:15px;
+    font-size:clamp(1rem,2vw,1.15rem);
+    line-height:1.9;
     color:#6a5960;
 }
 
+/* Buttons */
+
 button{
     margin-top:35px;
-    padding:14px 35px;
+    padding:15px 35px;
     border:none;
-    border-radius:40px;
-    background:linear-gradient(135deg,#ffb6c1,#ffd6a5);
-    color:white;
-    font-size:17px;
+    border-radius:50px;
+    font-size:1rem;
     cursor:pointer;
+    background:linear-gradient(135deg,#ffb7c5,#ffd7a8);
+    color:white;
     transition:0.4s;
-    box-shadow:0 5px 20px rgba(255,182,193,0.4);
+    box-shadow:0 8px 25px rgba(255,182,193,0.4);
 }
 
 button:hover{
-    transform:translateY(-3px) scale(1.03);
-    box-shadow:0 10px 25px rgba(255,182,193,0.6);
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:0 12px 28px rgba(255,182,193,0.65);
 }
+
+/* Hidden */
 
 .hidden{
     display:none;
 }
 
-/* Main Content */
+/* Main */
 
-.main-content{
-    padding:80px 20px;
+.main{
+    padding:90px 20px 100px;
     text-align:center;
-    animation:fadeIn 2s ease;
+    animation:fadeIn 1.5s ease;
 }
 
 .section-title{
     font-family:'Dancing Script',cursive;
-    font-size:48px;
+    font-size:clamp(2.5rem,5vw,4rem);
     color:#ff7f9f;
-    margin-bottom:40px;
+    margin-bottom:50px;
 }
+
+/* Cards */
 
 .cards{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
     gap:25px;
-    max-width:1000px;
+    max-width:1100px;
     margin:auto;
 }
 
 .special-card{
-    background:rgba(255,255,255,0.4);
-    padding:30px 20px;
-    border-radius:25px;
-    backdrop-filter:blur(10px);
+    background:rgba(255,255,255,0.38);
+    backdrop-filter:blur(12px);
+    border-radius:28px;
+    padding:30px 24px;
     transition:0.4s;
-    box-shadow:0 5px 20px rgba(0,0,0,0.05);
+    box-shadow:0 8px 25px rgba(0,0,0,0.05);
 }
 
 .special-card:hover{
@@ -198,46 +205,103 @@ button:hover{
 }
 
 .special-card h3{
-    margin-bottom:10px;
     color:#ff8fab;
+    margin-bottom:14px;
+    font-size:1.2rem;
 }
 
-.final-message{
-    margin-top:100px;
-    font-size:22px;
-    line-height:2;
+.special-card p{
+    line-height:1.8;
+}
+
+/* Hidden Stars */
+
+.star-zone{
+    margin-top:110px;
+}
+
+.stars{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:22px;
+    margin-top:35px;
+}
+
+.star{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    font-size:28px;
+    transition:0.4s;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);
+}
+
+.star:hover{
+    transform:scale(1.15) rotate(8deg);
+}
+
+.secret-message{
+    margin-top:35px;
+    font-size:1.1rem;
+    line-height:1.9;
     max-width:700px;
     margin-left:auto;
     margin-right:auto;
-    color:#6b5b63;
+    color:#6a5960;
+    display:none;
+    animation:fadeIn 1s ease;
+}
+
+/* Final Section */
+
+.final-section{
+    margin-top:120px;
+}
+
+.final-message{
+    max-width:750px;
+    margin:auto;
+    line-height:2.1;
+    font-size:1.15rem;
 }
 
 .footer{
-    margin-top:70px;
+    margin-top:60px;
     font-family:'Dancing Script',cursive;
-    font-size:52px;
+    font-size:clamp(2.7rem,5vw,4.2rem);
     color:#ff7f9f;
+}
+
+/* Small Note */
+
+.note{
+    margin-top:60px;
+    font-size:0.95rem;
+    opacity:0.75;
 }
 
 /* Responsive */
 
-@media(max-width:600px){
+@media(max-width:768px){
 
-    h1{
-        font-size:42px;
-    }
-
-    .section-title{
-        font-size:40px;
-    }
-
-    .message{
-        font-size:16px;
+    .card{
+        padding:35px 22px;
     }
 
     .rabbit-circle{
-        width:150px;
-        height:150px;
+        width:160px;
+        height:160px;
+    }
+
+    .star{
+        width:60px;
+        height:60px;
     }
 
 }
@@ -247,9 +311,9 @@ button:hover{
 
 <body>
 
-<div class="stars"></div>
+<div class="bg-lights"></div>
 
-<!-- First Card -->
+<!-- FIRST SCREEN -->
 
 <div class="container" id="page1">
 
@@ -262,10 +326,9 @@ button:hover{
         <h1>Hi Guddu 🌸</h1>
 
         <p class="message">
-            I made this little space just to make you smile today.
+            I wanted to make something a little different for your birthday this year.
             <br><br>
-            Sometimes some people naturally become special without even trying...
-            and you’re honestly one of them.
+            So... this tiny warm corner of the internet is just for you today ✨
         </p>
 
         <button onclick="nextPage()">Next ✨</button>
@@ -274,7 +337,7 @@ button:hover{
 
 </div>
 
-<!-- Second Card -->
+<!-- SECOND SCREEN -->
 
 <div class="container hidden" id="page2">
 
@@ -284,72 +347,111 @@ button:hover{
             <img src="https://i.pinimg.com/736x/29/6d/18/296d181eb0d87cf4cf9e9e2fbcf4e1a8.jpg">
         </div>
 
-        <h1>For You 💖</h1>
+        <h1>A Small Surprise ☁️</h1>
 
         <p class="message">
-            You genuinely make conversations feel lighter and days feel softer.
+            We may not have talked much...
+            but some people still leave a soft impression somehow.
             <br><br>
-            I just hope today reminds you how appreciated,
-            precious and amazing you truly are.
+            And honestly, you seem like one of those people 🌸
         </p>
 
-        <button onclick="startSite()">Let's Start 🌸</button>
+        <button onclick="startSite()">Let's Start 💖</button>
 
     </div>
 
 </div>
 
-<!-- Main Content -->
+<!-- MAIN SITE -->
 
-<div class="main-content hidden" id="main">
+<div class="main hidden" id="main">
 
-    <h2 class="section-title">Things That Make You Special ✨</h2>
+    <h2 class="section-title">Little Things ✨</h2>
 
     <div class="cards">
 
         <div class="special-card">
-    <h3>Your Smile 🌸</h3>
-    <p>
-        Even the little moments I’ve seen of you felt genuinely warm.
-    </p>
-</div>
-
-<div class="special-card">
-    <h3>Your Presence ☁️</h3>
-    <p>
-        Some people naturally leave a soft impression without even trying.
-    </p>
-</div>
-
-<div class="special-card">
-    <h3>This Day 🎂</h3>
-    <p>
-        I just wanted to make your birthday feel a little more special today.
-    </p>
-</div>
+            <h3>Your Smile 🌸</h3>
+            <p>
+                Even the little moments I’ve seen of you felt genuinely warm.
+            </p>
+        </div>
 
         <div class="special-card">
-            <h3>Your Heart 💖</h3>
+            <h3>Your Presence ☁️</h3>
             <p>
-                Never doubt how valuable and meaningful your existence is.
+                Some people naturally leave a soft impression without trying.
+            </p>
+        </div>
+
+        <div class="special-card">
+            <h3>Your Vibe ✨</h3>
+            <p>
+                There’s something calm and comforting about your energy.
+            </p>
+        </div>
+
+        <div class="special-card">
+            <h3>This Day 🎂</h3>
+            <p>
+                I just wanted to make your birthday feel a little more special today.
             </p>
         </div>
 
     </div>
 
-    <div class="final-message">
+    <!-- Hidden Messages -->
 
-        “No matter where life goes...
-        I’m really glad this world has someone like you in it.”
-        <br><br>
+    <div class="star-zone">
 
-        I hope this year brings you happiness,
-        peace, beautiful memories and countless reasons to smile 🌙
+        <h2 class="section-title">Tiny Hidden Messages 🌙</h2>
+
+        <p class="message">
+            Click the stars slowly ✨
+        </p>
+
+        <div class="stars">
+
+            <div class="star" onclick="showMessage(0)">⭐</div>
+            <div class="star" onclick="showMessage(1)">🌸</div>
+            <div class="star" onclick="showMessage(2)">☁️</div>
+            <div class="star" onclick="showMessage(3)">🐇</div>
+
+        </div>
+
+        <div class="secret-message" id="secretMessage"></div>
 
     </div>
 
-    <div class="footer">
-        Happy Birthday Guddu 🎂
+    <!-- Final -->
+
+    <div class="final-section">
+
+        <h2 class="section-title">One Last Thing 🌌</h2>
+
+        <div class="final-message">
+
+            I didn’t really know what kind of gift to give...
+            so I thought maybe making something myself would feel more genuine.
+            <br><br>
+
+            Not every effort needs a reason.
+            Sometimes making someone smile feels enough 🌸
+            <br><br>
+
+            I hope this year brings you peaceful moments,
+            beautiful memories and lots of happiness.
+
+        </div>
+
+        <div class="note">
+            Made patiently for one special birthday ✨
+        </div>
+
+        <div class="footer">
+            Happy Birthday Guddu 🎂
+        </div>
+
     </div>
 
 </div>
@@ -358,23 +460,29 @@ button:hover{
 
 /* Floating Lights */
 
-const starsContainer = document.querySelector('.stars');
+const bg = document.querySelector('.bg-lights');
 
-for(let i=0;i<40;i++){
+for(let i=0;i<45;i++){
 
-    let star = document.createElement('div');
-    star.classList.add('star');
+    const light = document.createElement('div');
 
-    star.style.left = Math.random()*100 + '%';
-    star.style.top = Math.random()*100 + '%';
+    light.classList.add('light');
 
-    star.style.animationDuration = (Math.random()*5 + 4) + 's';
-    star.style.width = star.style.height = (Math.random()*5 + 3) + 'px';
+    const size = Math.random()*6 + 4;
 
-    starsContainer.appendChild(star);
+    light.style.width = size + 'px';
+    light.style.height = size + 'px';
+
+    light.style.left = Math.random()*100 + '%';
+    light.style.top = Math.random()*100 + '%';
+
+    light.style.animationDuration = (Math.random()*5 + 4) + 's';
+
+    bg.appendChild(light);
+
 }
 
-/* Page Transitions */
+/* Pages */
 
 function nextPage(){
 
@@ -392,6 +500,30 @@ function startSite(){
         top:0,
         behavior:'smooth'
     });
+
+}
+
+/* Secret Messages */
+
+const messages = [
+
+"🌸 You seem like someone who deserves gentle and genuine happiness.",
+
+"☁️ This site was made slowly and patiently just for today.",
+
+"✨ Sometimes even small efforts carry sincere feelings behind them.",
+
+"🐇 You found the hidden rabbit message... that deserves an extra smile."
+
+];
+
+function showMessage(index){
+
+    const box = document.getElementById('secretMessage');
+
+    box.style.display = "block";
+
+    box.innerHTML = messages[index];
 
 }
 
