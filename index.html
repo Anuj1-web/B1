@@ -1,595 +1,976 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Guddu's Night</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Patrick+Hand&display=swap" rel="stylesheet">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Professional Typing Examination System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
 }
 
 body{
-  overflow:hidden;
-  font-family:'Poppins',sans-serif;
-  background:#06101d;
+
+background:
+linear-gradient(135deg,#09131d,#0d1f30,#102844);
+
+min-height:100vh;
+
+color:white;
+
 }
 
-.scene{
-  position:relative;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  background:
-  radial-gradient(circle at top,#17365c 0%,#08101c 45%,#02060c 100%);
+.container{
+
+width:95%;
+max-width:1700px;
+margin:auto;
+padding:25px;
+
 }
 
-/* STARS */
+header{
 
-.stars{
-  position:absolute;
-  inset:0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 30px;
+border-radius:18px;
+
+background:rgba(255,255,255,.05);
+
+backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.08);
+
+margin-bottom:25px;
+
 }
 
-.star{
-  position:absolute;
-  background:white;
-  border-radius:50%;
-  opacity:.7;
-  animation:twinkle infinite ease-in-out;
+.logo{
+
+font-size:30px;
+font-weight:900;
+
+letter-spacing:1px;
+
 }
 
-@keyframes twinkle{
-  0%,100%{opacity:.2;transform:scale(.8)}
-  50%{opacity:1;transform:scale(1.2)}
+.logo span{
+
+color:#ffd34d;
+
 }
 
-/* MOON */
+.examTitle{
 
-.moon{
-  position:absolute;
-  top:70px;
-  right:90px;
-  width:130px;
-  height:130px;
-  border-radius:50%;
-  background:#fff8d7;
-  box-shadow:0 0 80px rgba(255,248,210,.7);
+font-size:16px;
+
+opacity:.85;
+
 }
 
-/* CLOUDS */
+.topControls{
 
-.cloud{
-  position:absolute;
-  width:260px;
-  height:70px;
-  background:rgba(255,255,255,.05);
-  filter:blur(10px);
-  border-radius:100px;
-  animation:cloudMove linear infinite;
+display:flex;
+
+gap:15px;
+
+align-items:center;
+
 }
 
-.cloud:nth-child(1){
-  top:120px;
-  left:-300px;
-  animation-duration:40s;
+button{
+
+cursor:pointer;
+
+border:none;
+
+padding:12px 22px;
+
+border-radius:10px;
+
+font-weight:700;
+
+transition:.25s;
+
 }
 
-.cloud:nth-child(2){
-  top:220px;
-  left:-350px;
-  animation-duration:60s;
+.primary{
+
+background:#ffd34d;
+
+color:#111;
+
 }
 
-@keyframes cloudMove{
-  from{transform:translateX(0)}
-  to{transform:translateX(160vw)}
+.primary:hover{
+
+transform:translateY(-2px);
+
 }
 
-/* CLOCK */
+.secondary{
 
-.clock-box{
-  position:absolute;
-  top:40px;
-  left:40px;
-  width:130px;
-  height:130px;
-  border-radius:50%;
-  border:3px solid rgba(255,255,255,.4);
-  backdrop-filter:blur(8px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
-  z-index:30;
+background:#1b3d67;
+
+color:white;
+
 }
 
-.clock{
-  font-size:28px;
-  font-weight:300;
-  letter-spacing:2px;
+.secondary:hover{
+
+background:#2c5688;
+
 }
 
-/* GROUND */
+.dashboard{
 
-.ground{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:230px;
-  background:linear-gradient(to top,#091017,#11202e);
+display:grid;
+
+grid-template-columns:320px 1fr;
+
+gap:25px;
+
 }
 
-/* HOUSE */
+.sidebar{
 
-.house{
-  position:absolute;
-  bottom:120px;
-  left:50%;
-  transform:translateX(-50%);
-  width:460px;
-  height:260px;
-  transition:3s;
+background:rgba(255,255,255,.05);
+
+border-radius:18px;
+
+padding:22px;
+
+border:1px solid rgba(255,255,255,.07);
+
 }
 
-.house-body{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:180px;
-  background:#1d2430;
-  border-radius:12px;
-  box-shadow:0 0 40px rgba(0,0,0,.4);
+.sidebar h2{
+
+margin-bottom:20px;
+
+font-size:22px;
+
 }
 
-.roof{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:0;
-  height:0;
-  border-left:230px solid transparent;
-  border-right:230px solid transparent;
-  border-bottom:110px solid #2a3240;
+.setting{
+
+margin-bottom:20px;
+
 }
 
-/* WINDOW */
+.setting label{
 
-.window{
-  position:absolute;
-  top:55px;
-  left:50%;
-  transform:translateX(-50%);
-  width:130px;
-  height:100px;
-  background:#f6c57a;
-  border:7px solid #4a3528;
-  border-radius:8px;
-  box-shadow:0 0 25px rgba(255,198,122,.6);
+display:block;
+
+margin-bottom:8px;
+
+font-weight:600;
+
 }
 
-.window::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translateX(-50%);
-  width:5px;
-  height:100%;
-  background:#4a3528;
+select,input{
+
+width:100%;
+
+padding:12px;
+
+border-radius:10px;
+
+border:none;
+
+background:#14273d;
+
+color:white;
+
+font-size:15px;
+
 }
 
-.window::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  left:0;
-  transform:translateY(-50%);
-  width:100%;
-  height:5px;
-  background:#4a3528;
+.stats{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:14px;
+
+margin-top:30px;
+
 }
 
-/* DOOR */
+.card{
 
-.door{
-  position:absolute;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:95px;
-  height:140px;
-  border-radius:12px 12px 0 0;
-  background:#734d33;
-  box-shadow:0 0 25px rgba(255,208,140,.15);
-  cursor:pointer;
-  transition:1.5s;
-  z-index:20;
+background:#13283f;
+
+padding:18px;
+
+border-radius:14px;
+
+text-align:center;
+
 }
 
-.door::before{
-  content:"";
-  position:absolute;
-  right:15px;
-  top:50%;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#ffdba5;
+.card h3{
+
+font-size:13px;
+
+opacity:.8;
+
+margin-bottom:8px;
+
 }
 
-.door.open{
-  transform:translateX(-50%) rotateY(70deg);
-  transform-origin:left;
+.card p{
+
+font-size:26px;
+
+font-weight:800;
+
 }
 
-/* RABBIT */
+.main{
 
-.rabbit{
-  position:absolute;
-  width:90px;
-  left:50%;
-  bottom:185px;
-  transform:translateX(-50%);
-  z-index:10;
-  transition:3s ease-in-out;
-  animation:breath 3s infinite ease-in-out;
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
 }
 
-@keyframes breath{
-  0%,100%{transform:translateX(-50%) translateY(0)}
-  50%{transform:translateX(-50%) translateY(-5px)}
+.timerBox{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:18px 25px;
+
+background:rgba(255,255,255,.05);
+
+border-radius:18px;
+
+border:1px solid rgba(255,255,255,.06);
+
 }
 
-.rabbit img{
-  width:100%;
-  filter:drop-shadow(0 0 15px rgba(255,255,255,.15));
+.timer{
+
+font-size:42px;
+
+font-weight:900;
+
+color:#ffd34d;
+
 }
 
-.rabbit.runFront{
-  left:52%;
-  bottom:90px;
-  transform:translateX(-50%) scale(2.2);
+.status{
+
+display:flex;
+
+gap:15px;
+
 }
 
-.rabbit.runBack{
-  left:50%;
-  bottom:80px;
-  transform:translateX(-50%) scale(.8);
+.status div{
+
+background:#183453;
+
+padding:10px 18px;
+
+border-radius:10px;
+
+font-weight:700;
+
 }
 
-/* MESSAGE */
+.passage{
 
-.message-box{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:90%;
-  max-width:650px;
-  text-align:center;
-  color:white;
-  z-index:50;
-  opacity:0;
-  transition:1s;
+background:white;
+
+color:#222;
+
+padding:35px;
+
+border-radius:18px;
+
+font-size:26px;
+
+line-height:2;
+
+height:390px;
+
+overflow:auto;
+
+user-select:none;
+
+box-shadow:0 15px 40px rgba(0,0,0,.2);
+
 }
 
-.message-box.show{
-  opacity:1;
+.passage span.correct{
+
+color:#17b169;
+
 }
 
-.message{
-  font-size:clamp(1.2rem,2vw,1.8rem);
-  line-height:2;
-  font-family:'Patrick Hand',cursive;
-  text-shadow:0 0 15px rgba(255,255,255,.15);
+.passage span.wrong{
+
+background:#ff4b4b;
+
+color:white;
+
 }
 
-.next-btn{
-  margin-top:28px;
-  padding:14px 32px;
-  border:none;
-  border-radius:50px;
-  background:rgba(255,255,255,.15);
-  color:white;
-  backdrop-filter:blur(8px);
-  cursor:pointer;
-  transition:.4s;
-  display:none;
+.passage span.current{
+
+background:#ffe36f;
+
 }
 
-.next-btn:hover{
-  transform:scale(1.06);
-  background:rgba(255,255,255,.25);
+textarea{
+
+height:220px;
+
+padding:25px;
+
+font-size:24px;
+
+resize:none;
+
+border:none;
+
+border-radius:18px;
+
+outline:none;
+
+line-height:1.8;
+
+background:#f7f7f7;
+
 }
 
-/* LIGHTS */
+.controlBar{
 
-.lantern{
-  position:absolute;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#ffd690;
-  box-shadow:0 0 15px #ffd690;
-  animation:flicker 2s infinite;
+display:flex;
+
+gap:18px;
+
+justify-content:flex-end;
+
 }
 
-@keyframes flicker{
-  0%,100%{opacity:.6}
-  50%{opacity:1}
+.resultOverlay{
+
+position:fixed;
+
+left:0;
+
+top:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.75);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:999;
+
 }
 
-/* ZOOM */
+.resultBox{
 
-.zoom-house{
-  animation:zoomInHouse 4s forwards;
+background:white;
+
+width:1000px;
+
+max-width:95%;
+
+border-radius:20px;
+
+padding:35px;
+
+color:#111;
+
 }
 
-@keyframes zoomInHouse{
-  from{
-    transform:translateX(-50%) scale(1);
-  }
-  to{
-    transform:translateX(-50%) scale(2.4);
-  }
+.resultBox h1{
+
+margin-bottom:25px;
+
 }
 
-.fade-overlay{
-  position:absolute;
-  inset:0;
-  background:black;
-  opacity:0;
-  pointer-events:none;
-  transition:2s;
-  z-index:100;
+.resultGrid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:18px;
+
 }
 
-.fade-overlay.show{
-  opacity:1;
+.resultCard{
+
+background:#edf4fb;
+
+padding:22px;
+
+border-radius:15px;
+
+text-align:center;
+
 }
 
-/* MOBILE */
+.resultCard h4{
 
-@media(max-width:768px){
+margin-bottom:10px;
 
-  .moon{
-    width:90px;
-    height:90px;
-    right:25px;
-  }
+}
 
-  .clock-box{
-    width:90px;
-    height:90px;
-    left:20px;
-    top:20px;
-  }
+.resultCard p{
 
-  .clock{
-    font-size:18px;
-  }
+font-size:34px;
 
-  .house{
-    width:90%;
-  }
+font-weight:800;
 
-  .roof{
-    border-left:45vw solid transparent;
-    border-right:45vw solid transparent;
-  }
+}
 
-  .rabbit{
-    width:65px;
-  }
+.footerInfo{
+
+margin-top:30px;
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:20px;
+
+}
+
+.analysis{
+
+padding:20px;
+
+background:#edf4fb;
+
+border-radius:15px;
+
+}
+
+.progress{
+
+height:18px;
+
+background:#d7d7d7;
+
+border-radius:50px;
+
+overflow:hidden;
+
+margin-top:10px;
+
+}
+
+.fill{
+
+height:100%;
+
+width:0%;
+
+background:#17b169;
+
+}
+
+::-webkit-scrollbar{
+
+width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#999;
+
+border-radius:20px;
+
+}
+
+@media(max-width:1200px){
+
+.dashboard{
+
+grid-template-columns:1fr;
+
+}
+
+.stats{
+
+grid-template-columns:repeat(4,1fr);
+
+}
+
+}
+
+@media(max-width:700px){
+
+.stats{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.resultGrid{
+
+grid-template-columns:1fr;
+
+}
+
+.footerInfo{
+
+grid-template-columns:1fr;
+
+}
+
+.passage{
+
+font-size:22px;
+
+}
+
+textarea{
+
+font-size:22px;
+
+}
+
+.timer{
+
+font-size:34px;
+
+}
 
 }
 
 </style>
+
 </head>
+
 <body>
 
-<div class="scene">
+<div class="container">
 
-  <div class="stars" id="stars"></div>
+<header>
 
-  <div class="cloud"></div>
-  <div class="cloud"></div>
+<div>
 
-  <div class="moon"></div>
+<div class="logo">
 
-  <div class="clock-box">
-    <div class="clock" id="clock">11:59</div>
-  </div>
-
-  <div class="house" id="house">
-
-    <div class="roof"></div>
-
-    <div class="house-body">
-
-      <div class="window"></div>
-
-      <div class="door" id="door"></div>
-
-    </div>
-
-  </div>
-
-  <div class="rabbit" id="rabbit">
-    <img src="https://cdn-icons-png.flaticon.com/512/3069/3069172.png">
-  </div>
-
-  <div class="ground"></div>
-
-  <div class="message-box" id="messageBox">
-    <div class="message" id="message"></div>
-    <button class="next-btn" id="nextBtn">Come with me ✨</button>
-  </div>
-
-  <div class="fade-overlay" id="fade"></div>
+Typing<span>Exam</span>
 
 </div>
 
-<script>
+<div class="examTitle">
 
-/* STARS */
+Professional Typing Examination Simulator
 
-const stars = document.getElementById('stars');
+</div>
 
-for(let i=0;i<160;i++){
+</div>
 
-  const star = document.createElement('div');
+<div class="topControls">
 
-  star.classList.add('star');
+<button class="secondary" id="paperMode">
 
-  const size = Math.random()*3 + 1;
+Paper → Screen
 
-  star.style.width = size + 'px';
-  star.style.height = size + 'px';
+</button>
 
-  star.style.left = Math.random()*100 + '%';
-  star.style.top = Math.random()*100 + '%';
+<button class="secondary" id="screenMode">
 
-  star.style.animationDuration = (Math.random()*4 + 2) + 's';
+Screen → Screen
 
-  stars.appendChild(star);
-}
+</button>
 
-/* LANTERNS */
+<button class="primary" id="generateBtn">
 
-for(let i=0;i<18;i++){
+Generate Passage
 
-  const lantern = document.createElement('div');
+</button>
 
-  lantern.classList.add('lantern');
+</div>
 
-  lantern.style.left = Math.random()*100 + '%';
-  lantern.style.bottom = (Math.random()*120 + 20) + 'px';
+</header>
 
-  document.querySelector('.scene').appendChild(lantern);
-}
+<div class="dashboard">
 
-/* CLOCK */
+<div class="sidebar">
 
-const clock = document.getElementById('clock');
+<h2>Test Settings</h2>
 
-setTimeout(()=>{
-  clock.innerHTML = '12:00';
-},2500);
+<div class="setting">
 
-/* RABBIT SEQUENCE */
+<label>Exam</label>
 
-const rabbit = document.getElementById('rabbit');
-const messageBox = document.getElementById('messageBox');
-const message = document.getElementById('message');
-const nextBtn = document.getElementById('nextBtn');
-const house = document.getElementById('house');
-const door = document.getElementById('door');
-const fade = document.getElementById('fade');
+<select id="exam">
 
-setTimeout(()=>{
+<option>Delhi Police HCM</option>
 
-  rabbit.classList.add('runFront');
+<option>DSSSB</option>
 
-},4500);
+<option>NTA</option>
 
-setTimeout(()=>{
+<option>TCS</option>
 
-  messageBox.classList.add('show');
+<option>SSC</option>
 
-  typeWriter(
-`Happy Birthday Guddu.\n\nI'm Chunnu 🐇\n\nSomeone made this because\nyou're really special to them.\n\nCome with me ✨`
+</select>
 
-  );
+</div>
 
-},7200);
+<div class="setting">
 
-/* TYPEWRITER */
+<label>Duration</label>
 
-function typeWriter(text){
+<select id="duration">
 
-  let i = 0;
+<option value="10">10 Minutes</option>
 
-  function typing(){
+<option value="15">15 Minutes</option>
 
-    if(i < text.length){
+<option value="5">5 Minutes</option>
 
-      if(text.charAt(i) === '\n'){
-        message.innerHTML += '<br>';
-      }
-      else{
-        message.innerHTML += text.charAt(i);
-      }
+</select>
 
-      i++;
+</div>
 
-      setTimeout(typing,45);
-    }
-    else{
-      nextBtn.style.display = 'inline-block';
-    }
-  }
+<div class="setting">
 
-  typing();
-}
+<label>Difficulty</label>
 
-/* NEXT */
+<select id="difficulty">
 
-nextBtn.addEventListener('click',()=>{
+<option>Auto</option>
 
-  messageBox.classList.remove('show');
+<option>Easy</option>
 
-  rabbit.classList.remove('runFront');
-  rabbit.classList.add('runBack');
+<option>Moderate</option>
 
-  setTimeout(()=>{
+<option>Hard</option>
 
-    house.classList.add('zoom-house');
+</select>
 
-  },1500);
+</div>
 
-});
+<div class="setting">
 
-/* DOOR */
+<label>Source</label>
 
-let opened = false;
+<select id="source">
 
-setTimeout(()=>{
+<option>Editorial</option>
 
-  door.addEventListener('click',()=>{
+<option>Article</option>
 
-    if(opened) return;
+<option>Current Affairs</option>
 
-    opened = true;
+<option>Random</option>
 
-    door.classList.add('open');
+</select>
 
-    setTimeout(()=>{
+</div>
 
-      fade.classList.add('show');
+<div class="stats">
 
-      setTimeout(()=>{
+<div class="card">
 
-        alert('Inside house scene will continue here ✨');
+<h3>Gross WPM</h3>
 
-      },2000);
+<p id="grossSpeed">0</p>
 
-    },1200);
+</div>
 
-  });
+<div class="card">
 
-},12000);
+<h3>Net WPM</h3>
 
-</script>
+<p id="netSpeed">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Accuracy</h3>
+
+<p id="accuracy">0%</p>
+
+</div>
+
+<div class="card">
+
+<h3>Errors</h3>
+
+<p id="errors">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Backspace</h3>
+
+<p id="backspaceCount">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Mistakes</h3>
+
+<p id="wrongWords">0</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="timerBox">
+
+<div class="timer" id="timer">
+
+10:00
+
+</div>
+
+<div class="status">
+
+<div>
+
+Characters :
+<span id="characters">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+Words :
+<span id="words">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+Typed :
+<span id="typed">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="passage" class="passage">
+
+Click "Generate Passage" to begin your examination.
+
+</div>
+
+<textarea
+
+id="typingInput"
+
+placeholder="Start typing here..."
+
+spellcheck="false"
+
+autocomplete="off"
+
+autocorrect="off"
+
+autocapitalize="off"
+
+></textarea>
+
+<div class="controlBar">
+
+<button class="secondary" id="resetBtn">
+
+Reset
+
+</button>
+
+<button class="primary" id="startBtn">
+
+Start Test
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="resultOverlay" id="resultOverlay">
+
+<div class="resultBox">
+
+<h1>
+
+Typing Test Analysis
+
+</h1>
+
+<div class="resultGrid">
+
+<div class="resultCard">
+
+<h4>Gross Speed</h4>
+
+<p id="rGross">
+
+0
+
+</p>
+
+</div>
+
+<div class="resultCard">
+
+<h4>Net Speed</h4>
+
+<p id="rNet">
+
+0
+
+</p>
+
+</div>
+
+<div class="resultCard">
+
+<h4>Accuracy</h4>
+
+<p id="rAccuracy">
+
+0%
+
+</p>
+
+</div>
+
+<div class="resultCard">
+
+<h4>Backspace Used</h4>
+
+<p id="rBackspace">
+
+0
+
+</p>
+
+</div>
+
+<div class="resultCard">
+
+<h4>Wrong Words</h4>
+
+<p id="rWrong">
+
+0
+
+</p>
+
+</div>
+
+<div class="resultCard">
+
+<h4>Difficulty</h4>
+
+<p id="rDifficulty">
+
+-
+
+</p>
+
+</div>
+
+</div>
+
+<div class="footerInfo">
+
+<div class="analysis">
+
+<h3>Performance</h3>
+
+<div class="progress">
+
+<div class="fill" id="performanceFill"></div>
+
+</div>
+
+<p id="performanceText">
+
+Awaiting analysis...
+
+</p>
+
+</div>
+
+<div class="analysis">
+
+<h3>Exam Qualification</h3>
+
+<p id="qualification">
+
+Pending
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
+
 </html>
-```
