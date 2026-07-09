@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypingMaster Pro | Typing Test Portal</title>
 
-<title>Professional Typing Examination System</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
@@ -16,163 +13,175 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Inter,sans-serif;
+font-family:'Poppins',sans-serif;
+}
+
+:root{
+
+--primary:#2563eb;
+--secondary:#1d4ed8;
+--green:#10b981;
+--danger:#ef4444;
+--orange:#f59e0b;
+
+--bg:#f4f7fc;
+--card:#ffffff;
+--text:#1f2937;
+--muted:#6b7280;
+--border:#dbe4f0;
+
+--shadow:
+0 8px 24px rgba(0,0,0,.08);
+
+}
+
+body.dark{
+
+--bg:#111827;
+--card:#1f2937;
+--text:#f3f4f6;
+--muted:#9ca3af;
+--border:#374151;
+
 }
 
 body{
 
-background:
-linear-gradient(135deg,#09131d,#0d1f30,#102844);
-
-min-height:100vh;
-
-color:white;
-
-}
-
-.container{
-
-width:95%;
-max-width:1700px;
-margin:auto;
-padding:25px;
+background:var(--bg);
+color:var(--text);
+transition:.3s;
 
 }
 
 header{
 
+background:linear-gradient(135deg,#2563eb,#0f172a);
+
+padding:22px 45px;
+
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:18px 30px;
-border-radius:18px;
 
-background:rgba(255,255,255,.05);
+color:white;
 
-backdrop-filter:blur(20px);
-
-border:1px solid rgba(255,255,255,.08);
-
-margin-bottom:25px;
+box-shadow:var(--shadow);
 
 }
 
 .logo{
 
-font-size:30px;
-font-weight:900;
-
-letter-spacing:1px;
-
-}
-
-.logo span{
-
-color:#ffd34d;
-
-}
-
-.examTitle{
-
-font-size:16px;
-
-opacity:.85;
-
-}
-
-.topControls{
-
 display:flex;
-
+align-items:center;
 gap:15px;
 
-align-items:center;
+}
+
+.logo h2{
+
+font-size:28px;
 
 }
 
-button{
+.logo p{
 
-cursor:pointer;
+font-size:13px;
+opacity:.8;
+
+}
+
+nav{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+}
+
+nav button{
 
 border:none;
 
-padding:12px 22px;
+padding:10px 18px;
 
 border-radius:10px;
 
-font-weight:700;
+cursor:pointer;
 
-transition:.25s;
+font-weight:600;
 
-}
-
-.primary{
-
-background:#ffd34d;
-
-color:#111;
+transition:.3s;
 
 }
 
-.primary:hover{
+.themeBtn{
 
-transform:translateY(-2px);
+background:white;
 
 }
 
-.secondary{
+.adminBtn{
 
-background:#1b3d67;
-
+background:#10b981;
 color:white;
 
 }
 
-.secondary:hover{
+.hero{
 
-background:#2c5688;
+max-width:1450px;
 
-}
+margin:auto;
 
-.dashboard{
+padding:40px;
 
 display:grid;
 
-grid-template-columns:320px 1fr;
+grid-template-columns:420px auto;
 
-gap:25px;
+gap:30px;
 
 }
 
-.sidebar{
+.leftPanel{
 
-background:rgba(255,255,255,.05);
+background:var(--card);
 
 border-radius:18px;
 
-padding:22px;
+box-shadow:var(--shadow);
 
-border:1px solid rgba(255,255,255,.07);
+padding:30px;
 
 }
 
-.sidebar h2{
+.rightPanel{
 
-margin-bottom:20px;
+background:var(--card);
+
+border-radius:18px;
+
+box-shadow:var(--shadow);
+
+padding:30px;
+
+}
+
+.sectionTitle{
 
 font-size:22px;
 
-}
-
-.setting{
-
 margin-bottom:20px;
 
+font-weight:700;
+
 }
 
-.setting label{
+label{
 
 display:block;
+
+margin-top:18px;
 
 margin-bottom:8px;
 
@@ -184,17 +193,19 @@ select,input{
 
 width:100%;
 
-padding:12px;
+padding:14px;
 
 border-radius:10px;
 
-border:none;
+border:1px solid var(--border);
 
-background:#14273d;
+background:transparent;
 
-color:white;
+color:var(--text);
 
 font-size:15px;
+
+outline:none;
 
 }
 
@@ -204,369 +215,313 @@ display:grid;
 
 grid-template-columns:repeat(2,1fr);
 
-gap:14px;
+gap:15px;
 
-margin-top:30px;
+margin-top:25px;
 
 }
 
-.card{
-
-background:#13283f;
+.stat{
 
 padding:18px;
 
-border-radius:14px;
+border-radius:12px;
+
+background:linear-gradient(130deg,#eff6ff,#dbeafe);
 
 text-align:center;
 
 }
 
-.card h3{
+body.dark .stat{
+
+background:#0f172a;
+
+}
+
+.stat h1{
+
+font-size:30px;
+
+margin-bottom:6px;
+
+}
+
+.stat span{
 
 font-size:13px;
 
-opacity:.8;
-
-margin-bottom:8px;
+color:var(--muted);
 
 }
 
-.card p{
-
-font-size:26px;
-
-font-weight:800;
-
-}
-
-.main{
-
-display:flex;
-
-flex-direction:column;
-
-gap:20px;
-
-}
-
-.timerBox{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:18px 25px;
-
-background:rgba(255,255,255,.05);
-
-border-radius:18px;
-
-border:1px solid rgba(255,255,255,.06);
-
-}
-
-.timer{
-
-font-size:42px;
-
-font-weight:900;
-
-color:#ffd34d;
-
-}
-
-.status{
-
-display:flex;
-
-gap:15px;
-
-}
-
-.status div{
-
-background:#183453;
-
-padding:10px 18px;
-
-border-radius:10px;
-
-font-weight:700;
-
-}
-
-.passage{
-
-background:white;
-
-color:#222;
-
-padding:35px;
-
-border-radius:18px;
-
-font-size:26px;
-
-line-height:2;
-
-height:390px;
-
-overflow:auto;
-
-user-select:none;
-
-box-shadow:0 15px 40px rgba(0,0,0,.2);
-
-}
-
-.passage span.correct{
-
-color:#17b169;
-
-}
-
-.passage span.wrong{
-
-background:#ff4b4b;
-
-color:white;
-
-}
-
-.passage span.current{
-
-background:#ffe36f;
-
-}
-
-textarea{
-
-height:220px;
-
-padding:25px;
-
-font-size:24px;
-
-resize:none;
-
-border:none;
-
-border-radius:18px;
-
-outline:none;
-
-line-height:1.8;
-
-background:#f7f7f7;
-
-}
-
-.controlBar{
-
-display:flex;
-
-gap:18px;
-
-justify-content:flex-end;
-
-}
-
-.resultOverlay{
-
-position:fixed;
-
-left:0;
-
-top:0;
-
-width:100%;
-
-height:100%;
-
-background:rgba(0,0,0,.75);
-
-display:none;
-
-justify-content:center;
-
-align-items:center;
-
-z-index:999;
-
-}
-
-.resultBox{
-
-background:white;
-
-width:1000px;
-
-max-width:95%;
-
-border-radius:20px;
-
-padding:35px;
-
-color:#111;
-
-}
-
-.resultBox h1{
+.searchBox{
 
 margin-bottom:25px;
 
 }
 
-.resultGrid{
+table{
 
-display:grid;
+width:100%;
 
-grid-template-columns:repeat(3,1fr);
-
-gap:18px;
+border-collapse:collapse;
 
 }
 
-.resultCard{
+thead{
 
-background:#edf4fb;
+background:#2563eb;
 
-padding:22px;
-
-border-radius:15px;
-
-text-align:center;
+color:white;
 
 }
 
-.resultCard h4{
+th{
 
-margin-bottom:10px;
+padding:14px;
 
-}
-
-.resultCard p{
-
-font-size:34px;
-
-font-weight:800;
+font-size:15px;
 
 }
 
-.footerInfo{
+td{
 
-margin-top:30px;
+padding:15px;
 
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:20px;
+border-bottom:1px solid var(--border);
 
 }
 
-.analysis{
+tbody tr{
+
+transition:.25s;
+
+cursor:pointer;
+
+}
+
+tbody tr:hover{
+
+background:#eff6ff;
+
+}
+
+body.dark tbody tr:hover{
+
+background:#374151;
+
+}
+
+.badge{
+
+padding:5px 12px;
+
+background:#dbeafe;
+
+color:#2563eb;
+
+border-radius:40px;
+
+font-size:12px;
+
+font-weight:700;
+
+}
+
+.startBtn{
+
+padding:10px 18px;
+
+background:var(--green);
+
+border:none;
+
+color:white;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.preview{
+
+margin-top:25px;
+
+border:1px solid var(--border);
 
 padding:20px;
 
-background:#edf4fb;
+border-radius:12px;
 
-border-radius:15px;
+line-height:1.8;
 
-}
+height:180px;
 
-.progress{
+overflow:auto;
 
-height:18px;
-
-background:#d7d7d7;
-
-border-radius:50px;
-
-overflow:hidden;
-
-margin-top:10px;
+font-size:15px;
 
 }
 
-.fill{
+footer{
 
-height:100%;
+margin-top:35px;
 
-width:0%;
+padding:20px;
 
-background:#17b169;
+text-align:center;
 
-}
-
-::-webkit-scrollbar{
-
-width:10px;
+color:var(--muted);
 
 }
 
-::-webkit-scrollbar-thumb{
+.modal{
 
-background:#999;
+position:fixed;
 
-border-radius:20px;
+inset:0;
 
-}
+display:none;
 
-@media(max-width:1200px){
+align-items:center;
 
-.dashboard{
+justify-content:center;
 
-grid-template-columns:1fr;
+background:rgba(0,0,0,.5);
 
-}
-
-.stats{
-
-grid-template-columns:repeat(4,1fr);
+z-index:999;
 
 }
 
-}
+.modal.active{
 
-@media(max-width:700px){
-
-.stats{
-
-grid-template-columns:repeat(2,1fr);
+display:flex;
 
 }
 
-.resultGrid{
+.modalCard{
 
-grid-template-columns:1fr;
+width:780px;
 
-}
+background:var(--card);
 
-.footerInfo{
+padding:30px;
 
-grid-template-columns:1fr;
+border-radius:16px;
 
-}
+box-shadow:var(--shadow);
 
-.passage{
+max-height:90vh;
 
-font-size:22px;
+overflow:auto;
 
 }
 
 textarea{
 
-font-size:22px;
+width:100%;
+
+height:220px;
+
+padding:15px;
+
+resize:vertical;
+
+margin-top:10px;
+
+border-radius:12px;
+
+background:transparent;
+
+color:var(--text);
+
+border:1px solid var(--border);
 
 }
 
-.timer{
+.actions{
 
-font-size:34px;
+margin-top:20px;
+
+display:flex;
+
+gap:12px;
+
+}
+
+.saveBtn{
+
+background:var(--green);
+
+color:white;
+
+border:none;
+
+padding:12px 20px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+}
+
+.closeBtn{
+
+background:#ef4444;
+
+color:white;
+
+border:none;
+
+padding:12px 20px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+}
+
+.addPassage{
+
+margin-top:25px;
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:13px;
+
+width:100%;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.empty{
+
+padding:50px;
+
+text-align:center;
+
+color:var(--muted);
+
+}
+
+@media(max-width:1100px){
+
+.hero{
+
+grid-template-columns:1fr;
 
 }
 
@@ -575,82 +530,67 @@ font-size:34px;
 </style>
 
 </head>
-
 <body>
-
-<div class="container">
 
 <header>
 
-<div>
-
 <div class="logo">
 
-Typing<span>Exam</span>
+<div style="font-size:40px;">⌨️</div>
+
+<div>
+
+<h2>TypingMaster Pro</h2>
+
+<p>Professional Typing Examination Portal</p>
 
 </div>
 
-<div class="examTitle">
-
-Professional Typing Examination Simulator
-
 </div>
 
-</div>
+<nav>
 
-<div class="topControls">
-
-<button class="secondary" id="paperMode">
-
-Paper → Screen
-
+<button class="themeBtn" onclick="toggleTheme()">
+🌙 Theme
 </button>
 
-<button class="secondary" id="screenMode">
-
-Screen → Screen
-
+<button class="adminBtn" onclick="openAdmin()">
+Admin Portal
 </button>
 
-<button class="primary" id="generateBtn">
-
-Generate Passage
-
-</button>
-
-</div>
+</nav>
 
 </header>
 
-<div class="dashboard">
+<section class="hero">
 
-<div class="sidebar">
+<div class="leftPanel">
 
-<h2>Test Settings</h2>
+<div class="sectionTitle">
+Exam Configuration
+</div>
 
-<div class="setting">
-
-<label>Exam</label>
+<label>Select Examination</label>
 
 <select id="exam">
 
-<option>Delhi Police HCM</option>
+<option>SSC CHSL</option>
 
-<option>DSSSB</option>
+<option>SSC CGL DEST</option>
 
-<option>NTA</option>
+<option>SSC CPO</option>
 
-<option>TCS</option>
+<option>RRB NTPC</option>
 
-<option>SSC</option>
+<option>Stenographer</option>
+
+<option>CPCT</option>
+
+<option>Custom Examination</option>
 
 </select>
 
-</div>
-
-<div class="setting">
-
-<label>Duration</label>
+<label>Typing Duration</label>
 
 <select id="duration">
 
@@ -658,319 +598,779 @@ Generate Passage
 
 <option value="15">15 Minutes</option>
 
-<option value="5">5 Minutes</option>
+<option value="20">20 Minutes</option>
+
+<option value="30">30 Minutes</option>
 
 </select>
 
-</div>
+<label>Search Passage</label>
 
-<div class="setting">
-
-<label>Difficulty</label>
-
-<select id="difficulty">
-
-<option>Auto</option>
-
-<option>Easy</option>
-
-<option>Moderate</option>
-
-<option>Hard</option>
-
-</select>
-
-</div>
-
-<div class="setting">
-
-<label>Source</label>
-
-<select id="source">
-
-<option>Editorial</option>
-
-<option>Article</option>
-
-<option>Current Affairs</option>
-
-<option>Random</option>
-
-</select>
-
-</div>
+<input
+type="text"
+placeholder="Search..."
+id="search">
 
 <div class="stats">
 
-<div class="card">
+<div class="stat">
 
-<h3>Gross WPM</h3>
+<h1 id="totalPassages">0</h1>
 
-<p id="grossSpeed">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>Net WPM</h3>
-
-<p id="netSpeed">0</p>
+<span>Total Passages</span>
 
 </div>
 
-<div class="card">
+<div class="stat">
 
-<h3>Accuracy</h3>
+<h1 id="selectedNo">0</h1>
 
-<p id="accuracy">0%</p>
-
-</div>
-
-<div class="card">
-
-<h3>Errors</h3>
-
-<p id="errors">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>Backspace</h3>
-
-<p id="backspaceCount">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>Mistakes</h3>
-
-<p id="wrongWords">0</p>
+<span>Selected</span>
 
 </div>
 
 </div>
 
-</div>
-
-<div class="main">
-
-<div class="timerBox">
-
-<div class="timer" id="timer">
-
-10:00
+<button
+class="addPassage"
+onclick="openAdmin()">
++ Add New Passage
+</button>
 
 </div>
 
-<div class="status">
+<div class="rightPanel">
 
-<div>
+<div class="sectionTitle">
+Available Passages
+</div>
 
-Characters :
-<span id="characters">
+<table>
 
-0
+<thead>
 
-</span>
+<tr>
+
+<th>No.</th>
+
+<th>Title</th>
+
+<th>Exam</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tbody">
+
+</tbody>
+
+</table>
+
+<div class="empty" id="empty">
+
+No passages stored offline.
+
+Open Admin Portal and add passages.
 
 </div>
 
-<div>
+<div class="preview" id="preview">
 
-Words :
-<span id="words">
-
-0
-
-</span>
-
-</div>
-
-<div>
-
-Typed :
-<span id="typed">
-
-0
-
-</span>
+Select any passage to preview.
 
 </div>
 
 </div>
 
-</div>
+</section>
 
-<div id="passage" class="passage">
+<footer>
 
-Click "Generate Passage" to begin your examination.
+TypingMaster Pro © 2026
 
-</div>
+</footer>
+
+<div class="modal" id="adminModal">
+
+<div class="modalCard">
+
+<h2 style="margin-bottom:20px;">
+Offline Admin Portal
+</h2>
+
+<label>Passage Title</label>
+
+<input
+id="title"
+placeholder="Enter title">
+
+<label>Exam Category</label>
+
+<select id="adminExam">
+
+<option>SSC CHSL</option>
+
+<option>SSC CGL DEST</option>
+
+<option>SSC CPO</option>
+
+<option>RRB NTPC</option>
+
+<option>Stenographer</option>
+
+<option>CPCT</option>
+
+<option>Custom Examination</option>
+
+</select>
+
+<label>Passage Text</label>
 
 <textarea
+id="passage"
+placeholder="Paste passage here..."></textarea>
 
-id="typingInput"
+<div class="actions">
 
-placeholder="Start typing here..."
+<button
+class="saveBtn"
+onclick="savePassage()">
 
-spellcheck="false"
-
-autocomplete="off"
-
-autocorrect="off"
-
-autocapitalize="off"
-
-></textarea>
-
-<div class="controlBar">
-
-<button class="secondary" id="resetBtn">
-
-Reset
+Save Offline
 
 </button>
 
-<button class="primary" id="startBtn">
+<button
+class="closeBtn"
+onclick="closeAdmin()">
 
-Start Test
+Close
 
 </button>
 
 </div>
 
-</div>
+<hr style="margin:30px 0;">
+
+<h3>
+Stored Passages
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No.</th>
+
+<th>Title</th>
+
+<th>Exam</th>
+
+<th>Delete</th>
+
+</tr>
+
+</thead>
+
+<tbody id="adminTable">
+
+</tbody>
+
+</table>
 
 </div>
 
 </div>
 
-<div class="resultOverlay" id="resultOverlay">
+<script>
 
-<div class="resultBox">
+let selectedPassage=null;
 
-<h1>
+let passages=JSON.parse(localStorage.getItem("typing_passages"))||[];
 
-Typing Test Analysis
+function saveStorage(){
 
-</h1>
+localStorage.setItem(
+"typing_passages",
+JSON.stringify(passages)
+);
 
-<div class="resultGrid">
+}
 
-<div class="resultCard">
+function toggleTheme(){
 
-<h4>Gross Speed</h4>
+document.body.classList.toggle("dark");
 
-<p id="rGross">
+localStorage.setItem(
+"theme",
+document.body.classList.contains("dark")
+);
 
-0
+}
 
-</p>
+if(localStorage.getItem("theme")=="true"){
 
-</div>
+document.body.classList.add("dark");
 
-<div class="resultCard">
+}
 
-<h4>Net Speed</h4>
+function openAdmin(){
 
-<p id="rNet">
+document.getElementById("adminModal").classList.add("active");
 
-0
+renderAdmin();
 
-</p>
+}
 
-</div>
+function closeAdmin(){
 
-<div class="resultCard">
+document.getElementById("adminModal").classList.remove("active");
 
-<h4>Accuracy</h4>
+}
 
-<p id="rAccuracy">
+function savePassage(){
 
-0%
+let title=document.getElementById("title").value.trim();
 
-</p>
+let exam=document.getElementById("adminExam").value;
 
-</div>
+let text=document.getElementById("passage").value.trim();
 
-<div class="resultCard">
+if(title==""||text==""){
 
-<h4>Backspace Used</h4>
+alert("Fill all fields.");
 
-<p id="rBackspace">
+return;
 
-0
+}
 
-</p>
+passages.push({
 
-</div>
+id:Date.now(),
 
-<div class="resultCard">
+title,
 
-<h4>Wrong Words</h4>
+exam,
 
-<p id="rWrong">
+text
 
-0
+});
 
-</p>
+saveStorage();
 
-</div>
+document.getElementById("title").value="";
 
-<div class="resultCard">
+document.getElementById("passage").value="";
 
-<h4>Difficulty</h4>
+render();
 
-<p id="rDifficulty">
+renderAdmin();
 
--
+}
 
-</p>
+function render(){
 
-</div>
+let body=document.getElementById("tbody");
 
-</div>
+body.innerHTML="";
 
-<div class="footerInfo">
+document.getElementById("totalPassages").innerHTML=passages.length;
 
-<div class="analysis">
+document.getElementById("empty").style.display=
 
-<h3>Performance</h3>
+passages.length?"none":"block";
 
-<div class="progress">
+passages.forEach((p,i)=>{
 
-<div class="fill" id="performanceFill"></div>
+body.innerHTML+=`
 
-</div>
+<tr onclick="preview(${p.id})">
 
-<p id="performanceText">
+<td>${i+1}</td>
 
-Awaiting analysis...
+<td>${p.title}</td>
 
-</p>
+<td>${p.exam}</td>
 
-</div>
+<td>
 
-<div class="analysis">
+<span class="badge">
 
-<h3>Exam Qualification</h3>
+Offline
 
-<p id="qualification">
+</span>
 
-Pending
+</td>
 
-</p>
+<td>
 
-</div>
+<button
+class="startBtn"
+onclick="event.stopPropagation();startTyping(${p.id})">
 
-</div>
+Start
 
-</div>
+</button>
 
-</div>
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function preview(id){
+
+selectedPassage=id;
+
+document.getElementById("selectedNo").innerHTML=id;
+
+let p=passages.find(x=>x.id==id);
+
+document.getElementById("preview").innerHTML=p.text;
+
+}
+function startTyping(id){
+
+const passage=passages.find(p=>p.id===id);
+
+if(!passage){
+
+alert("Passage not found.");
+
+return;
+
+}
+
+/*
+Store selected test configuration.
+typing.html will read these values.
+*/
+
+localStorage.setItem(
+"selectedPassage",
+JSON.stringify(passage)
+);
+
+localStorage.setItem(
+"selectedExam",
+document.getElementById("exam").value
+);
+
+localStorage.setItem(
+"selectedDuration",
+document.getElementById("duration").value
+);
+
+window.location.href="typing.html";
+
+}
+
+function renderAdmin(){
+
+let table=document.getElementById("adminTable");
+
+table.innerHTML="";
+
+passages.forEach((p,index)=>{
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${p.title}</td>
+
+<td>${p.exam}</td>
+
+<td>
+
+<button
+style="
+background:#ef4444;
+border:none;
+padding:8px 14px;
+color:white;
+border-radius:8px;
+cursor:pointer;
+"
+onclick="deletePassage(${p.id})">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function deletePassage(id){
+
+if(!confirm("Delete this passage?")) return;
+
+passages=passages.filter(x=>x.id!==id);
+
+saveStorage();
+
+render();
+
+renderAdmin();
+
+}
+
+render();
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+const keyword=this.value.toLowerCase();
+
+const rows=document.querySelectorAll("#tbody tr");
+
+rows.forEach(row=>{
+
+const txt=row.innerText.toLowerCase();
+
+row.style.display=
+
+txt.includes(keyword)
+
+?
+
+"table-row"
+
+:
+
+"none";
+
+});
+
+});
+
+/* ---------- Sample passages on first run ---------- */
+
+if(passages.length===0){
+
+passages=[
+
+{
+
+id:1,
+
+title:"Environmental Awareness",
+
+exam:"SSC CHSL",
+
+text:`Environmental protection has become one of the most important concerns across the globe. Every individual shares responsibility for maintaining a clean and healthy environment. Planting trees, reducing plastic waste, conserving water, and using renewable sources of energy contribute significantly toward sustainable development. Governments, educational institutions, industries, and citizens must work together to preserve natural resources for future generations. Awareness and collective effort are the keys to protecting the planet.`
+
+},
+
+{
+
+id:2,
+
+title:"Digital India",
+
+exam:"SSC CGL DEST",
+
+text:`Digital technology has transformed the way people communicate, learn, and work. Online education, digital banking, e-governance, and cloud computing have simplified everyday activities. The rapid growth of information technology has created new employment opportunities and improved productivity across industries. At the same time, awareness regarding cyber security, digital privacy, and responsible internet usage is essential for ensuring a safe and secure digital ecosystem.`
+
+},
+
+{
+
+id:3,
+
+title:"Indian Railways",
+
+exam:"RRB NTPC",
+
+text:`Indian Railways is one of the largest railway networks in the world. Every day millions of passengers travel safely through thousands of trains connecting villages, towns, and metropolitan cities. Modernization, electrification, improved passenger facilities, and digital ticketing have significantly enhanced railway services. Continuous investment in infrastructure and technology plays an important role in supporting economic development and public transportation.`
+
+}
+
+];
+
+saveStorage();
+
+render();
+
+}
+
+/* ---------- Keyboard Shortcuts ---------- */
+
+document.addEventListener("keydown",function(e){
+
+if(e.ctrlKey && e.key.toLowerCase()=="a"){
+
+e.preventDefault();
+
+openAdmin();
+
+}
+
+if(e.key==="Escape"){
+
+closeAdmin();
+
+}
+
+});
+
+/* ---------- Live Exam Filter ---------- */
+
+document.getElementById("exam").addEventListener("change",function(){
+
+const exam=this.value;
+
+const body=document.getElementById("tbody");
+
+body.innerHTML="";
+
+const filtered=passages.filter(p=>{
+
+if(exam==="Custom Examination"){
+
+return p.exam==="Custom Examination";
+
+}
+
+return p.exam===exam;
+
+});
+
+document.getElementById("totalPassages").innerHTML=filtered.length;
+
+document.getElementById("empty").style.display=
+
+filtered.length?"none":"block";
+
+filtered.forEach((p,index)=>{
+
+body.innerHTML+=`
+
+<tr onclick="preview(${p.id})">
+
+<td>${index+1}</td>
+
+<td>${p.title}</td>
+
+<td>${p.exam}</td>
+
+<td>
+
+<span class="badge">
+
+Offline
+
+</span>
+
+</td>
+
+<td>
+
+<button
+
+class="startBtn"
+
+onclick="event.stopPropagation();startTyping(${p.id})">
+
+Start
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+});
+
+/* ---------- Export Backup ---------- */
+
+function exportPassages(){
+
+const blob=new Blob(
+
+[JSON.stringify(passages,null,2)],
+
+{type:"application/json"}
+
+);
+
+const a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="typing_passages_backup.json";
+
+a.click();
+
+}
+
+/* ---------- Import Backup ---------- */
+
+function importBackup(file){
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+try{
+
+const data=JSON.parse(e.target.result);
+
+if(Array.isArray(data)){
+
+passages=data;
+
+saveStorage();
+
+render();
+
+renderAdmin();
+
+alert("Backup imported successfully.");
+
+}else{
+
+alert("Invalid backup file.");
+
+}
+
+}catch(err){
+
+alert("Invalid JSON file.");
+
+}
+
+}
+
+reader.readAsText(file);
+
+}
+
+/* ---------- Admin Toolbar ---------- */
+
+const toolbar=document.createElement("div");
+
+toolbar.style.marginTop="25px";
+
+toolbar.innerHTML=`
+
+<button
+class="saveBtn"
+onclick="exportPassages()">
+
+Export Backup
+
+</button>
+
+<label
+style="
+margin-left:12px;
+cursor:pointer;
+background:#2563eb;
+padding:12px 20px;
+border-radius:10px;
+color:white;
+display:inline-block;
+">
+
+Import Backup
+
+<input
+type="file"
+accept=".json"
+style="display:none"
+onchange="importBackup(this.files[0])">
+
+</label>
+
+`;
+
+document.querySelector(".modalCard").appendChild(toolbar);
+
+/* ---------- Welcome Notification ---------- */
+
+setTimeout(()=>{
+
+console.log("TypingMaster Pro Ready");
+
+},300);
+
+/* ---------- Auto Preview ---------- */
+
+if(passages.length){
+
+preview(passages[0].id);
+
+}
+
+/* ---------- Utilities ---------- */
+
+function getPassageCount(){
+
+return passages.length;
+
+}
+
+function getAllPassages(){
+
+return passages;
+
+}
+
+function clearAllPassages(){
+
+if(confirm("Delete ALL stored passages?")){
+
+passages=[];
+
+saveStorage();
+
+render();
+
+renderAdmin();
+
+document.getElementById("preview").innerHTML=
+
+"Select any passage to preview.";
+
+}
+
+}
+
+window.addEventListener("storage",()=>{
+
+passages=JSON.parse(localStorage.getItem("typing_passages"))||[];
+
+render();
+
+renderAdmin();
+
+});
+
+</script>
 
 </body>
-
 </html>
