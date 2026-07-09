@@ -800,7 +800,9 @@ if(!resultData){
 
     alert("No typing result found.");
 
-    location.href="index.html";
+    location.href = "index.html";
+
+    throw new Error("Missing typing result");
 
 }
 
@@ -809,12 +811,19 @@ if(!resultData){
 
 
 const originalText =
+
 resultData.originalText || "";
 
+
+
 const typedText =
+
 resultData.typedText || "";
 
+
+
 const examName =
+
 resultData.exam || "";
 
 
@@ -823,22 +832,26 @@ resultData.exam || "";
 
 
 
+
 /* =====================================
-   DISPLAY BASIC DETAILS
+   DISPLAY EXAM DETAILS
 ===================================== */
 
 
 document.getElementById("examName").textContent =
+
 examName;
 
 
 
 document.getElementById("title").textContent =
+
 resultData.title || "-";
 
 
 
 document.getElementById("submitTime").textContent =
+
 resultData.submittedAt || "-";
 
 
@@ -855,39 +868,34 @@ resultData.submittedAt || "-";
 
 
 /*
-   Time calculation priority:
+   Priority:
 
-   1. examStartTime + submittedAt
+   Start Time + Submit Time
 
-   2. saved startTime in resultData
-
-   3. duration fallback only if no timestamps exist
-
+   Actual time used for calculation
 
 */
 
 
 
-let startTimestamp =
+let startTime =
+
 localStorage.getItem("examStartTime");
 
 
 
-if(!startTimestamp){
+if(!startTime){
 
-    startTimestamp =
-    resultData.startTime || null;
+    startTime =
+    resultData.startTime || "";
 
 }
 
 
 
+let submittedTime =
 
-
-let submittedTimestamp =
-resultData.submittedAt || null;
-
-
+resultData.submittedAt || "";
 
 
 
@@ -901,20 +909,22 @@ let timeTakenSeconds = 0;
 
 if(
 
-    startTimestamp &&
-    submittedTimestamp
+    startTime &&
+
+    submittedTime
 
 ){
 
 
-
     const start =
-    new Date(startTimestamp);
+
+    new Date(startTime);
 
 
 
     const end =
-    new Date(submittedTimestamp);
+
+    new Date(submittedTime);
 
 
 
@@ -924,8 +934,7 @@ if(
     (end.getTime() -
      start.getTime())
 
-     /1000;
-
+     / 1000;
 
 
 }
@@ -934,9 +943,8 @@ if(
 
 
 
-
 /*
-   Fallback only when actual
+   Only fallback if real
    timestamps are unavailable
 
 */
@@ -945,6 +953,7 @@ if(
 if(
 
     !timeTakenSeconds ||
+
     timeTakenSeconds <= 0
 
 ){
@@ -953,14 +962,12 @@ if(
 
     timeTakenSeconds =
 
-    (resultData.duration || 1)
+    Number(resultData.duration || 1)
 
-    *60;
-
+    * 60;
 
 
 }
-
 
 
 
@@ -981,7 +988,6 @@ Math.max(
 
 
 
-
 const minutes =
 
 timeTakenSeconds / 60;
@@ -990,11 +996,9 @@ timeTakenSeconds / 60;
 
 
 
-
-
 document.getElementById("timeTaken").textContent =
 
-minutes.toFixed(2)+" min";
+minutes.toFixed(2) + " min";
 
 
 
@@ -1005,25 +1009,27 @@ minutes.toFixed(2)+" min";
 
 
 /* =====================================
-   KEYSTROKE CALCULATION
+   KEYSTROKE DATA
 ===================================== */
 
 
 /*
-   Priority:
 
-   totalKeystrokes:
-   includes all pressed keys
+The typing page should save:
 
-   effectiveKeystrokes:
-   final remaining strokes after backspaces
+totalKeystrokes:
+all pressed keys including corrections
+
+
+effectiveKeystrokes:
+final remaining characters after
+backspace removal
 
 
 */
 
 
-
-let totalKeystrokes =
+const totalKeystrokes =
 
 
 Number(
@@ -1035,7 +1041,6 @@ Number(
 ||
 
 
-
 typedText.length;
 
 
@@ -1043,8 +1048,7 @@ typedText.length;
 
 
 
-
-let effectiveKeystrokes =
+const effectiveKeystrokes =
 
 
 Number(
@@ -1056,26 +1060,7 @@ Number(
 ||
 
 
-
 typedText.length;
-
-
-
-
-
-
-
-/*
-   Protection
-
-*/
-
-
-if(effectiveKeystrokes < 0){
-
-    effectiveKeystrokes = 0;
-
-}
 
 
 
@@ -1125,7 +1110,7 @@ tokenize(typedText);
 
 
 /* =====================================
-   NORMALIZE
+   NORMALIZE WORD
 ===================================== */
 
 
@@ -1150,25 +1135,15 @@ function normalizeToken(token){
 
 
 /* =====================================
-   IMPROVED WORD ALIGNMENT
+   WORD MATCHING ENGINE
 ===================================== */
 
 
-/*
-   Word based comparison.
-
-   Missing words are displayed
-   but NOT counted as mistakes.
-
-*/
-
-
-function compareText(original,typed){
+function compareText(original, typed){
 
 
 
-    let result = {
-
+    const result = {
 
 
         original:[],
@@ -1189,9 +1164,7 @@ function compareText(original,typed){
         extraWords:0
 
 
-
     };
-
 
 
 
@@ -1203,9 +1176,11 @@ function compareText(original,typed){
 
     original.filter(
 
-        x=>/\w/.test(x)
+        item => /\w/.test(item)
 
     );
+
+
 
 
 
@@ -1214,7 +1189,7 @@ function compareText(original,typed){
 
     typed.filter(
 
-        x=>/\w/.test(x)
+        item => /\w/.test(item)
 
     );
 
@@ -1223,12 +1198,9 @@ function compareText(original,typed){
 
 
 
+    let i = 0;
 
-
-
-    let i=0;
-
-    let j=0;
+    let j = 0;
 
 
 
@@ -1245,19 +1217,49 @@ function compareText(original,typed){
 
 
 
+        let originalWord =
+
+        normalizeToken(
+
+            originalWords[i]
+
+        );
+
+
+
+        let typedWord =
+
+
+        j < typedWords.length
+
+        ?
+
+        normalizeToken(
+
+            typedWords[j]
+
+        )
+
+        :
+
+        "";
+
+
+
+
+
+
+
+
+        /*
+          Correct word
+
+        */
+
+
         if(
 
-            j < typedWords.length &&
-
-            normalizeToken(
-                originalWords[i]
-            )
-
-            ===
-
-            normalizeToken(
-                typedWords[j]
-            )
+            originalWord === typedWord
 
         ){
 
@@ -1265,13 +1267,9 @@ function compareText(original,typed){
 
             result.original.push({
 
-
                 token:originalWords[i],
 
-
                 type:"correct"
-
-
 
             });
 
@@ -1279,13 +1277,9 @@ function compareText(original,typed){
 
             result.typed.push({
 
-
                 token:typedWords[j],
 
-
                 type:"correct"
-
-
 
             });
 
@@ -1300,16 +1294,25 @@ function compareText(original,typed){
             j++;
 
 
-
         }
 
+
+
+
+
+        /*
+          Search ahead
+
+          Prevent shifting errors
+
+        */
 
 
         else{
 
 
 
-            let found=-1;
+            let found = -1;
 
 
 
@@ -1328,14 +1331,14 @@ function compareText(original,typed){
                 if(
 
                     normalizeToken(
-                        originalWords[i]
+
+                        typedWords[k]
+
                     )
 
                     ===
 
-                    normalizeToken(
-                        typedWords[k]
-                    )
+                    originalWord
 
                 ){
 
@@ -1356,30 +1359,20 @@ function compareText(original,typed){
 
 
 
-            if(found!==-1){
+
+            if(found !== -1){
 
 
 
-                /*
-                   Extra typed words
-                   before match
-
-                */
-
-
-                while(j<found){
+                while(j < found){
 
 
 
                     result.typed.push({
 
-
                         token:typedWords[j],
 
-
                         type:"extra"
-
-
 
                     });
 
@@ -1390,6 +1383,7 @@ function compareText(original,typed){
                     result.mistakes++;
 
 
+
                     j++;
 
 
@@ -1397,7 +1391,54 @@ function compareText(original,typed){
 
 
 
+
             }
+
+
+
+
+
+
+
+            else if(j < typedWords.length){
+
+
+
+                result.original.push({
+
+                    token:originalWords[i],
+
+                    type:"wrong"
+
+                });
+
+
+
+                result.typed.push({
+
+                    token:typedWords[j],
+
+                    type:"wrong"
+
+                });
+
+
+
+                result.wrongWords++;
+
+                result.mistakes++;
+
+
+
+                i++;
+
+                j++;
+
+
+            }
+
+
+
 
 
 
@@ -1407,67 +1448,7 @@ function compareText(original,typed){
 
 
                 /*
-                   Wrong word
-
-                */
-
-
-
-                if(j < typedWords.length){
-
-
-
-                    result.original.push({
-
-
-                        token:originalWords[i],
-
-
-                        type:"wrong"
-
-
-
-                    });
-
-
-
-                    result.typed.push({
-
-
-                        token:typedWords[j],
-
-
-                        type:"wrong"
-
-
-
-                    });
-
-
-
-                    result.wrongWords++;
-
-                    result.mistakes++;
-
-
-
-                    i++;
-
-                    j++;
-
-
-
-                    continue;
-
-
-                }
-
-
-
-
-
-                /*
-                   Remaining original words
+                   Remaining passage
 
                    NOT mistakes
 
@@ -1476,23 +1457,15 @@ function compareText(original,typed){
 
                 result.original.push({
 
-
                     token:originalWords[i],
 
-
                     type:"missing"
-
-
 
                 });
 
 
 
                 i++;
-
-
-
-                continue;
 
 
             }
@@ -1512,7 +1485,6 @@ function compareText(original,typed){
 
 
 
-
     /*
        Remaining typed words
 
@@ -1521,19 +1493,19 @@ function compareText(original,typed){
     */
 
 
-    while(j < typedWords.length){
+    while(
+
+        j < typedWords.length
+
+    ){
 
 
 
         result.typed.push({
 
-
             token:typedWords[j],
 
-
             type:"extra"
-
-
 
         });
 
@@ -1549,8 +1521,6 @@ function compareText(original,typed){
 
 
     }
-
-
 
 
 
@@ -1576,7 +1546,7 @@ compareText(
     typedTokens
 
 );
-    /* =====================================
+/* =====================================
    DISPLAY COMPARISON
 ===================================== */
 
@@ -1612,7 +1582,6 @@ function renderTokens(tokens){
     tokens.forEach((item,index)=>{
 
 
-
         let token =
 
         escapeHTML(item.token);
@@ -1625,7 +1594,7 @@ function renderTokens(tokens){
 
 
 
-        if(item.type==="wrong"){
+        if(item.type === "wrong"){
 
 
 
@@ -1634,12 +1603,11 @@ function renderTokens(tokens){
             `<span class="wrong">${token}</span>`;
 
 
-
         }
 
 
 
-        else if(item.type==="missing"){
+        else if(item.type === "missing"){
 
 
 
@@ -1648,12 +1616,11 @@ function renderTokens(tokens){
             `<span class="missing">${token}</span>`;
 
 
-
         }
 
 
 
-        else if(item.type==="extra"){
+        else if(item.type === "extra"){
 
 
 
@@ -1662,8 +1629,8 @@ function renderTokens(tokens){
             `<span class="extra">${token}</span>`;
 
 
-
         }
+
 
 
 
@@ -1673,7 +1640,7 @@ function renderTokens(tokens){
 
         if(
 
-            index < tokens.length-1 &&
+            index < tokens.length - 1 &&
 
             !/[.,!?;:"()\-\n]/.test(
 
@@ -1707,9 +1674,7 @@ function renderTokens(tokens){
     return html;
 
 
-
 }
-
 
 
 
@@ -1725,7 +1690,6 @@ renderTokens(
     comparison.original
 
 );
-
 
 
 
@@ -1750,23 +1714,20 @@ renderTokens(
 
 
 /* =====================================
-   WORD AND SPEED CALCULATION
+   STROKE BASED SPEED CALCULATION
 ===================================== */
-
-
-
 
 
 /*
 
-Gross words:
+GENERAL RULE:
 
-Total strokes / 5
+Gross Words =
+Total Keystrokes / 5
 
 
-Net words:
-
-Effective strokes after backspace / 5
+Net Words =
+Effective Keystrokes / 5
 
 
 */
@@ -1793,13 +1754,6 @@ effectiveKeystrokes / 5;
 
 
 
-
-/*
-   Gross Speed
-
-*/
-
-
 const grossWPM =
 
 
@@ -1816,13 +1770,6 @@ grossWords / minutes
 
 
 
-
-
-
-/*
-   Normal Net Speed
-
-*/
 
 
 let netWPM =
@@ -1846,7 +1793,9 @@ netWords / minutes
 
 
 
-
+/* =====================================
+   DISPLAY VALUES
+===================================== */
 
 
 const mistakes =
@@ -1864,12 +1813,6 @@ comparison.correctWords;
 
 
 
-
-
-
-/* =====================================
-   DISPLAY PERFORMANCE
-===================================== */
 
 
 document.getElementById("gross").textContent =
@@ -1909,7 +1852,7 @@ mistakes;
 
 
 /* =====================================
-   EXAM EVALUATION
+   EXAM RESULT CALCULATION
 ===================================== */
 
 
@@ -1932,13 +1875,18 @@ let resultStatus = "-";
 
 /*
 
-DP HCM calculation:
+DP HCM:
+
+Gross speed is calculated first.
+
+Then mistakes are directly deducted.
+
 
 Example:
 
 2500 strokes
 
-2500/5 = 500 gross words
+2500/5 = 500 words
 
 
 10 minutes
@@ -1962,15 +1910,16 @@ Net:
 */
 
 
+
+
+
 function calculateDPHCM(){
 
 
 
     netWPM =
 
-
     grossWPM - mistakes;
-
 
 
 
@@ -1989,13 +1938,10 @@ function calculateDPHCM(){
 
 
 
-
     if(netWPM < 30){
 
 
-
         marks = 0;
-
 
 
     }
@@ -2004,9 +1950,7 @@ function calculateDPHCM(){
     else if(netWPM < 35){
 
 
-
         marks = 10;
-
 
 
     }
@@ -2015,9 +1959,7 @@ function calculateDPHCM(){
     else if(netWPM < 40){
 
 
-
         marks = 15;
-
 
 
     }
@@ -2026,9 +1968,7 @@ function calculateDPHCM(){
     else if(netWPM < 45){
 
 
-
         marks = 18;
-
 
 
     }
@@ -2037,9 +1977,7 @@ function calculateDPHCM(){
     else if(netWPM < 50){
 
 
-
         marks = 21;
-
 
 
     }
@@ -2048,9 +1986,7 @@ function calculateDPHCM(){
     else{
 
 
-
         marks = 25;
-
 
 
     }
@@ -2068,25 +2004,12 @@ function calculateDPHCM(){
 
 
 /* =====================================
-   OTHER EXAMS
+   GENERAL EXAM RULE
 ===================================== */
 
 
-/*
 
-Other exams:
-
-Net speed:
-
-Effective strokes /5
-
-divided by time
-
-
-*/
-
-
-function calculateOtherExam(){
+function calculateGeneralExam(){
 
 
 
@@ -2106,9 +2029,10 @@ function calculateOtherExam(){
 
 
 
-    marks="-";
 
-    resultStatus="-";
+    marks = "-";
+
+    resultStatus = "-";
 
 
 
@@ -2123,20 +2047,18 @@ function calculateOtherExam(){
 
 
 /* =====================================
-   SELECT CALCULATION
+   SELECT EXAM TYPE
 ===================================== */
 
 
 
 if(
 
+    examName
 
-examName
+    .toLowerCase()
 
-.toLowerCase()
-
-.includes("dp hcm")
-
+    .includes("dp hcm")
 
 ){
 
@@ -2151,9 +2073,7 @@ examName
 else{
 
 
-
-    calculateOtherExam();
-
+    calculateGeneralExam();
 
 
 }
@@ -2169,6 +2089,7 @@ else{
 document.getElementById("net").textContent =
 
 netWPM.toFixed(2);
+
 
 
 
@@ -2193,7 +2114,6 @@ marks;
 
 
 const finalResult = {
-
 
 
     exam:
@@ -2221,6 +2141,7 @@ const finalResult = {
 
 
 
+
     totalKeystrokes:
 
     totalKeystrokes,
@@ -2230,6 +2151,8 @@ const finalResult = {
     effectiveKeystrokes:
 
     effectiveKeystrokes,
+
+
 
 
 
@@ -2245,6 +2168,8 @@ const finalResult = {
 
 
 
+
+
     grossWPM:
 
     grossWPM.toFixed(2),
@@ -2257,9 +2182,11 @@ const finalResult = {
 
 
 
+
     typedWords:
 
     Math.floor(grossWords),
+
 
 
 
@@ -2337,12 +2264,13 @@ function goHome(){
 
 
 
-        location.href=
+        location.href =
 
         "index.html";
 
 
     }
+
 
 
 }
