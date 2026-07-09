@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Typing Test Result</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+
+:root{
+
+    --primary:#2563eb;
+    --dark:#0f172a;
+    --bg:#eef2f7;
+    --border:#dbe4ef;
+    --text:#1e293b;
+
+    --wrong:#fecaca;
+    --wrong-text:#991b1b;
+
+    --missing:#fef3c7;
+    --missing-text:#92400e;
+
+    --extra:#ddd6fe;
+    --extra-text:#5b21b6;
+
+}
+
+
+
+body{
+
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+
+}
+
+
+
+/* ================= HEADER ================= */
+
+
+header{
+
+    height:75px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #0f172a
+    );
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 30px;
+
+    box-shadow:
+    0 5px 20px rgba(0,0,0,.2);
+
+}
+
+
+
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+}
+
+
+
+.logo-icon{
+
+    font-size:40px;
+
+}
+
+
+
+.logo h1{
+
+    font-size:25px;
+
+}
+
+
+
+.logo p{
+
+    font-size:12px;
+    opacity:.8;
+
+}
+
+
+
+.home-btn{
+
+    background:white;
+
+    color:#1e3a8a;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    border:none;
+
+}
+
+
+
+/* ================= MAIN ================= */
+
+
+.container{
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:25px;
+
+}
+
+
+
+.card{
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    border:1px solid var(--border);
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.07);
+
+    margin-bottom:20px;
+
+}
+
+
+
+.card-title{
+
+    font-size:20px;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+
+
+
+
+/* ================= EXAM INFO ================= */
+
+
+.exam-info{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:15px;
+
+}
+
+
+
+.info-box{
+
+    background:#f8fafc;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+}
+
+
+
+.info-box h3{
+
+    font-size:22px;
+
+    color:var(--primary);
+
+}
+
+
+
+.info-box p{
+
+    font-size:13px;
+
+    color:#64748b;
+
+}
+
+
+
+
+
+/* ================= RESULT ================= */
+
+
+.result-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(6,1fr);
+
+    gap:15px;
+
+}
+
+
+
+.result-box{
+
+    background:#eff6ff;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+}
+
+
+
+.result-box h2{
+
+    font-size:28px;
+
+    color:#2563eb;
+
+}
+
+
+
+.result-box span{
+
+    font-size:12px;
+
+    color:#64748b;
+
+}
+
+
+
+.marks-box{
+
+    background:#dcfce7;
+
+}
+
+
+
+
+/* ================= COMPARISON ================= */
+
+
+.compare{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:20px;
+
+}
+
+
+
+.compare-panel{
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+}
+
+
+
+.compare-header{
+
+    background:#2563eb;
+
+    color:white;
+
+    padding:12px;
+
+    text-align:center;
+
+    font-weight:600;
+
+}
+
+
+
+.compare-body{
+
+    height:450px;
+    overflow:auto;
+    padding:20px;
+    line-height:2;
+    font-size:16px;
+    white-space:pre-wrap;
+    word-spacing:5px;
+
+}
+
+
+
+.original{
+
+    background:#f8fafc;
+
+}
+
+
+
+.typed{
+
+    background:white;
+
+}
+
+
+
+
+/* ================= HIGHLIGHT COLORS ================= */
+
+
+
+.wrong{
+
+    background:var(--wrong);
+
+    color:var(--wrong-text);
+
+    border-radius:3px;
+
+}
+
+
+
+.missing{
+
+    background:var(--missing);
+
+    color:var(--missing-text);
+
+    border-radius:3px;
+
+}
+
+
+
+.extra{
+
+    background:var(--extra);
+
+    color:var(--extra-text);
+
+    border-radius:3px;
+
+}
+
+
+
+
+/* ================= RESPONSIVE ================= */
+
+
+@media(max-width:1000px){
+
+
+.exam-info{
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+}
+
+
+
+.result-grid{
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+}
+
+
+
+.compare{
+
+    grid-template-columns:1fr;
+
+}
+
+
+}
+
+.wrong,
+.missing,
+.extra{
+
+    padding:2px 3px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+
+<div class="logo">
+
+
+<div class="logo-icon">
+
+⌨️
+
+</div>
+
+
+<div>
+
+<h1>
+Typing Result
+</h1>
+
+
+<p>
+Examination Performance Report
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+<button class="home-btn" onclick="goHome()">
+
+Back To Home
+
+</button>
+
+
+
+</header>
+
+
+
+
+
+<div class="container">
+
+
+
+<div class="card">
+
+
+<div class="card-title">
+
+Exam Details
+
+</div>
+
+
+
+<div class="exam-info">
+
+
+<div class="info-box">
+
+<h3 id="examName">
+-
+</h3>
+
+<p>
+Exam
+</p>
+
+</div>
+
+
+
+<div class="info-box">
+
+<h3 id="title">
+-
+</h3>
+
+<p>
+Passage
+</p>
+
+</div>
+
+
+
+
+<div class="info-box">
+
+<h3 id="submitTime">
+-
+</h3>
+
+<p>
+Submitted
+</p>
+
+</div>
+
+
+
+
+<div class="info-box">
+
+<h3 id="timeTaken">
+-
+</h3>
+
+<p>
+Time Taken
+</p>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<div class="card-title">
+
+Typing Performance
+
+</div>
+
+
+<div class="result-grid">
+
+
+
+<div class="result-box">
+
+<h2 id="gross">
+0
+</h2>
+
+<span>
+Gross WPM
+</span>
+
+</div>
+
+
+
+
+<div class="result-box">
+
+<h2 id="net">
+0
+</h2>
+
+<span>
+Net WPM
+</span>
+
+</div>
+
+
+
+
+<div class="result-box">
+
+<h2 id="typedWords">
+0
+</h2>
+
+<span>
+Typed Words
+</span>
+
+</div>
+
+
+
+
+<div class="result-box">
+
+<h2 id="correctWords">
+0
+</h2>
+
+<span>
+Correct Words
+</span>
+
+</div>
+
+
+
+
+<div class="result-box">
+
+<h2 id="mistakes">
+0
+</h2>
+
+<span>
+Mistakes
+</span>
+
+</div>
+
+
+
+
+<div class="result-box marks-box">
+
+<h2 id="marks">
+-
+</h2>
+
+<span>
+Marks
+</span>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+<div class="card-title">
+
+Passage Comparison
+
+</div>
+
+
+
+
+<div class="compare">
+
+
+
+<div class="compare-panel">
+
+
+<div class="compare-header">
+
+Original Passage
+
+</div>
+
+
+
+<div class="compare-body original" id="original">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="compare-panel">
+
+
+<div class="compare-header">
+
+Candidate Typed Text
+
+</div>
+
+
+
+<div class="compare-body typed" id="typed">
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<script>
+ 
+/* =====================================
+   LOAD RESULT DATA
+===================================== */
+
+
+const resultData = JSON.parse(
+    localStorage.getItem("typingResult")
+);
+
+
+
+if(!resultData){
+
+    alert("No typing result found.");
+
+    location.href="index.html";
+
+}
+
+
+
+
+const originalText = resultData.originalText || "";
+
+const typedText = resultData.typedText || "";
+
+const examName = resultData.exam || "";
+
+
+
+
+
+/* =====================================
+   DISPLAY BASIC DETAILS
+===================================== */
+
+
+document.getElementById("examName").textContent =
+examName;
+
+
+
+document.getElementById("title").textContent =
+resultData.title || "-";
+
+
+
+document.getElementById("submitTime").textContent =
+resultData.submittedAt || "-";
+
+
+
+
+
+
+/* =====================================
+   ACTUAL TIME TAKEN CALCULATION
+===================================== */
+
+
+/*
+   Calculation uses actual submission time.
+
+   Example:
+   Exam duration = 10 minutes
+
+   Candidate submits after 5 minutes
+
+   Calculation uses 5 minutes.
+*/
+
+
+const startTime =
+localStorage.getItem("examStartTime");
+
+
+
+let timeTakenSeconds = 0;
+
+
+
+if(startTime && resultData.submittedAt){
+
+
+    let start =
+    new Date(startTime);
+
+
+    let end =
+    new Date(resultData.submittedAt);
+
+
+
+    timeTakenSeconds =
+    (end - start) / 1000;
+
+
+}
+
+
+
+else{
+
+
+    /*
+       fallback only if start time missing
+    */
+
+
+    timeTakenSeconds =
+    (resultData.duration || 1) * 60;
+
+
+}
+
+
+
+
+
+if(timeTakenSeconds <= 0){
+
+    timeTakenSeconds = 1;
+
+}
+
+
+
+const minutes =
+timeTakenSeconds / 60;
+
+
+
+document.getElementById("timeTaken").textContent =
+
+minutes.toFixed(2) + " min";
+
+
+
+
+
+
+
+
+/* =====================================
+   TEXT TOKENIZER
+===================================== */
+
+
+/*
+ Creates separate words and punctuation.
+
+ Example:
+
+ "Hello, world!"
+
+ becomes:
+
+ Hello
+ ,
+ world
+ !
+
+*/
+
+
+function tokenize(text){
+
+
+    return text.match(
+        /[\w']+|[.,!?;:"()\-\n]/g
+    ) || [];
+
+
+}
+
+
+
+
+
+const originalTokens =
+tokenize(originalText);
+
+
+
+const typedTokens =
+tokenize(typedText);
+
+
+
+
+
+
+
+
+
+/* =====================================
+   NORMALIZE TOKEN
+===================================== */
+
+
+function normalizeToken(token){
+
+
+    return token
+
+    .toLowerCase()
+
+    .trim();
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+   COMPARE TYPED TEXT
+===================================== */
+
+
+
+function compareText(original, typed){
+
+
+    let result = {
+
+
+        original:[],
+
+
+        typed:[],
+
+
+        mistakes:0,
+
+
+        correctWords:0,
+
+
+        typedWords:0
+
+
+    };
+
+
+
+
+    let i = 0;
+
+    let j = 0;
+
+
+
+
+
+    while(
+        i < original.length &&
+        j < typed.length
+    ){
+
+
+
+        let originalValue =
+
+        normalizeToken(
+            original[i]
+        );
+
+
+
+        let typedValue =
+
+        normalizeToken(
+            typed[j]
+        );
+
+
+
+
+
+
+
+        /*
+          Exact match
+        */
+
+
+        if(
+            originalValue === typedValue
+        ){
+
+
+
+            result.original.push({
+
+                token:original[i],
+
+                type:"correct"
+
+            });
+
+
+
+            result.typed.push({
+
+                token:typed[j],
+
+                type:"correct"
+
+            });
+
+
+
+
+            if(
+                /\w/.test(original[i])
+            ){
+
+                result.correctWords++;
+
+            }
+
+
+
+            i++;
+
+            j++;
+
+            continue;
+
+
+        }
+
+
+
+
+
+
+
+
+        /*
+          Check if original word was skipped
+        */
+
+
+        let foundLater = -1;
+
+
+
+        for(
+            let k=j+1;
+            k<typed.length;
+            k++
+        ){
+
+
+
+            if(
+
+            normalizeToken(
+                original[i]
+            )
+            ===
+
+            normalizeToken(
+                typed[k]
+            )
+
+            ){
+
+
+                foundLater = k;
+
+                break;
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+        if(foundLater !== -1){
+
+
+
+            /*
+              Missing token
+            */
+
+
+            result.original.push({
+
+                token:original[i],
+
+                type:"missing"
+
+            });
+
+
+
+            result.mistakes++;
+
+
+
+            i++;
+
+
+
+        }
+
+
+
+        else{
+
+
+
+            /*
+              Wrong typed token
+            */
+
+
+            result.original.push({
+
+                token:original[i],
+
+                type:"wrong"
+
+            });
+
+
+
+            result.typed.push({
+
+                token:typed[j],
+
+                type:"wrong"
+
+            });
+
+
+
+            result.mistakes++;
+
+
+
+            i++;
+
+            j++;
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+    /*
+      Remaining original tokens
+
+      are left after submission.
+
+      They are NOT mistakes.
+
+    */
+
+
+    while(
+        i < original.length
+    ){
+
+
+
+        result.original.push({
+
+            token:original[i],
+
+            type:"missing"
+
+        });
+
+
+
+        i++;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+      Remaining typed tokens
+
+      are extra typing.
+
+    */
+
+
+    while(
+        j < typed.length
+    ){
+
+
+
+        result.typed.push({
+
+            token:typed[j],
+
+            type:"extra"
+
+        });
+
+
+
+        result.mistakes++;
+
+
+
+        j++;
+
+
+    }
+
+
+
+
+
+
+
+
+    result.typedWords =
+
+    typed.filter(
+
+        item =>
+
+        /\w/.test(item)
+
+    ).length;
+
+
+
+
+    return result;
+
+
+}
+
+
+
+
+
+
+
+
+const comparison =
+
+compareText(
+
+    originalTokens,
+
+    typedTokens
+
+);
+
+
+
+/* =====================================
+   DISPLAY COMPARISON
+===================================== */
+
+
+function escapeHTML(text){
+
+
+    return text
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;");
+
+
+}
+
+
+
+
+
+function renderTokens(tokens){
+
+    let html = "";
+
+    tokens.forEach((item,index)=>{
+
+        let token = escapeHTML(item.token);
+
+        let output = token;
+
+
+        if(item.type === "wrong"){
+
+            output =
+            `<span class="wrong">${token}</span>`;
+
+        }
+
+        else if(item.type === "missing"){
+
+            output =
+            `<span class="missing">${token}</span>`;
+
+        }
+
+        else if(item.type === "extra"){
+
+            output =
+            `<span class="extra">${token}</span>`;
+
+        }
+
+
+        /*
+          Add spacing except before punctuation
+        */
+
+        if(
+            index < tokens.length-1 &&
+            !/[.,!?;:"()\-\n]/.test(tokens[index+1].token)
+        ){
+
+            output += " ";
+
+        }
+
+
+        html += output;
+
+
+    });
+
+
+    return html;
+
+}
+
+
+
+
+
+
+document.getElementById("original").innerHTML =
+
+renderTokens(
+
+    comparison.original
+
+);
+
+
+
+
+
+
+document.getElementById("typed").innerHTML =
+
+renderTokens(
+
+    comparison.typed
+
+);
+
+
+
+
+
+
+
+
+
+/* =====================================
+   KEYBOARD WORD COUNT
+===================================== */
+
+
+
+const keystrokes =
+
+typedText.length;
+
+
+
+
+/*
+  5 keystrokes = 1 word
+*/
+
+
+const typedWords =
+
+Math.floor(
+    keystrokes / 5
+);
+
+
+
+
+
+
+
+/* =====================================
+   GROSS WPM
+===================================== */
+
+
+const grossWPM =
+
+(
+    keystrokes / 5
+)
+/
+minutes;
+
+
+
+
+
+
+
+
+
+/* =====================================
+   COMMON VALUES
+===================================== */
+
+
+const mistakes =
+
+comparison.mistakes;
+
+
+
+const correctWords =
+
+comparison.correctWords;
+
+
+
+
+
+
+
+
+document.getElementById("gross").textContent =
+
+grossWPM.toFixed(2);
+
+
+
+document.getElementById("typedWords").textContent =
+
+typedWords;
+
+
+
+document.getElementById("correctWords").textContent =
+
+correctWords;
+
+
+
+document.getElementById("mistakes").textContent =
+
+mistakes;
+
+
+
+
+
+
+
+
+
+/* =====================================
+   EXAM EVALUATION
+===================================== */
+
+
+let netWPM = 0;
+
+let marks = "-";
+
+let resultStatus = "-";
+
+
+
+
+
+
+
+
+/* =====================================
+   DP HCM CALCULATION
+===================================== */
+
+
+/*
+
+DP HCM RULES REMAIN SAME:
+
+5 strokes = 1 word
+
+10 mistakes = 1 WPM deduction
+
+Marks:
+
+Below 30 = 0
+
+30-35 = 10
+
+35-40 = 15
+
+40-45 = 18
+
+45-50 = 21
+
+50+ = 25
+
+
+*/
+
+
+function calculateDPHCM(){
+
+
+
+    let penalty =
+
+    mistakes / 10;
+
+
+
+
+    netWPM =
+
+    grossWPM - penalty;
+
+
+
+
+
+    if(netWPM < 0){
+
+        netWPM = 0;
+
+    }
+
+
+
+
+
+
+
+    if(netWPM < 30){
+
+
+        marks = 0;
+
+
+    }
+
+
+
+    else if(netWPM < 35){
+
+
+        marks = 10;
+
+
+    }
+
+
+
+    else if(netWPM < 40){
+
+
+        marks = 15;
+
+
+    }
+
+
+
+    else if(netWPM < 45){
+
+
+        marks = 18;
+
+
+    }
+
+
+
+    else if(netWPM < 50){
+
+
+        marks = 21;
+
+
+    }
+
+
+
+    else{
+
+
+        marks = 25;
+
+
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================================
+   OTHER EXAM CALCULATION
+===================================== */
+
+
+/*
+
+Other exams:
+
+Net WPM =
+correct words / actual time
+
+
+*/
+
+
+function calculateOtherExam(){
+
+
+
+    netWPM =
+
+    correctWords / minutes;
+
+
+
+
+    if(netWPM < 0){
+
+        netWPM = 0;
+
+    }
+
+
+
+
+    marks = "-";
+
+    resultStatus = "-";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================================
+   SELECT EXAM TYPE
+===================================== */
+
+
+if(
+
+examName
+
+.toLowerCase()
+
+.includes("dp hcm")
+
+){
+
+
+    calculateDPHCM();
+
+
+}
+
+
+else{
+
+
+    calculateOtherExam();
+
+
+}
+
+
+
+
+
+
+
+
+document.getElementById("net").textContent =
+
+netWPM.toFixed(2);
+
+
+
+
+
+document.getElementById("marks").textContent =
+
+marks;
+
+/* =====================================
+   SAVE FINAL RESULT
+===================================== */
+
+
+const finalResult = {
+
+
+    exam: examName,
+
+
+    title: resultData.title,
+
+
+    submittedAt: resultData.submittedAt,
+
+
+    timeTaken:
+    minutes.toFixed(2),
+
+
+
+    grossWPM:
+    grossWPM.toFixed(2),
+
+
+
+    netWPM:
+    netWPM.toFixed(2),
+
+
+
+    typedWords:
+    typedWords,
+
+
+
+    correctWords:
+    correctWords,
+
+
+
+    mistakes:
+    mistakes,
+
+
+
+    marks:
+    marks,
+
+
+
+    status:
+    resultStatus
+
+
+
+};
+
+
+
+
+
+
+
+localStorage.setItem(
+
+    "finalTypingResult",
+
+    JSON.stringify(finalResult)
+
+);
+
+
+
+
+
+
+
+
+
+/* =====================================
+   HOME BUTTON
+===================================== */
+
+
+function goHome(){
+
+
+
+    if(confirm(
+
+        "Return to home page?"
+
+    )){
+
+
+        localStorage.removeItem(
+
+            "typingDraft"
+
+        );
+
+
+
+        location.href =
+
+        "index.html";
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+</script>
+
+
+</body>
+
+</html>
