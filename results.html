@@ -343,16 +343,12 @@ header{
 .compare-body{
 
     height:450px;
-
     overflow:auto;
-
     padding:20px;
-
     line-height:2;
-
     font-size:16px;
-
     white-space:pre-wrap;
+    word-spacing:5px;
 
 }
 
@@ -1405,75 +1401,60 @@ function escapeHTML(text){
 
 function renderTokens(tokens){
 
-
     let html = "";
 
+    tokens.forEach((item,index)=>{
 
+        let token = escapeHTML(item.token);
 
-    tokens.forEach(item=>{
-
-
-        let token =
-        escapeHTML(item.token);
-
+        let output = token;
 
 
         if(item.type === "wrong"){
 
-
-            html +=
+            output =
             `<span class="wrong">${token}</span>`;
 
-
         }
-
 
         else if(item.type === "missing"){
 
-
-            html +=
+            output =
             `<span class="missing">${token}</span>`;
 
-
         }
-
 
         else if(item.type === "extra"){
 
-
-            html +=
+            output =
             `<span class="extra">${token}</span>`;
 
+        }
+
+
+        /*
+          Add spacing except before punctuation
+        */
+
+        if(
+            index < tokens.length-1 &&
+            !/[.,!?;:"()\-\n]/.test(tokens[index+1].token)
+        ){
+
+            output += " ";
 
         }
 
 
-        else{
-
-
-            /*
-               Correct text has no color
-            */
-
-
-            html += token;
-
-
-        }
-
+        html += output;
 
 
     });
 
 
-
     return html;
 
-
-
 }
-
-
 
 
 
