@@ -1077,18 +1077,11 @@ typedText.length;
 
 function tokenize(text){
 
-
     return text.match(
-
-        /[\w']+|[.,!?;:"()\-\n]/g
-
+        /[\w']+|[^\w\s]/g
     ) || [];
 
-
 }
-
-
-
 
 
 const originalTokens =
