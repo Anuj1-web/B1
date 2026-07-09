@@ -1,1073 +1,2018 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TypingMaster Pro | Typing Test Portal</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>TypingMaster Pro | Examination Portal</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
 
 *{
+
 margin:0;
 padding:0;
 box-sizing:border-box;
 font-family:'Poppins',sans-serif;
+
 }
+
 
 :root{
 
---primary:#2563eb;
---secondary:#1d4ed8;
---green:#10b981;
---danger:#ef4444;
---orange:#f59e0b;
 
---bg:#f4f7fc;
+--primary:#2563eb;
+
+--primary-dark:#1e40af;
+
+--success:#16a34a;
+
+--danger:#dc2626;
+
+
+--bg:#f1f5f9;
+
 --card:#ffffff;
---text:#1f2937;
---muted:#6b7280;
---border:#dbe4f0;
+
+--text:#111827;
+
+--muted:#64748b;
+
+--border:#dbe3ef;
+
+--input:#ffffff;
+
 
 --shadow:
-0 8px 24px rgba(0,0,0,.08);
+0 10px 30px rgba(15,23,42,.08);
+
 
 }
+
+
 
 body.dark{
 
---bg:#111827;
---card:#1f2937;
---text:#f3f4f6;
---muted:#9ca3af;
---border:#374151;
+
+--bg:#020617;
+
+--card:#0f172a;
+
+--text:#f8fafc;
+
+--muted:#cbd5e1;
+
+--border:#334155;
+
+--input:#1e293b;
+
 
 }
+
+
 
 body{
 
+
 background:var(--bg);
+
 color:var(--text);
+
+min-height:100vh;
+
 transition:.3s;
 
+
 }
+
+
 
 header{
 
-background:linear-gradient(135deg,#2563eb,#0f172a);
 
-padding:22px 45px;
+height:78px;
+
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#0f172a
+);
+
 
 display:flex;
-justify-content:space-between;
+
+
 align-items:center;
+
+
+justify-content:space-between;
+
+
+padding:0 45px;
+
 
 color:white;
 
+
 box-shadow:var(--shadow);
 
+
 }
+
+
 
 .logo{
 
+
 display:flex;
+
 align-items:center;
+
 gap:15px;
 
-}
-
-.logo h2{
-
-font-size:28px;
 
 }
+
+
+
+.logo-icon{
+
+
+font-size:42px;
+
+
+}
+
+
+
+.logo h1{
+
+
+font-size:27px;
+
+
+}
+
+
 
 .logo p{
 
+
 font-size:13px;
-opacity:.8;
+
+opacity:.85;
+
 
 }
 
-nav{
+
+
+.nav{
+
 
 display:flex;
-align-items:center;
+
 gap:15px;
+
+align-items:center;
+
 
 }
 
-nav button{
 
-border:none;
 
-padding:10px 18px;
+.nav button{
+
+
+padding:12px 22px;
 
 border-radius:10px;
+
+border:none;
 
 cursor:pointer;
 
 font-weight:600;
 
-transition:.3s;
+font-size:14px;
+
 
 }
 
-.themeBtn{
+
+
+.theme-btn{
+
 
 background:white;
 
+color:#111827;
+
+
 }
 
-.adminBtn{
+
+
+.admin-btn{
+
 
 background:#10b981;
+
 color:white;
+
 
 }
 
-.hero{
 
-max-width:1450px;
+
+.container{
+
+
+max-width:1400px;
 
 margin:auto;
 
-padding:40px;
+padding:35px;
+
+
+}
+
+
+
+.welcome{
+
+
+background:
+
+linear-gradient(
+135deg,
+#2563eb,
+#1e40af
+);
+
+
+color:white;
+
+padding:30px;
+
+border-radius:20px;
+
+box-shadow:var(--shadow);
+
+
+}
+
+
+
+.welcome h2{
+
+
+font-size:30px;
+
+
+}
+
+
+
+.welcome p{
+
+
+margin-top:8px;
+
+opacity:.9;
+
+
+}
+
+
+
+.grid{
+
 
 display:grid;
 
-grid-template-columns:420px auto;
 
-gap:30px;
+grid-template-columns:
+
+380px 1fr;
+
+
+gap:25px;
+
+
+margin-top:30px;
+
 
 }
 
-.leftPanel{
+
+
+.card{
+
 
 background:var(--card);
 
-border-radius:18px;
-
-box-shadow:var(--shadow);
-
-padding:30px;
-
-}
-
-.rightPanel{
-
-background:var(--card);
 
 border-radius:18px;
 
+
+padding:28px;
+
+
 box-shadow:var(--shadow);
 
-padding:30px;
-
-}
-
-.sectionTitle{
-
-font-size:22px;
-
-margin-bottom:20px;
-
-font-weight:700;
-
-}
-
-label{
-
-display:block;
-
-margin-top:18px;
-
-margin-bottom:8px;
-
-font-weight:600;
-
-}
-
-select,input{
-
-width:100%;
-
-padding:14px;
-
-border-radius:10px;
 
 border:1px solid var(--border);
 
-background:transparent;
-
-color:var(--text);
-
-font-size:15px;
-
-outline:none;
 
 }
 
-.stats{
+
+
+.title{
+
+
+font-size:21px;
+
+
+font-weight:700;
+
+
+margin-bottom:22px;
+
+
+}
+
+
+
+label{
+
+
+display:block;
+
+
+font-weight:600;
+
+
+margin-bottom:8px;
+
+
+margin-top:18px;
+
+
+}
+
+
+
+select,
+input{
+
+
+width:100%;
+
+
+padding:14px;
+
+
+border-radius:10px;
+
+
+border:1px solid var(--border);
+
+
+background:var(--input);
+
+
+color:var(--text);
+
+
+outline:none;
+
+
+font-size:15px;
+
+
+}
+
+
+
+select option{
+
+
+background:var(--card);
+
+color:var(--text);
+
+
+}
+
+
+
+select:focus,
+input:focus{
+
+
+border-color:var(--primary);
+
+
+}
+
+
+
+.duration-box{
+
 
 display:grid;
 
-grid-template-columns:repeat(2,1fr);
+
+grid-template-columns:
+
+repeat(5,1fr);
+
+
+gap:8px;
+
+
+}
+
+
+
+.time{
+
+
+padding:10px;
+
+
+border-radius:8px;
+
+
+border:1px solid var(--border);
+
+
+background:var(--input);
+
+
+color:var(--text);
+
+
+cursor:pointer;
+
+
+text-align:center;
+
+
+}
+
+
+
+.time.active{
+
+
+background:var(--primary);
+
+color:white;
+
+
+}
+
+
+<style>
+
+
+.exam-info{
+
+
+display:grid;
+
+grid-template-columns:
+
+repeat(3,1fr);
 
 gap:15px;
 
 margin-top:25px;
 
+
 }
 
-.stat{
+
+
+.info-box{
+
+
+background:var(--bg);
+
+border:1px solid var(--border);
 
 padding:18px;
 
 border-radius:12px;
 
-background:linear-gradient(130deg,#eff6ff,#dbeafe);
-
 text-align:center;
 
-}
-
-body.dark .stat{
-
-background:#0f172a;
 
 }
 
-.stat h1{
 
-font-size:30px;
 
-margin-bottom:6px;
+.info-box h2{
+
+
+color:var(--primary);
+
+font-size:26px;
+
 
 }
 
-.stat span{
+
+
+.info-box span{
+
+
+color:var(--muted);
 
 font-size:13px;
 
-color:var(--muted);
 
 }
 
-.searchBox{
 
-margin-bottom:25px;
 
-}
+.selection-area{
 
-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-}
-
-thead{
-
-background:#2563eb;
-
-color:white;
-
-}
-
-th{
-
-padding:14px;
-
-font-size:15px;
-
-}
-
-td{
-
-padding:15px;
-
-border-bottom:1px solid var(--border);
-
-}
-
-tbody tr{
-
-transition:.25s;
-
-cursor:pointer;
-
-}
-
-tbody tr:hover{
-
-background:#eff6ff;
-
-}
-
-body.dark tbody tr:hover{
-
-background:#374151;
-
-}
-
-.badge{
-
-padding:5px 12px;
-
-background:#dbeafe;
-
-color:#2563eb;
-
-border-radius:40px;
-
-font-size:12px;
-
-font-weight:700;
-
-}
-
-.startBtn{
-
-padding:10px 18px;
-
-background:var(--green);
-
-border:none;
-
-color:white;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-weight:600;
-
-}
-
-.preview{
 
 margin-top:25px;
 
-border:1px solid var(--border);
-
-padding:20px;
-
-border-radius:12px;
-
-line-height:1.8;
-
-height:180px;
-
-overflow:auto;
-
-font-size:15px;
 
 }
 
-footer{
 
-margin-top:35px;
 
-padding:20px;
+.passage-search{
 
-text-align:center;
 
-color:var(--muted);
+position:relative;
+
 
 }
 
-.modal{
 
-position:fixed;
 
-inset:0;
+.passage-list{
 
-display:none;
-
-align-items:center;
-
-justify-content:center;
-
-background:rgba(0,0,0,.5);
-
-z-index:999;
-
-}
-
-.modal.active{
-
-display:flex;
-
-}
-
-.modalCard{
-
-width:780px;
-
-background:var(--card);
-
-padding:30px;
-
-border-radius:16px;
-
-box-shadow:var(--shadow);
-
-max-height:90vh;
-
-overflow:auto;
-
-}
-
-textarea{
-
-width:100%;
-
-height:220px;
-
-padding:15px;
-
-resize:vertical;
 
 margin-top:10px;
 
-border-radius:12px;
-
-background:transparent;
-
-color:var(--text);
 
 border:1px solid var(--border);
 
+border-radius:12px;
+
+
+max-height:260px;
+
+
+overflow-y:auto;
+
+
+display:none;
+
+
+background:var(--card);
+
+
 }
 
-.actions{
 
-margin-top:20px;
 
-display:flex;
+.passage-list.show{
 
-gap:12px;
+
+display:block;
+
 
 }
 
-.saveBtn{
 
-background:var(--green);
 
-color:white;
+.passage-item{
 
-border:none;
 
-padding:12px 20px;
+padding:15px;
 
-border-radius:10px;
+
+border-bottom:1px solid var(--border);
+
 
 cursor:pointer;
 
-}
 
-.closeBtn{
+transition:.2s;
 
-background:#ef4444;
-
-color:white;
-
-border:none;
-
-padding:12px 20px;
-
-border-radius:10px;
-
-cursor:pointer;
 
 }
 
-.addPassage{
 
-margin-top:25px;
 
-background:#2563eb;
+.passage-item:last-child{
 
-color:white;
 
-border:none;
+border-bottom:none;
 
-padding:13px;
-
-width:100%;
-
-border-radius:10px;
-
-cursor:pointer;
-
-font-weight:600;
 
 }
 
-.empty{
 
-padding:50px;
 
-text-align:center;
+.passage-item:hover{
+
+
+background:rgba(37,99,235,.1);
+
+
+}
+
+
+
+.passage-item h4{
+
+
+font-size:15px;
+
+
+}
+
+
+
+.passage-item p{
+
+
+font-size:12px;
+
 
 color:var(--muted);
 
+
+margin-top:4px;
+
+
 }
 
-@media(max-width:1100px){
 
-.hero{
+
+.selected{
+
+
+margin-top:20px;
+
+
+padding:18px;
+
+
+border-radius:12px;
+
+
+background:rgba(37,99,235,.1);
+
+
+border:1px solid #93c5fd;
+
+
+display:none;
+
+
+}
+
+
+
+.selected.show{
+
+
+display:block;
+
+
+}
+
+
+
+.selected h3{
+
+
+color:var(--primary);
+
+
+}
+
+
+
+.preview{
+
+
+margin-top:25px;
+
+
+height:220px;
+
+
+overflow:auto;
+
+
+padding:20px;
+
+
+border-radius:12px;
+
+
+border:1px solid var(--border);
+
+
+line-height:1.8;
+
+
+background:var(--bg);
+
+
+}
+
+
+
+.start{
+
+
+margin-top:25px;
+
+
+width:100%;
+
+
+padding:15px;
+
+
+border:none;
+
+
+border-radius:12px;
+
+
+background:var(--success);
+
+
+color:white;
+
+
+font-size:17px;
+
+
+font-weight:700;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+.start:hover{
+
+
+transform:translateY(-2px);
+
+
+}
+
+
+
+.instructions{
+
+
+line-height:2;
+
+
+color:var(--muted);
+
+
+}
+
+
+
+.instructions li{
+
+
+margin-left:20px;
+
+
+}
+
+
+
+footer{
+
+
+text-align:center;
+
+
+padding:25px;
+
+
+color:var(--muted);
+
+
+}
+
+
+
+@media(max-width:1000px){
+
+
+
+.grid{
+
 
 grid-template-columns:1fr;
 
-}
 
 }
+
+
+}
+
+
+
+@media(max-width:600px){
+
+
+
+header{
+
+
+padding:0 15px;
+
+
+}
+
+
+
+.logo h1{
+
+
+font-size:20px;
+
+
+}
+
+
+
+.container{
+
+
+padding:15px;
+
+
+}
+
+
+.exam-info{
+
+
+grid-template-columns:1fr;
+
+
+}
+
+
+}
+
+
 
 </style>
 
+
 </head>
+
+
 <body>
+
+
 
 <header>
 
+
 <div class="logo">
 
-<div style="font-size:40px;">⌨️</div>
+
+<div class="logo-icon">
+
+⌨️
+
+</div>
+
 
 <div>
 
-<h2>TypingMaster Pro</h2>
 
-<p>Professional Typing Examination Portal</p>
+<h1>
+
+TypingMaster Pro
+
+</h1>
+
+
+<p>
+
+Professional Computer Typing Examination System
+
+</p>
+
 
 </div>
 
+
 </div>
 
-<nav>
 
-<button class="themeBtn" onclick="toggleTheme()">
+
+<div class="nav">
+
+
+<button
+
+class="theme-btn"
+
+onclick="toggleTheme()">
+
 🌙 Theme
+
 </button>
 
-<button class="adminBtn" onclick="openAdmin()">
+
+<button
+
+class="admin-btn"
+
+onclick="openAdmin()">
+
 Admin Portal
+
 </button>
 
-</nav>
+
+</div>
+
 
 </header>
 
-<section class="hero">
 
-<div class="leftPanel">
 
-<div class="sectionTitle">
-Exam Configuration
+
+<div class="container">
+
+
+
+<div class="welcome">
+
+
+<h2>
+
+Welcome Candidate
+
+</h2>
+
+
+<p>
+
+Select your examination, choose a passage and start your typing test.
+
+</p>
+
+
 </div>
 
-<label>Select Examination</label>
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+
+<div class="title">
+
+Exam Setup
+
+</div>
+
+
+
+<label>
+
+Select Examination
+
+</label>
+
+
 
 <select id="exam">
 
-<option>SSC CHSL</option>
 
-<option>SSC CGL DEST</option>
+<option value="SSC CHSL">
 
-<option>SSC CPO</option>
+SSC CHSL
 
-<option>RRB NTPC</option>
+</option>
 
-<option>Stenographer</option>
 
-<option>CPCT</option>
+<option value="SSC CGL DEST">
 
-<option>Custom Examination</option>
+SSC CGL DEST
+
+</option>
+
+
+<option value="SSC CPO">
+
+SSC CPO
+
+</option>
+
+
+<option value="RRB NTPC">
+
+RRB NTPC
+
+</option>
+
+
+<option value="Stenographer">
+
+Stenographer
+
+</option>
+
+
+<option value="CPCT">
+
+CPCT
+
+</option>
+
+
+<option value="DP HCM">
+
+DP HCM
+
+</option>
+
+
+<option value="Custom Examination">
+
+Custom Examination
+
+</option>
+
 
 </select>
 
-<label>Typing Duration</label>
 
-<select id="duration">
 
-<option value="10">10 Minutes</option>
+<label>
 
-<option value="15">15 Minutes</option>
+Select Test Time
 
-<option value="20">20 Minutes</option>
+</label>
 
-<option value="30">30 Minutes</option>
 
-</select>
 
-<label>Search Passage</label>
+<div class="duration-box">
 
-<input
-type="text"
-placeholder="Search..."
-id="search">
 
-<div class="stats">
+<div class="time active" data-time="1">
 
-<div class="stat">
-
-<h1 id="totalPassages">0</h1>
-
-<span>Total Passages</span>
+1 Min
 
 </div>
 
-<div class="stat">
 
-<h1 id="selectedNo">0</h1>
+<div class="time" data-time="2">
 
-<span>Selected</span>
-
-</div>
+2 Min
 
 </div>
 
-<button
-class="addPassage"
-onclick="openAdmin()">
-+ Add New Passage
-</button>
+
+<div class="time" data-time="5">
+
+5 Min
 
 </div>
 
-<div class="rightPanel">
 
-<div class="sectionTitle">
-Available Passages
-</div>
+<div class="time" data-time="10">
 
-<table>
-
-<thead>
-
-<tr>
-
-<th>No.</th>
-
-<th>Title</th>
-
-<th>Exam</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tbody">
-
-</tbody>
-
-</table>
-
-<div class="empty" id="empty">
-
-No passages stored offline.
-
-Open Admin Portal and add passages.
+10 Min
 
 </div>
 
-<div class="preview" id="preview">
 
-Select any passage to preview.
+<div class="time" data-time="15">
+
+15 Min
 
 </div>
 
+
+<div class="time" data-time="20">
+
+20 Min
+
 </div>
 
-</section>
 
-<footer>
+</div>
 
-TypingMaster Pro © 2026
 
-</footer>
 
-<div class="modal" id="adminModal">
+<input type="hidden" id="duration" value="1">
 
-<div class="modalCard">
 
-<h2 style="margin-bottom:20px;">
-Offline Admin Portal
+
+<div class="exam-info">
+
+
+<div class="info-box">
+
+
+<h2 id="passageCount">
+
+0
+
 </h2>
 
-<label>Passage Title</label>
+
+<span>
+
+Passages
+
+</span>
+
+
+</div>
+
+
+<div class="info-box">
+
+
+<h2>
+
+Auto
+
+</h2>
+
+
+<span>
+
+Offline Storage
+
+</span>
+
+
+</div>
+
+
+<div class="info-box">
+
+
+<h2>
+
+Secure
+
+</h2>
+
+
+<span>
+
+Exam Mode
+
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+
+<div class="title">
+
+Select Typing Passage
+
+</div>
+
+
+
+<div class="selection-area">
+
+
+
+<label>
+
+Search Passage
+
+</label>
+
+
+
+<div class="passage-search">
+
 
 <input
-id="title"
-placeholder="Enter title">
 
-<label>Exam Category</label>
+id="passageSearch"
 
-<select id="adminExam">
+placeholder="Search passage title...">
 
-<option>SSC CHSL</option>
 
-<option>SSC CGL DEST</option>
 
-<option>SSC CPO</option>
+<div
 
-<option>RRB NTPC</option>
+class="passage-list"
 
-<option>Stenographer</option>
-
-<option>CPCT</option>
-
-<option>Custom Examination</option>
-
-</select>
-
-<label>Passage Text</label>
-
-<textarea
-id="passage"
-placeholder="Paste passage here..."></textarea>
-
-<div class="actions">
-
-<button
-class="saveBtn"
-onclick="savePassage()">
-
-Save Offline
-
-</button>
-
-<button
-class="closeBtn"
-onclick="closeAdmin()">
-
-Close
-
-</button>
+id="passageList">
 
 </div>
 
-<hr style="margin:30px 0;">
 
-<h3>
-Stored Passages
+
+</div>
+
+
+
+<div
+
+class="selected"
+
+id="selectedPassage">
+
+
+<h3 id="selectedTitle">
+
 </h3>
 
-<table>
 
-<thead>
+<p id="selectedExam">
 
-<tr>
+</p>
 
-<th>No.</th>
-
-<th>Title</th>
-
-<th>Exam</th>
-
-<th>Delete</th>
-
-</tr>
-
-</thead>
-
-<tbody id="adminTable">
-
-</tbody>
-
-</table>
 
 </div>
 
+
+
+<div
+
+class="preview"
+
+id="preview">
+
+
+Select a passage to preview.
+
 </div>
 
-<script>
+
+
+<button
+
+class="start"
+
+onclick="startTest()">
+
+
+Start Typing Test
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+ <script>
+
+
+let passages =
+JSON.parse(
+localStorage.getItem("typing_passages")
+)
+||[];
+
+
 
 let selectedPassage=null;
 
-let passages=JSON.parse(localStorage.getItem("typing_passages"))||[];
 
-function saveStorage(){
+let selectedDuration=1;
 
-localStorage.setItem(
-"typing_passages",
-JSON.stringify(passages)
-);
 
-}
+
+
+/*
+====================================
+THEME MANAGEMENT
+====================================
+*/
+
 
 function toggleTheme(){
 
+
 document.body.classList.toggle("dark");
 
+
 localStorage.setItem(
-"theme",
+
+"darkTheme",
+
 document.body.classList.contains("dark")
+
 );
+
 
 }
 
-if(localStorage.getItem("theme")=="true"){
+
+
+if(
+localStorage.getItem("darkTheme")==="true"
+){
 
 document.body.classList.add("dark");
 
 }
 
-function openAdmin(){
 
-document.getElementById("adminModal").classList.add("active");
 
-renderAdmin();
 
-}
 
-function closeAdmin(){
-
-document.getElementById("adminModal").classList.remove("active");
-
-}
-
-function savePassage(){
-
-let title=document.getElementById("title").value.trim();
-
-let exam=document.getElementById("adminExam").value;
-
-let text=document.getElementById("passage").value.trim();
-
-if(title==""||text==""){
-
-alert("Fill all fields.");
-
-return;
-
-}
-
-passages.push({
-
-id:Date.now(),
-
-title,
-
-exam,
-
-text
-
-});
-
-saveStorage();
-
-document.getElementById("title").value="";
-
-document.getElementById("passage").value="";
-
-render();
-
-renderAdmin();
-
-}
-
-function render(){
-
-let body=document.getElementById("tbody");
-
-body.innerHTML="";
-
-document.getElementById("totalPassages").innerHTML=passages.length;
-
-document.getElementById("empty").style.display=
-
-passages.length?"none":"block";
-
-passages.forEach((p,i)=>{
-
-body.innerHTML+=`
-
-<tr onclick="preview(${p.id})">
-
-<td>${i+1}</td>
-
-<td>${p.title}</td>
-
-<td>${p.exam}</td>
-
-<td>
-
-<span class="badge">
-
-Offline
-
-</span>
-
-</td>
-
-<td>
-
-<button
-class="startBtn"
-onclick="event.stopPropagation();startTyping(${p.id})">
-
-Start
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-function preview(id){
-
-selectedPassage=id;
-
-document.getElementById("selectedNo").innerHTML=id;
-
-let p=passages.find(x=>x.id==id);
-
-document.getElementById("preview").innerHTML=p.text;
-
-}
-function startTyping(id){
-
-const passage=passages.find(p=>p.id===id);
-
-if(!passage){
-
-alert("Passage not found.");
-
-return;
-
-}
 
 /*
-Store selected test configuration.
-typing.html will read these values.
+====================================
+ADMIN REDIRECT
+====================================
 */
 
-localStorage.setItem(
-"selectedPassage",
-JSON.stringify(passage)
-);
 
-localStorage.setItem(
-"selectedExam",
-document.getElementById("exam").value
-);
+function openAdmin(){
 
-localStorage.setItem(
-"selectedDuration",
-document.getElementById("duration").value
-);
 
-window.location.href="typing.html";
+window.location.href="admin.html";
+
 
 }
 
-function renderAdmin(){
 
-let table=document.getElementById("adminTable");
 
-table.innerHTML="";
 
-passages.forEach((p,index)=>{
 
-table.innerHTML+=`
 
-<tr>
+/*
+====================================
+LOAD PASSAGES
+====================================
+*/
 
-<td>${index+1}</td>
 
-<td>${p.title}</td>
+function getCurrentExam(){
 
-<td>${p.exam}</td>
 
-<td>
+return document
+.getElementById("exam")
+.value;
 
-<button
-style="
-background:#ef4444;
-border:none;
-padding:8px 14px;
-color:white;
-border-radius:8px;
-cursor:pointer;
-"
-onclick="deletePassage(${p.id})">
 
-Delete
+}
 
-</button>
 
-</td>
 
-</tr>
+
+function loadPassages(){
+
+
+
+let exam=getCurrentExam();
+
+
+
+let list=
+document.getElementById("passageList");
+
+
+
+list.innerHTML="";
+
+
+
+let filtered=
+passages.filter(
+p=>p.exam===exam
+||
+exam==="Custom Examination"
+&&
+p.exam==="Custom Examination"
+
+);
+
+
+
+document.getElementById("passageCount")
+.innerHTML=
+filtered.length;
+
+
+
+
+if(filtered.length===0){
+
+
+list.innerHTML=`
+
+<div class="passage-item">
+
+<h4>
+No Passage Available
+</h4>
+
+<p>
+Admin has not added passages for this exam.
+</p>
+
+</div>
 
 `;
 
-});
+return;
+
 
 }
 
-function deletePassage(id){
 
-if(!confirm("Delete this passage?")) return;
 
-passages=passages.filter(x=>x.id!==id);
+filtered.forEach(
+p=>{
 
-saveStorage();
 
-render();
+list.innerHTML+=`
 
-renderAdmin();
+
+<div
+
+class="passage-item"
+
+onclick="selectPassage(${p.id})">
+
+
+<h4>
+
+${p.title}
+
+</h4>
+
+
+<p>
+
+${p.exam}
+
+|
+
+${p.text.split(/\s+/).length} Words
+
+</p>
+
+
+</div>
+
+
+`;
+
 
 }
 
-render();
+);
 
-document.getElementById("search").addEventListener("keyup",function(){
 
-const keyword=this.value.toLowerCase();
 
-const rows=document.querySelectorAll("#tbody tr");
+}
 
-rows.forEach(row=>{
 
-const txt=row.innerText.toLowerCase();
 
-row.style.display=
 
-txt.includes(keyword)
 
-?
+/*
+====================================
+SEARCH PASSAGE
+====================================
+*/
 
-"table-row"
 
-:
+document
+.getElementById("passageSearch")
+.addEventListener(
+"focus",
+function(){
 
-"none";
+
+document
+.getElementById("passageList")
+.classList.add("show");
+
+
+
+loadSearch();
+
 
 });
 
+
+
+
+document
+.getElementById("passageSearch")
+.addEventListener(
+"keyup",
+function(){
+
+
+loadSearch(
+this.value.toLowerCase()
+);
+
+
 });
 
-/* ---------- Sample passages on first run ---------- */
+
+
+
+
+
+function loadSearch(keyword=""){
+
+
+
+let exam=
+getCurrentExam();
+
+
+
+let list=
+document.getElementById("passageList");
+
+
+
+list.innerHTML="";
+
+
+
+let filtered=
+passages.filter(
+p=>
+
+
+(p.exam===exam)
+
+
+&&
+
+
+(
+p.title
+.toLowerCase()
+.includes(keyword)
+
+||
+p.text
+.toLowerCase()
+.includes(keyword)
+
+)
+
+
+);
+
+
+
+if(filtered.length===0){
+
+
+list.innerHTML=`
+
+<div class="passage-item">
+
+<h4>
+No matching passage
+</h4>
+
+</div>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+filtered.forEach(
+p=>{
+
+
+list.innerHTML+=`
+
+<div
+
+class="passage-item"
+
+onclick="selectPassage(${p.id})">
+
+
+<h4>
+
+${p.title}
+
+</h4>
+
+
+<p>
+
+${p.exam}
+
+|
+
+${p.text.split(/\s+/).length}
+
+Words
+
+</p>
+
+
+</div>
+
+`;
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+/*
+====================================
+SELECT PASSAGE
+====================================
+*/
+
+
+function selectPassage(id){
+
+
+
+selectedPassage=
+passages.find(
+p=>p.id===id
+);
+
+
+
+if(!selectedPassage)
+return;
+
+
+
+document
+.getElementById("passageSearch")
+.value=
+selectedPassage.title;
+
+
+
+document
+.getElementById("selectedPassage")
+.classList.add("show");
+
+
+
+document
+.getElementById("selectedTitle")
+.innerHTML=
+selectedPassage.title;
+
+
+
+document
+.getElementById("selectedExam")
+.innerHTML=
+
+"Exam : "
++
+selectedPassage.exam;
+
+
+
+document
+.getElementById("preview")
+.innerHTML=
+selectedPassage.text;
+
+
+
+document
+.getElementById("passageList")
+.classList.remove("show");
+
+
+
+}
+
+
+
+
+
+
+
+/*
+====================================
+TIME SELECTION
+====================================
+*/
+
+
+document
+.querySelectorAll(".time")
+.forEach(
+btn=>{
+
+
+btn.onclick=function(){
+
+
+document
+.querySelectorAll(".time")
+.forEach(
+x=>
+x.classList.remove("active")
+);
+
+
+
+this.classList.add("active");
+
+
+
+selectedDuration=
+this.dataset.time;
+
+
+
+document
+.getElementById("duration")
+.value=
+selectedDuration;
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+====================================
+EXAM CHANGE
+====================================
+*/
+
+
+document
+.getElementById("exam")
+.addEventListener(
+"change",
+function(){
+
+
+
+selectedPassage=null;
+
+
+
+document
+.getElementById("selectedPassage")
+.classList.remove("show");
+
+
+
+document
+.getElementById("preview")
+.innerHTML=
+
+"Select a passage to preview.";
+
+
+
+document
+.getElementById("passageSearch")
+.value="";
+
+
+
+loadPassages();
+
+
+
+});
+
+
+
+
+
+
+
+
+/*
+====================================
+START TEST
+====================================
+*/
+
+
+function startTest(){
+
+
+
+if(!selectedPassage){
+
+
+alert(
+"Please select a typing passage first."
+);
+
+
+
+return;
+
+
+}
+
+
+
+localStorage.setItem(
+
+"selectedPassage",
+
+JSON.stringify(selectedPassage)
+
+);
+
+
+
+localStorage.setItem(
+
+"selectedExam",
+
+getCurrentExam()
+
+);
+
+
+
+localStorage.setItem(
+
+"selectedDuration",
+
+selectedDuration
+
+);
+
+
+
+
+window.location.href=
+"typing.html";
+
+
+
+}
+
+
+
+
+
+
+/*
+====================================
+CLICK OUTSIDE CLOSE LIST
+====================================
+*/
+
+
+document.addEventListener(
+"click",
+function(e){
+
+
+
+if(
+!e.target.closest(".passage-search")
+){
+
+
+document
+.getElementById("passageList")
+.classList.remove("show");
+
+
+
+}
+
+
+});
+
+
+
+
+
+
+
+/*
+====================================
+INITIAL LOAD
+====================================
+*/
+
+
+loadPassages();
+
+
+
+/*
+====================================
+DEMO DATA ONLY IF EMPTY
+(remove after admin use)
+====================================
+*/
+
 
 if(passages.length===0){
 
+
 passages=[
+
 
 {
 
@@ -1077,9 +2022,11 @@ title:"Environmental Awareness",
 
 exam:"SSC CHSL",
 
-text:`Environmental protection has become one of the most important concerns across the globe. Every individual shares responsibility for maintaining a clean and healthy environment. Planting trees, reducing plastic waste, conserving water, and using renewable sources of energy contribute significantly toward sustainable development. Governments, educational institutions, industries, and citizens must work together to preserve natural resources for future generations. Awareness and collective effort are the keys to protecting the planet.`
+text:
+"Environmental protection is the responsibility of every citizen. Clean surroundings, plantation of trees and conservation of natural resources help maintain ecological balance."
 
 },
+
 
 {
 
@@ -1089,288 +2036,74 @@ title:"Digital India",
 
 exam:"SSC CGL DEST",
 
-text:`Digital technology has transformed the way people communicate, learn, and work. Online education, digital banking, e-governance, and cloud computing have simplified everyday activities. The rapid growth of information technology has created new employment opportunities and improved productivity across industries. At the same time, awareness regarding cyber security, digital privacy, and responsible internet usage is essential for ensuring a safe and secure digital ecosystem.`
+text:
+"Digital transformation has changed the way people communicate and perform daily activities. Technology provides new opportunities in education and employment."
 
 },
+
 
 {
 
 id:3,
 
-title:"Indian Railways",
+title:"Delhi Police HCM Practice",
 
-exam:"RRB NTPC",
+exam:"DP HCM",
 
-text:`Indian Railways is one of the largest railway networks in the world. Every day millions of passengers travel safely through thousands of trains connecting villages, towns, and metropolitan cities. Modernization, electrification, improved passenger facilities, and digital ticketing have significantly enhanced railway services. Continuous investment in infrastructure and technology plays an important role in supporting economic development and public transportation.`
+text:
+"Modern policing requires dedication discipline and effective communication skills. Police personnel play an important role in maintaining law and order."
 
 }
+
 
 ];
 
-saveStorage();
 
-render();
+localStorage.setItem(
 
-}
+"typing_passages",
 
-/* ---------- Keyboard Shortcuts ---------- */
-
-document.addEventListener("keydown",function(e){
-
-if(e.ctrlKey && e.key.toLowerCase()=="a"){
-
-e.preventDefault();
-
-openAdmin();
-
-}
-
-if(e.key==="Escape"){
-
-closeAdmin();
-
-}
-
-});
-
-/* ---------- Live Exam Filter ---------- */
-
-document.getElementById("exam").addEventListener("change",function(){
-
-const exam=this.value;
-
-const body=document.getElementById("tbody");
-
-body.innerHTML="";
-
-const filtered=passages.filter(p=>{
-
-if(exam==="Custom Examination"){
-
-return p.exam==="Custom Examination";
-
-}
-
-return p.exam===exam;
-
-});
-
-document.getElementById("totalPassages").innerHTML=filtered.length;
-
-document.getElementById("empty").style.display=
-
-filtered.length?"none":"block";
-
-filtered.forEach((p,index)=>{
-
-body.innerHTML+=`
-
-<tr onclick="preview(${p.id})">
-
-<td>${index+1}</td>
-
-<td>${p.title}</td>
-
-<td>${p.exam}</td>
-
-<td>
-
-<span class="badge">
-
-Offline
-
-</span>
-
-</td>
-
-<td>
-
-<button
-
-class="startBtn"
-
-onclick="event.stopPropagation();startTyping(${p.id})">
-
-Start
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-});
-
-/* ---------- Export Backup ---------- */
-
-function exportPassages(){
-
-const blob=new Blob(
-
-[JSON.stringify(passages,null,2)],
-
-{type:"application/json"}
+JSON.stringify(passages)
 
 );
 
-const a=document.createElement("a");
 
-a.href=URL.createObjectURL(blob);
 
-a.download="typing_passages_backup.json";
+loadPassages();
 
-a.click();
 
 }
 
-/* ---------- Import Backup ---------- */
 
-function importBackup(file){
 
-const reader=new FileReader();
 
-reader.onload=function(e){
 
-try{
 
-const data=JSON.parse(e.target.result);
+/*
+====================================
+SECURITY
+====================================
+*/
 
-if(Array.isArray(data)){
 
-passages=data;
+document.addEventListener(
+"contextmenu",
+e=>e.preventDefault()
+);
 
-saveStorage();
 
-render();
-
-renderAdmin();
-
-alert("Backup imported successfully.");
-
-}else{
-
-alert("Invalid backup file.");
-
-}
-
-}catch(err){
-
-alert("Invalid JSON file.");
-
-}
-
-}
-
-reader.readAsText(file);
-
-}
-
-/* ---------- Admin Toolbar ---------- */
-
-const toolbar=document.createElement("div");
-
-toolbar.style.marginTop="25px";
-
-toolbar.innerHTML=`
-
-<button
-class="saveBtn"
-onclick="exportPassages()">
-
-Export Backup
-
-</button>
-
-<label
-style="
-margin-left:12px;
-cursor:pointer;
-background:#2563eb;
-padding:12px 20px;
-border-radius:10px;
-color:white;
-display:inline-block;
-">
-
-Import Backup
-
-<input
-type="file"
-accept=".json"
-style="display:none"
-onchange="importBackup(this.files[0])">
-
-</label>
-
-`;
-
-document.querySelector(".modalCard").appendChild(toolbar);
-
-/* ---------- Welcome Notification ---------- */
-
-setTimeout(()=>{
-
-console.log("TypingMaster Pro Ready");
-
-},300);
-
-/* ---------- Auto Preview ---------- */
-
-if(passages.length){
-
-preview(passages[0].id);
-
-}
-
-/* ---------- Utilities ---------- */
-
-function getPassageCount(){
-
-return passages.length;
-
-}
-
-function getAllPassages(){
-
-return passages;
-
-}
-
-function clearAllPassages(){
-
-if(confirm("Delete ALL stored passages?")){
-
-passages=[];
-
-saveStorage();
-
-render();
-
-renderAdmin();
-
-document.getElementById("preview").innerHTML=
-
-"Select any passage to preview.";
-
-}
-
-}
-
-window.addEventListener("storage",()=>{
-
-passages=JSON.parse(localStorage.getItem("typing_passages"))||[];
-
-render();
-
-renderAdmin();
-
-});
 
 </script>
 
+
+
+<footer>
+
+TypingMaster Pro © 2026 | Professional Typing Examination Platform
+
+</footer>
+
+
 </body>
+
 </html>
