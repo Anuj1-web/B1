@@ -1,49 +1,70 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+
 <title>Typing Examination</title>
+
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 
 <style>
 
+
 *{
+
 margin:0;
+
 padding:0;
+
 box-sizing:border-box;
+
 font-family:'Poppins',sans-serif;
+
 }
+
 
 
 :root{
 
---primary:#2563eb;
+--primary:#1d4ed8;
+
 --dark:#0f172a;
---success:#16a34a;
---danger:#dc2626;
 
 --bg:#eef2f7;
+
 --card:#ffffff;
+
 --border:#dbe4ef;
+
 --text:#1e293b;
+
 --muted:#64748b;
+
+--success:#16a34a;
+
+--danger:#dc2626;
 
 }
 
 
+
 body{
 
-background:var(--bg);
-color:var(--text);
-
 height:100vh;
+
 overflow:hidden;
+
+background:var(--bg);
+
+color:var(--text);
 
 }
 
@@ -54,7 +75,9 @@ overflow:hidden;
 
 header{
 
-height:70px;
+
+height:72px;
+
 
 background:linear-gradient(
 135deg,
@@ -62,35 +85,51 @@ background:linear-gradient(
 #0f172a
 );
 
+
 color:white;
+
 
 display:flex;
 
+
 align-items:center;
+
 
 justify-content:space-between;
 
+
 padding:0 25px;
 
-box-shadow:0 5px 20px rgba(0,0,0,.2);
+
+box-shadow:
+0 5px 18px rgba(0,0,0,.2);
+
 
 }
+
+
 
 
 .logo{
 
+
 display:flex;
+
 align-items:center;
-gap:14px;
+
+gap:15px;
+
 
 }
+
 
 
 .logo-icon{
 
-font-size:38px;
+font-size:40px;
 
 }
+
 
 
 .logo h2{
@@ -100,41 +139,53 @@ font-size:23px;
 }
 
 
+
 .logo p{
 
 font-size:12px;
+
 opacity:.8;
 
 }
 
 
 
-.examInfo{
+
+
+.exam-info{
+
 
 display:flex;
+
 align-items:center;
-gap:35px;
+
+gap:40px;
+
 
 }
 
 
-.infoBox{
+
+.info-box{
 
 text-align:center;
 
 }
 
 
-.infoBox h3{
 
-font-size:24px;
+.info-box h3{
+
+font-size:26px;
 
 }
 
 
-.infoBox span{
+
+.info-box span{
 
 font-size:11px;
+
 opacity:.8;
 
 }
@@ -151,76 +202,111 @@ letter-spacing:2px;
 
 
 
-/* ================= MAIN AREA ================= */
 
 
-.main{
+/* ================= MAIN EXAM AREA ================= */
 
-height:calc(100vh - 70px - 75px);
 
-padding:12px;
+.exam-container{
+
+
+height:
+
+calc(100vh - 72px - 70px);
+
 
 display:grid;
 
+
 grid-template-rows:1fr 1fr;
+
 
 gap:12px;
 
+
+padding:12px;
+
+
 }
 
 
 
-/* ================= PANELS ================= */
 
 
-.panel{
+.box{
+
 
 background:white;
 
+
 border-radius:14px;
+
 
 border:1px solid var(--border);
 
+
 display:flex;
+
 
 flex-direction:column;
 
+
 overflow:hidden;
 
-box-shadow:0 5px 15px rgba(0,0,0,.05);
+
+box-shadow:
+
+0 5px 15px rgba(0,0,0,.06);
+
 
 }
 
 
 
-.panelHeader{
 
-height:48px;
+
+.box-header{
+
+
+height:50px;
+
 
 background:#f8fafc;
 
+
 border-bottom:1px solid var(--border);
+
 
 display:flex;
 
+
 align-items:center;
+
 
 justify-content:space-between;
 
-padding:0 18px;
+
+padding:0 20px;
+
 
 font-weight:600;
 
+
 }
 
 
-.panelHeader span:last-child{
 
-font-size:13px;
+
+
+.box-header small{
+
 
 color:var(--muted);
 
+font-size:12px;
+
 }
+
 
 
 
@@ -228,21 +314,17 @@ color:var(--muted);
 /* ================= PASSAGE ================= */
 
 
-.passageArea{
+.passage-wrapper{
+
 
 flex:1;
 
+
 overflow:auto;
 
-padding:20px;
 
-font-size:18px;
+padding:25px;
 
-line-height:2;
-
-white-space:pre-wrap;
-
-word-break:break-word;
 
 }
 
@@ -250,158 +332,151 @@ word-break:break-word;
 
 #originalText{
 
-color:#334155;
 
-}
+font-size:19px;
 
-
-
-/* ================= TYPING AREA ================= */
-
-
-.typingBox{
-
-flex:1;
-
-position:relative;
-
-}
-
-
-textarea{
-
-width:100%;
-
-height:100%;
-
-border:none;
-
-outline:none;
-
-resize:none;
-
-padding:20px;
-
-font-size:18px;
 
 line-height:2;
 
-color:#111827;
 
-background:#fff;
-
-}
+white-space:pre-wrap;
 
 
-textarea:focus{
-
-background:#fffdf5;
-
-}
+word-break:break-word;
 
 
+color:#334155;
 
-/* ================= STATS ================= */
-
-
-.statsBar{
-
-height:75px;
-
-background:white;
-
-border-top:1px solid var(--border);
-
-display:grid;
-
-grid-template-columns:repeat(7,1fr);
 
 }
 
 
 
-.stat{
 
-display:flex;
 
-align-items:center;
+/* ================= TYPING ================= */
 
-justify-content:center;
 
-flex-direction:column;
+.typing-wrapper{
 
-border-right:1px solid var(--border);
+
+flex:1;
+
 
 }
 
 
 
-.stat:last-child{
+#typingArea{
+
+
+width:100%;
+
+
+height:100%;
+
 
 border:none;
 
+
+outline:none;
+
+
+resize:none;
+
+
+padding:25px;
+
+
+font-size:19px;
+
+
+line-height:2;
+
+
+color:#111827;
+
+
+background:#fff;
+
+
 }
 
 
 
-.stat h2{
+#typingArea:focus{
 
-font-size:22px;
+
+background:#fffdf5;
+
 
 }
 
 
 
-.stat span{
-
-font-size:11px;
-
-color:var(--muted);
-
-}
 
 
 
-/* ================= BUTTON AREA ================= */
+/* ================= FOOTER ================= */
 
 
-.bottomBar{
 
-height:65px;
+.bottom-bar{
+
+
+height:70px;
+
 
 background:white;
 
-display:flex;
-
-justify-content:flex-end;
-
-align-items:center;
-
-gap:15px;
-
-padding:0 20px;
 
 border-top:1px solid var(--border);
 
+
+display:flex;
+
+
+align-items:center;
+
+
+justify-content:flex-end;
+
+
+gap:15px;
+
+
+padding:0 25px;
+
+
 }
+
+
 
 
 
 button{
 
-padding:12px 25px;
+
+padding:13px 28px;
+
 
 border:none;
 
-border-radius:8px;
+
+border-radius:9px;
+
 
 font-size:15px;
 
+
 font-weight:600;
+
 
 cursor:pointer;
 
+
 transition:.3s;
+
 
 }
 
@@ -409,17 +484,9 @@ transition:.3s;
 
 button:hover{
 
+
 transform:translateY(-2px);
 
-}
-
-
-
-#submitBtn{
-
-background:#16a34a;
-
-color:white;
 
 }
 
@@ -427,20 +494,41 @@ color:white;
 
 #resetBtn{
 
+
 background:#dc2626;
+
 
 color:white;
 
+
 }
+
+
+
+#submitBtn{
+
+
+background:#16a34a;
+
+
+color:white;
+
+
+}
+
+
 
 
 
 /* ================= SCROLL ================= */
 
 
+
 ::-webkit-scrollbar{
 
+
 width:8px;
+
 
 }
 
@@ -448,57 +536,46 @@ width:8px;
 
 ::-webkit-scrollbar-thumb{
 
+
 background:#cbd5e1;
 
+
 border-radius:20px;
+
 
 }
 
 
 
-/* ================= MOBILE ================= */
+
+/* ================= RESPONSIVE ================= */
+
 
 
 @media(max-width:900px){
 
 
-header{
+.exam-info{
 
-padding:0 12px;
+
+gap:15px;
+
 
 }
 
 
-.examInfo{
 
-gap:10px;
+.exam-container{
 
-}
-
-
-.main{
-
-height:auto;
 
 overflow:auto;
 
-}
-
-
-.statsBar{
-
-grid-template-columns:repeat(3,1fr);
 
 height:auto;
 
-}
-
-
-.stat{
-
-padding:10px;
 
 }
+
 
 
 }
@@ -513,14 +590,20 @@ padding:10px;
 <body>
 
 
+
 <header>
+
 
 
 <div class="logo">
 
+
 <div class="logo-icon">
+
 ⌨️
+
 </div>
+
 
 
 <div>
@@ -531,42 +614,61 @@ Typing Examination
 
 
 <p id="examName">
+
 Loading Examination...
+
 </p>
 
 
 </div>
 
+
 </div>
 
 
 
-<div class="examInfo">
 
 
-<div class="infoBox">
+<div class="exam-info">
+
+
+<div class="info-box">
+
 
 <h3 id="timer">
+
 00:00
+
 </h3>
 
+
 <span>
-TIME LEFT
+
+TIME REMAINING
+
 </span>
+
 
 </div>
 
 
 
-<div class="infoBox">
+<div class="info-box">
+
 
 <h3 id="candidate">
+
 Candidate
+
 </h3>
 
+
 <span>
+
 USER
+
 </span>
+
 
 </div>
 
@@ -581,37 +683,40 @@ USER
 
 
 
-<div class="main">
+
+<div class="exam-container">
 
 
-<!-- PASSAGE PANEL -->
+
+<!-- PASSAGE SECTION -->
 
 
-<div class="panel">
+<div class="box">
 
 
-<div class="panelHeader">
+<div class="box-header">
+
 
 <span>
 Question Passage
 </span>
 
 
-<span id="wordCountLabel">
-0 Words
-</span>
+<small>
+Scroll manually
+</small>
 
 
 </div>
 
 
 
-<div class="passageArea">
+<div class="passage-wrapper">
 
 
 <div id="originalText">
 
-Loading passage...
+Loading Passage...
 
 </div>
 
@@ -625,30 +730,37 @@ Loading passage...
 
 
 
-<!-- TYPING PANEL -->
 
 
-<div class="panel">
+<!-- TYPING SECTION -->
 
 
-<div class="panelHeader">
+<div class="box">
+
+
+<div class="box-header">
 
 
 <span>
-Your Typing
+
+Typing Area
+
 </span>
 
 
-<span id="typedChars">
-0 Characters
-</span>
+<small>
+
+Enter text exactly
+
+</small>
 
 
 </div>
 
 
 
-<div class="typingBox">
+
+<div class="typing-wrapper">
 
 
 <textarea
@@ -674,110 +786,6 @@ placeholder="Start typing here..."
 </div>
 
 
-</div>
-
-
-
-
-
-<div class="statsBar">
-
-
-<div class="stat">
-
-<h2 id="grossWPM">
-0
-</h2>
-
-<span>
-Gross WPM
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="netWPM">
-0
-</h2>
-
-<span>
-Net WPM
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="accuracy">
-100%
-</h2>
-
-<span>
-Accuracy
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="errors">
-0
-</h2>
-
-<span>
-Errors
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="keystrokes">
-0
-</h2>
-
-<span>
-Keystrokes
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="wordsTyped">
-0
-</h2>
-
-<span>
-Words
-</span>
-
-</div>
-
-
-
-<div class="stat">
-
-<h2 id="progress">
-0%
-</h2>
-
-<span>
-Completed
-</span>
-
-</div>
 
 
 </div>
@@ -786,16 +794,21 @@ Completed
 
 
 
-<div class="bottomBar">
+
+<div class="bottom-bar">
 
 
 <button id="resetBtn">
+
 Reset Test
+
 </button>
 
 
 <button id="submitBtn">
+
 Submit Test
+
 </button>
 
 
@@ -803,114 +816,122 @@ Submit Test
 <script>
 
 
-/* ==============================
-   LOAD SELECTED PASSAGE
-============================== */
+/* =================================
+   LOAD EXAM DATA
+================================= */
 
 
 const passageData =
+
 JSON.parse(
+
 localStorage.getItem("selectedPassage")
+
 );
 
 
+
 const examName =
+
 localStorage.getItem("selectedExam")
+
 ||
+
 "Typing Examination";
 
 
+
 const duration =
+
 parseInt(
+
 localStorage.getItem("selectedDuration")
+
 )
+
 ||
+
 10;
+
+
 
 
 
 if(!passageData){
 
+
 alert(
 "No passage selected."
 );
 
+
 location.href="index.html";
+
 
 }
 
 
 
-const originalText =
-passageData.text;
+
+
+const originalText = passageData.text;
 
 
 
 document.getElementById("examName").textContent =
+
 examName;
 
 
 
-document.getElementById("candidate").textContent =
-"Candidate";
-
-
 
 document.getElementById("originalText").textContent =
+
 originalText;
 
 
 
-document.getElementById("wordCountLabel").textContent =
-
-originalText
-.trim()
-.split(/\s+/)
-.length
-+
-" Words";
 
 
+/* =================================
+   VARIABLES
+================================= */
 
 
+const typingArea =
 
-/* ==============================
- VARIABLES
-============================== */
-
-
-const input =
 document.getElementById("typingArea");
 
 
+
 let totalSeconds =
+
 duration * 60;
 
 
-let timerInterval;
+
+let timerInterval = null;
 
 
-let started=false;
+
+let started = false;
 
 
-let keystrokes=0;
+
+let examFinished = false;
 
 
-let errors=0;
 
-
-let correctChars=0;
-
-
-let typedText="";
-
+let typedText = "";
 
 
 
 
-/* ==============================
- TIMER
-============================== */
+
+
+/* =================================
+   TIMER DISPLAY
+================================= */
 
 
 document.getElementById("timer").textContent =
@@ -922,11 +943,14 @@ String(duration).padStart(2,"0")
 
 
 
+
+
+
 function startTimer(){
 
 
-timerInterval =
-setInterval(()=>{
+timerInterval = setInterval(function(){
+
 
 
 if(totalSeconds<=0){
@@ -945,131 +969,40 @@ return;
 
 
 
+
 totalSeconds--;
 
 
 
-let min =
+
+let minutes =
+
 Math.floor(totalSeconds/60);
 
 
 
-let sec =
+let seconds =
+
 totalSeconds%60;
+
 
 
 
 document.getElementById("timer").textContent =
 
-String(min).padStart(2,"0")
+
+String(minutes).padStart(2,"0")
 +
 ":"
 +
-String(sec).padStart(2,"0");
+String(seconds).padStart(2,"0");
+
 
 
 
 },1000);
 
 
-}
-
-
-
-
-
-/* ==============================
- TYPING CHECK ENGINE
-============================== */
-
-
-function calculateTyping(){
-
-
-
-typedText =
-input.value;
-
-
-
-errors=0;
-
-
-correctChars=0;
-
-
-
-for(
-let i=0;
-i<typedText.length;
-i++
-){
-
-
-if(
-typedText[i]
-===
-originalText[i]
-){
-
-
-correctChars++;
-
-
-}
-else{
-
-
-errors++;
-
-
-}
-
-
-}
-
-
-
-
-
-updateStats();
-
-
-
-}
-
-
-
-
-
-/* ==============================
- AUTO PASSAGE SCROLL
-============================== */
-
-
-function scrollPassage(){
-
-
-let ratio =
-
-input.value.length
-/
-originalText.length;
-
-
-
-let passageBox =
-document.querySelector(".passageArea");
-
-
-
-passageBox.scrollTop =
-
-passageBox.scrollHeight
-*
-ratio;
-
-
 
 }
 
@@ -1079,14 +1012,18 @@ ratio;
 
 
 
-/* ==============================
- INPUT EVENT
-============================== */
 
 
-input.addEventListener(
+/* =================================
+   START TEST ON FIRST INPUT
+================================= */
+
+
+typingArea.addEventListener(
+
 "input",
-()=>{
+
+function(){
 
 
 
@@ -1103,10 +1040,7 @@ startTimer();
 
 
 
-calculateTyping();
-
-
-scrollPassage();
+typedText=this.value;
 
 
 
@@ -1120,190 +1054,35 @@ scrollPassage();
 
 
 
-/* ==============================
- STATISTICS
-============================== */
+/* =================================
+   KEEP ONLY TYPED TEXT
+================================= */
 
 
-function updateStats(){
+typingArea.addEventListener(
 
+"keydown",
 
-
-keystrokes =
-input.value.length;
-
-
-
-let elapsed =
-
-(duration*60-totalSeconds)/60;
+function(e){
 
 
 
-if(elapsed<=0){
-
-elapsed=1/60;
-
-}
+if(examFinished){
 
 
+e.preventDefault();
 
 
-
-let gross =
-
-(keystrokes/5)
-/elapsed;
-
-
-
-let net =
-
-(correctChars/5)
-/elapsed;
-
-
-
-if(net<0){
-
-net=0;
-
-}
-
-
-
-
-let accuracy=0;
-
-
-
-if(keystrokes>0){
-
-
-accuracy =
-
-(correctChars/keystrokes)
-*
-100;
+return;
 
 
 }
 
 
 
-
-
-let words =
-
-input.value.trim();
-
-
-
-if(words===""){
-
-words=0;
-
-}
-else{
-
-
-words =
-input.value
-.trim()
-.split(/\s+/)
-.length;
-
-
 }
 
-
-
-
-
-
-let progress =
-
-(input.value.length
-/
-originalText.length)
-*
-100;
-
-
-
-if(progress>100){
-
-progress=100;
-
-}
-
-
-
-
-
-
-document.getElementById("grossWPM").textContent =
-
-gross.toFixed(0);
-
-
-
-
-document.getElementById("netWPM").textContent =
-
-net.toFixed(0);
-
-
-
-
-document.getElementById("accuracy").textContent =
-
-accuracy.toFixed(1)
-+
-"%";
-
-
-
-
-document.getElementById("errors").textContent =
-
-errors;
-
-
-
-
-document.getElementById("keystrokes").textContent =
-
-keystrokes;
-
-
-
-
-document.getElementById("wordsTyped").textContent =
-
-words;
-
-
-
-
-document.getElementById("typedChars").textContent =
-
-keystrokes
-+
-" Characters";
-
-
-
-
-document.getElementById("progress").textContent =
-
-progress.toFixed(0)
-+
-"%";
-
-
-
-}
+);
 
 
 
@@ -1311,19 +1090,18 @@ progress.toFixed(0)
 
 
 
-/* ==============================
- INITIAL FOCUS
-============================== */
+/* =================================
+   RESTORE FOCUS
+================================= */
 
 
 window.onload=function(){
 
 
-input.focus();
+typingArea.focus();
 
 
 };
-
 
 
 
@@ -1331,7 +1109,7 @@ input.focus();
 window.onclick=function(){
 
 
-input.focus();
+typingArea.focus();
 
 
 };
@@ -1341,327 +1119,11 @@ input.focus();
 
 
 
-/* ==============================
-   SUBMIT TEST
-============================== */
 
 
-function submitTest(){
-
-
-clearInterval(timerInterval);
-
-
-
-let elapsed =
-
-(duration*60-totalSeconds)/60;
-
-
-
-if(elapsed<=0){
-
-elapsed=1/60;
-
-}
-
-
-
-let gross =
-
-(keystrokes/5)
-/elapsed;
-
-
-
-let net =
-
-(correctChars/5)
-/elapsed;
-
-
-
-if(net<0){
-
-net=0;
-
-}
-
-
-
-let accuracy=0;
-
-
-
-if(keystrokes>0){
-
-
-accuracy =
-
-(correctChars/keystrokes)
-*
-100;
-
-
-}
-
-
-
-
-
-const result={
-
-
-exam:examName,
-
-
-title:passageData.title,
-
-
-duration:duration,
-
-
-original:originalText,
-
-
-typed:typedText,
-
-
-grossWPM:gross.toFixed(2),
-
-
-netWPM:net.toFixed(2),
-
-
-accuracy:accuracy.toFixed(2),
-
-
-errors:errors,
-
-
-keystrokes:keystrokes,
-
-
-wordsTyped:
-input.value.trim()===""
-?
-0
-:
-input.value.trim().split(/\s+/).length,
-
-
-
-completed:
-
-new Date().toLocaleString()
-
-
-
-};
-
-
-
-
-
-localStorage.setItem(
-
-"typingResult",
-
-JSON.stringify(result)
-
-);
-
-
-
-
-alert(
-
-"Typing Test Completed\n\n"+
-"Gross WPM : "+gross.toFixed(0)+
-"\nNet WPM : "+net.toFixed(0)+
-"\nAccuracy : "+accuracy.toFixed(1)+"%"
-
-);
-
-
-
-
-location.href="results.html";
-
-
-
-}
-
-
-
-
-
-
-
-/* ==============================
- SUBMIT BUTTON
-============================== */
-
-
-document
-
-.getElementById("submitBtn")
-
-.addEventListener(
-
-"click",
-
-()=>{
-
-
-if(
-confirm(
-"Submit your typing test?"
-)
-
-){
-
-
-submitTest();
-
-
-}
-
-
-}
-
-);
-
-
-
-
-
-
-
-/* ==============================
- RESET BUTTON
-============================== */
-
-
-document
-
-.getElementById("resetBtn")
-
-.addEventListener(
-
-"click",
-
-()=>{
-
-
-if(
-confirm(
-"Reset current examination?"
-)
-
-){
-
-
-clearInterval(timerInterval);
-
-
-input.value="";
-
-
-totalSeconds=duration*60;
-
-
-started=false;
-
-
-keystrokes=0;
-
-
-errors=0;
-
-
-correctChars=0;
-
-
-typedText="";
-
-
-updateStats();
-
-
-
-document.getElementById("timer").textContent =
-
-String(duration).padStart(2,"0")
-+
-":00";
-
-
-
-}
-
-
-
-}
-
-);
-
-
-
-
-
-
-
-/* ==============================
- FULLSCREEN MODE
-============================== */
-
-
-async function enterFullscreen(){
-
-
-try{
-
-
-await document.documentElement.requestFullscreen();
-
-
-}
-
-catch(e){}
-
-
-
-}
-
-
-
-enterFullscreen();
-
-
-
-
-
-
-
-/* ==============================
- PREVENT COPYING
-============================== */
-
-
-document.addEventListener(
-
-"contextmenu",
-
-e=>{
-
-e.preventDefault();
-
-}
-
-);
-
-
+/* =================================
+   DISABLE COPY PASTE
+================================= */
 
 
 document.addEventListener(
@@ -1710,21 +1172,32 @@ e.preventDefault();
 
 
 
-/* ==============================
- KEYBOARD SECURITY
-============================== */
+/* =================================
+   KEYBOARD SECURITY
+================================= */
 
 
 document.addEventListener(
 
 "keydown",
 
-e=>{
+function(e){
 
 
-if(e.ctrlKey){
+
+if(
+
+e.ctrlKey ||
+
+e.altKey ||
+
+e.metaKey
+
+){
+
 
 e.preventDefault();
+
 
 }
 
@@ -1732,7 +1205,9 @@ e.preventDefault();
 
 if(e.key==="F12"){
 
+
 e.preventDefault();
+
 
 }
 
@@ -1740,63 +1215,12 @@ e.preventDefault();
 
 if(e.key==="Tab"){
 
-e.preventDefault();
-
-}
-
-
-
-if(
-e.altKey ||
-e.metaKey
-){
 
 e.preventDefault();
 
-}
-
-
 
 }
 
-);
-
-
-
-
-
-
-
-/* ==============================
- TAB SWITCH DETECTION
-============================== */
-
-
-let examActive=true;
-
-
-
-document.addEventListener(
-
-"visibilitychange",
-
-()=>{
-
-
-if(
-document.hidden &&
-examActive
-){
-
-
-alert(
-
-"Warning: Do not leave the examination window."
-
-);
-
-
-}
 
 
 }
@@ -1809,58 +1233,94 @@ alert(
 
 
 
-/* ==============================
- AUTO SAVE DRAFT
-============================== */
+
+/* =================================
+   FULLSCREEN
+================================= */
 
 
-setInterval(
+async function startFullscreen(){
 
-()=>{
+
+try{
+
+
+await document.documentElement.requestFullscreen();
+
+
+}
+
+catch(e){}
+
+
+
+}
+
+
+
+startFullscreen();
+
+
+
+
+
+
+
+/* =================================
+   AUTO SAVE TYPING
+================================= */
+
+
+setInterval(function(){
+
+
+
+if(started && !examFinished){
 
 
 localStorage.setItem(
 
 "typingDraft",
 
-input.value
+typingArea.value
 
 );
 
 
+}
 
-},
 
-1000
 
-);
-
+},2000);
 
 
 
 
 
 
-/* ==============================
- RESTORE DRAFT
-============================== */
+
+/* =================================
+   RESTORE UNSUBMITTED TEXT
+================================= */
 
 
-let savedDraft =
+const oldDraft =
 
 localStorage.getItem(
+
 "typingDraft"
+
 );
 
 
 
-if(savedDraft){
+if(oldDraft){
 
 
-input.value=savedDraft;
+typingArea.value = oldDraft;
 
 
-calculateTyping();
+typedText = oldDraft;
 
 
 }
@@ -1868,93 +1328,108 @@ calculateTyping();
 
 
 
+ 
+
+/* =================================
+   SUBMIT TEST
+================================= */
 
 
-
-/* ==============================
- TITLE PROGRESS
-============================== */
+function submitTest(){
 
 
-setInterval(
+if(examFinished){
 
-()=>{
-
-
-document.title =
-
-"Typing Test - "
-+
-document.getElementById("progress").textContent;
-
-
-
-},
-
-1000
-
-);
-
-
-
-
-
-
-
-/* ==============================
- KEEP FOCUS
-============================== */
-
-
-setInterval(
-
-()=>{
-
-
-if(started){
-
-input.focus();
-
-}
-
-
-},
-
-2000
-
-);
-
-
-
-
-/* ==============================
- FINAL PERFORMANCE CLEANUP
-============================== */
-
-
-// Remove old draft after successful submission
-
-function clearTypingDraft(){
-
-localStorage.removeItem(
-"typingDraft"
-);
+return;
 
 }
 
 
 
+examFinished=true;
 
 
-// Stop all exam activity
-
-function stopExam(){
-
-examActive=false;
 
 clearInterval(timerInterval);
 
-clearTypingDraft();
+
+
+
+
+const result = {
+
+
+exam:
+
+examName,
+
+
+
+title:
+
+passageData.title,
+
+
+
+duration:
+
+duration,
+
+
+
+originalText:
+
+originalText,
+
+
+
+typedText:
+
+typingArea.value,
+
+
+
+submittedAt:
+
+new Date().toLocaleString()
+
+
+
+};
+
+
+
+
+
+localStorage.setItem(
+
+"typingResult",
+
+JSON.stringify(result)
+
+);
+
+
+
+
+
+// remove temporary typing data
+
+localStorage.removeItem(
+
+"typingDraft"
+
+);
+
+
+
+
+
+location.href=
+
+"results.html";
+
+
 
 }
 
@@ -1963,21 +1438,157 @@ clearTypingDraft();
 
 
 
-/* ==============================
- UPDATE SUBMIT FUNCTION HOOK
-============================== */
 
 
-const oldSubmitTest = submitTest;
+
+/* =================================
+   SUBMIT BUTTON
+================================= */
 
 
-submitTest=function(){
+document
+
+.getElementById("submitBtn")
+
+.addEventListener(
+
+"click",
+
+function(){
 
 
-stopExam();
+
+let confirmSubmit =
+
+confirm(
+
+"Are you sure you want to submit the examination?"
+
+);
 
 
-oldSubmitTest();
+
+if(confirmSubmit){
+
+
+submitTest();
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/* =================================
+   RESET TEST
+================================= */
+
+
+document
+
+.getElementById("resetBtn")
+
+.addEventListener(
+
+"click",
+
+function(){
+
+
+
+let reset =
+
+confirm(
+
+"Reset current examination?"
+
+);
+
+
+
+if(reset){
+
+
+
+clearInterval(timerInterval);
+
+
+
+typingArea.value="";
+
+
+
+localStorage.removeItem(
+
+"typingDraft"
+
+);
+
+
+
+totalSeconds =
+
+duration*60;
+
+
+
+started=false;
+
+
+
+document.getElementById("timer").textContent =
+
+String(duration).padStart(2,"0")
++
+":00";
+
+
+
+typingArea.focus();
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/* =================================
+   PREVENT ACCIDENTAL EXIT
+================================= */
+
+
+window.onbeforeunload=function(e){
+
+
+if(!examFinished){
+
+
+return "Your examination is running.";
+
+}
 
 
 };
@@ -1988,53 +1599,139 @@ oldSubmitTest();
 
 
 
-/* ==============================
- CHARACTER REMAINING INDICATOR
-============================== */
 
 
-setInterval(()=>{
+/* =================================
+   TAB SWITCH WARNING
+================================= */
 
 
-let remaining =
+document.addEventListener(
 
-originalText.length -
-input.value.length;
+"visibilitychange",
+
+function(){
 
 
 
-if(remaining<0){
+if(
 
-remaining=0;
+document.hidden &&
+
+started &&
+
+!examFinished
+
+){
+
+
+
+alert(
+
+"Please do not leave the examination window."
+
+);
+
+
 
 }
 
 
 
-document.getElementById("typedChars").textContent =
+}
 
-input.value.length
+);
+
+
+
+
+
+
+
+
+
+/* =================================
+   STOP EXAM CLEANLY
+================================= */
+
+
+function endExam(){
+
+
+examFinished=true;
+
+
+clearInterval(timerInterval);
+
+
+typingArea.disabled=true;
+
+
+}
+
+ 
+
+/* =================================
+   FINAL CLEANUP
+================================= */
+
+
+
+// Remove focus issues after exam end
+
+function lockExam(){
+
+
+typingArea.blur();
+
+
+typingArea.disabled=true;
+
+
+}
+
+
+
+
+
+// Clear old data before new test
+
+function clearOldResult(){
+
+
+localStorage.removeItem(
+
+"typingResult"
+
+);
+
+
+}
+
+
+
+
+
+// Keep exam title updated
+
+setInterval(function(){
+
+
+if(!examFinished){
+
+
+document.title =
+
+"Typing Examination - "
 +
-" Characters";
+document.getElementById("timer").textContent;
+
+
+}
 
 
 
-},500);
-
-
-
-
-
-
-
-/* ==============================
- PREVENT TEXT SELECTION
-============================== */
-
-
-document
-.getElementById("originalText")
-.style.userSelect="none";
+},1000);
 
 
 
@@ -2042,28 +1739,28 @@ document
 
 
 
-/* ==============================
- INITIAL STAT LOAD
-============================== */
+/* =================================
+   INITIAL SETTINGS
+================================= */
 
 
-updateStats();
-
-
+typingArea.focus();
 
 
 
 
 
-/* ==============================
- END OF APPLICATION
-============================== */
+/* =================================
+   COMPLETE
+================================= */
 
 
 </script>
 
 
+
 </body>
 
 </html>
+
 
