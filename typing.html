@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Typing Examination</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+:root{
+
+--primary:#2563eb;
+--success:#16a34a;
+--danger:#dc2626;
+--warning:#f59e0b;
+
+--bg:#eef2f7;
+--card:#ffffff;
+--border:#d8e0eb;
+--text:#1f2937;
+--muted:#6b7280;
+
+}
+
+body{
+
+background:var(--bg);
+height:100vh;
+overflow:hidden;
+color:var(--text);
+
+}
+
+header{
+
+height:72px;
+
+background:#1e3a8a;
+
+color:#fff;
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:0 25px;
+
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+
+}
+
+.logo{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+}
+
+.logo h2{
+
+font-size:24px;
+
+font-weight:700;
+
+}
+
+.logo p{
+
+font-size:13px;
+opacity:.8;
+
+}
+
+.examInfo{
+
+display:flex;
+gap:35px;
+align-items:center;
+
+}
+
+.examCard{
+
+text-align:center;
+
+}
+
+.examCard h3{
+
+font-size:22px;
+
+font-weight:700;
+
+}
+
+.examCard span{
+
+font-size:12px;
+
+opacity:.8;
+
+}
+
+#timer{
+
+color:#ffeb3b;
+
+font-size:30px;
+
+font-weight:700;
+
+letter-spacing:2px;
+
+}
+
+.main{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+height:calc(100vh - 72px);
+
+gap:14px;
+
+padding:14px;
+
+}
+
+.panel{
+
+background:var(--card);
+
+border-radius:12px;
+
+border:1px solid var(--border);
+
+display:flex;
+
+flex-direction:column;
+
+overflow:hidden;
+
+}
+
+.panelHeader{
+
+height:55px;
+
+background:#f8fafc;
+
+border-bottom:1px solid var(--border);
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:0 20px;
+
+font-weight:600;
+
+}
+
+.panelBody{
+
+flex:1;
+
+overflow:auto;
+
+padding:25px;
+
+line-height:2.15;
+
+font-size:20px;
+
+}
+
+#originalText{
+
+white-space:pre-wrap;
+
+word-break:break-word;
+
+}
+
+.correct{
+
+background:#d1fae5;
+color:#166534;
+
+}
+
+.wrong{
+
+background:#fecaca;
+color:#991b1b;
+
+}
+
+.current{
+
+background:#bfdbfe;
+color:#1e3a8a;
+
+}
+
+textarea{
+
+width:100%;
+height:100%;
+border:none;
+outline:none;
+resize:none;
+
+font-size:20px;
+
+line-height:2.15;
+
+padding:25px;
+
+color:#111827;
+
+}
+
+.statsBar{
+
+height:72px;
+
+background:#fff;
+
+border-top:1px solid var(--border);
+
+display:grid;
+
+grid-template-columns:repeat(7,1fr);
+
+}
+
+.stat{
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+border-right:1px solid var(--border);
+
+}
+
+.stat:last-child{
+
+border:none;
+
+}
+
+.stat h2{
+
+font-size:24px;
+
+font-weight:700;
+
+}
+
+.stat span{
+
+font-size:12px;
+
+color:var(--muted);
+
+}
+
+.bottomBar{
+
+height:65px;
+
+background:#fff;
+
+display:flex;
+
+justify-content:flex-end;
+
+align-items:center;
+
+padding:0 20px;
+
+gap:15px;
+
+border-top:1px solid var(--border);
+
+}
+
+button{
+
+padding:12px 22px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:600;
+
+font-size:15px;
+
+}
+
+#submitBtn{
+
+background:#16a34a;
+
+color:white;
+
+}
+
+#resetBtn{
+
+background:#dc2626;
+
+color:white;
+
+}
+
+::-webkit-scrollbar{
+
+width:8px;
+
+height:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#cbd5e1;
+
+border-radius:20px;
+
+}
+
+#typingArea{
+
+caret-color:#2563eb;
+
+}
+
+#typingArea:focus{
+
+background:#fffefb;
+
+}
+
+.status{
+
+padding:4px 10px;
+
+border-radius:20px;
+
+background:#dbeafe;
+
+color:#2563eb;
+
+font-size:13px;
+
+}
+
+.overlay{
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.55);
+
+display:none;
+
+align-items:center;
+
+justify-content:center;
+
+z-index:100;
+
+}
+
+.dialog{
+
+width:480px;
+
+background:white;
+
+border-radius:14px;
+
+padding:30px;
+
+text-align:center;
+
+}
+
+.dialog h2{
+
+margin-bottom:20px;
+
+}
+
+.dialog p{
+
+line-height:1.8;
+
+color:#555;
+
+margin-bottom:25px;
+
+}
+
+.dialog button{
+
+margin:8px;
+
+}
+
+#resumeBtn{
+
+background:#2563eb;
+
+color:white;
+
+}
+
+#exitBtn{
+
+background:#dc2626;
+
+color:white;
+
+}
+
+@media(max-width:1000px){
+
+.main{
+
+grid-template-columns:1fr;
+
+}
+
+.statsBar{
+
+grid-template-columns:repeat(4,1fr);
+
+height:auto;
+
+}
+
+.stat{
+
+padding:15px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+
+<div style="font-size:42px">
+⌨️
+</div>
+
+<div>
+
+<h2>Typing Examination</h2>
+
+<p id="examName">Loading...</p>
+
+</div>
+
+</div>
+
+<div class="examInfo">
+
+<div class="examCard">
+
+<h3 id="timer">00:00</h3>
+
+<span>TIME REMAINING</span>
+
+</div>
+
+<div class="examCard">
+
+<h3 id="candidate">Candidate</h3>
+
+<span>CANDIDATE</span>
+
+</div>
+
+<div class="examCard">
+
+<div class="status">
+
+Typing Test Running
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<div class="main">
+
+<div class="panel">
+
+<div class="panelHeader">
+
+<span>Question Passage</span>
+
+<span id="wordCountLabel">
+
+0 Words
+
+</span>
+
+</div>
+
+<div
+class="panelBody"
+id="originalText">
+
+Loading passage...
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="panelHeader">
+
+<span>Your Typing</span>
+
+<span id="typedChars">
+
+0 Characters
+
+</span>
+
+</div>
+
+<textarea
+id="typingArea"
+spellcheck="false"
+autocomplete="off"
+autocorrect="off"
+autocapitalize="off">
+
+</textarea>
+
+</div>
+
+</div>
+
+<div class="statsBar">
+
+<div class="stat">
+
+<h2 id="grossWPM">
+
+0
+
+</h2>
+
+<span>Gross WPM</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="netWPM">
+
+0
+
+</h2>
+
+<span>Net WPM</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="accuracy">
+
+100%</h2>
+
+<span>Accuracy</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="errors">
+
+0</h2>
+
+<span>Errors</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="keystrokes">
+
+0</h2>
+
+<span>Keystrokes</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="wordsTyped">
+
+0</h2>
+
+<span>Words</span>
+
+</div>
+
+<div class="stat">
+
+<h2 id="progress">
+
+0%</h2>
+
+<span>Completed</span>
+
+</div>
+
+</div>
+
+<div class="bottomBar">
+
+<button id="resetBtn">
+
+Reset Test
+
+</button>
+
+<button id="submitBtn">
+
+Submit Test
+
+</button>
+
+</div>
+
+<div class="overlay" id="pauseOverlay">
+
+<div class="dialog">
+
+<h2>
+
+Leave Examination?
+
+</h2>
+
+<p>
+
+The typing examination is currently running.
+Leaving now may result in loss of your progress.
+
+</p>
+
+<button id="resumeBtn">
+
+Continue Test
+
+</button>
+
+<button id="exitBtn">
+
+Exit Anyway
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const passageData=JSON.parse(localStorage.getItem("selectedPassage"));
+
+const examName=localStorage.getItem("selectedExam")||"Typing Examination";
+
+const duration=parseInt(localStorage.getItem("selectedDuration"))||10;
+
+document.getElementById("examName").textContent=examName;
+
+document.getElementById("candidate").textContent="Candidate";
+
+if(!passageData){
+
+alert("No passage selected.");
+
+location.href="index.html";
+
+}
+
+const originalText=passageData.text;
+
+document.getElementById("originalText").textContent=originalText;
+
+document.getElementById("wordCountLabel").textContent=
+
+originalText.trim().split(/\s+/).length+" Words";
+
+let totalSeconds=duration*60;
+
+let timerInterval;
+
+let started=false;
+
+let errors=0;
+
+let keystrokes=0;
+
+let correctChars=0;
+
+let typedText="";
+
+const input=document.getElementById("typingArea");
+
+const passage=document.getElementById("originalText");
+function startTimer(){
+
+timerInterval=setInterval(function(){
+
+if(totalSeconds<=0){
+
+clearInterval(timerInterval);
+
+submitTest();
+
+return;
+
+}
+
+totalSeconds--;
+
+let min=Math.floor(totalSeconds/60);
+
+let sec=totalSeconds%60;
+
+document.getElementById("timer").textContent=
+
+String(min).padStart(2,"0")+":"+
+
+String(sec).padStart(2,"0");
+
+},1000);
+
+}
+
+document.getElementById("timer").textContent=
+
+String(duration).padStart(2,"0")+":00";
+
+function escapeHTML(str){
+
+return str
+
+.replace(/&/g,"&amp;")
+
+.replace(/</g,"&lt;")
+
+.replace(/>/g,"&gt;");
+
+}
+
+function highlight(){
+
+typedText=input.value;
+
+let html="";
+
+errors=0;
+
+correctChars=0;
+
+for(let i=0;i<originalText.length;i++){
+
+let expected=originalText[i];
+
+let typed=typedText[i];
+
+if(typed==null){
+
+html+="<span>"+escapeHTML(expected)+"</span>";
+
+continue;
+
+}
+
+if(typed===expected){
+
+correctChars++;
+
+html+="<span class='correct'>"+escapeHTML(expected)+"</span>";
+
+}
+
+else{
+
+errors++;
+
+html+="<span class='wrong'>"+escapeHTML(expected)+"</span>";
+
+}
+
+}
+
+passage.innerHTML=html;
+
+let current=passage.querySelectorAll("span")[typedText.length];
+
+if(current){
+
+current.classList.add("current");
+
+current.scrollIntoView({
+
+behavior:"smooth",
+
+block:"center"
+
+});
+
+}
+
+updateStats();
+
+}
+
+function updateStats(){
+
+keystrokes=input.value.length;
+
+let elapsed=(duration*60-totalSeconds)/60;
+
+if(elapsed<=0) elapsed=1/60;
+
+let gross=(keystrokes/5)/elapsed;
+
+let net=((correctChars/5)/elapsed);
+
+if(net<0) net=0;
+
+let accuracy=0;
+
+if(keystrokes>0){
+
+accuracy=(correctChars/keystrokes)*100;
+
+}
+
+let words=input.value.trim().split(/\s+/);
+
+if(input.value.trim()=="") words=[];
+
+let progress=(keystrokes/originalText.length)*100;
+
+if(progress>100) progress=100;
+
+document.getElementById("grossWPM").textContent=
+
+gross.toFixed(0);
+
+document.getElementById("netWPM").textContent=
+
+net.toFixed(0);
+
+document.getElementById("accuracy").textContent=
+
+accuracy.toFixed(1)+"%";
+
+document.getElementById("errors").textContent=
+
+errors;
+
+document.getElementById("keystrokes").textContent=
+
+keystrokes;
+
+document.getElementById("wordsTyped").textContent=
+
+words.length;
+
+document.getElementById("typedChars").textContent=
+
+keystrokes+" Characters";
+
+document.getElementById("progress").textContent=
+
+progress.toFixed(0)+"%";
+
+}
+
+input.addEventListener("input",function(){
+
+if(!started){
+
+started=true;
+
+startTimer();
+
+}
+
+highlight();
+
+});
+
+input.focus();
+
+window.onload=function(){
+
+input.focus();
+
+};
+
+window.onclick=function(){
+
+input.focus();
+
+};
+
+document.addEventListener("contextmenu",e=>{
+
+e.preventDefault();
+
+});
+
+document.addEventListener("copy",e=>{
+
+e.preventDefault();
+
+});
+
+document.addEventListener("cut",e=>{
+
+e.preventDefault();
+
+});
+
+document.addEventListener("paste",e=>{
+
+e.preventDefault();
+
+});
+
+document.addEventListener("keydown",function(e){
+
+if(e.ctrlKey){
+
+e.preventDefault();
+
+}
+
+if(e.key==="F12"){
+
+e.preventDefault();
+
+}
+
+if(e.key==="Tab"){
+
+e.preventDefault();
+
+}
+
+});
+
+function submitTest(){
+
+clearInterval(timerInterval);
+
+let elapsed=(duration*60-totalSeconds)/60;
+
+if(elapsed<=0) elapsed=1/60;
+
+let gross=(keystrokes/5)/elapsed;
+
+let net=(correctChars/5)/elapsed;
+
+if(net<0) net=0;
+
+let accuracy=0;
+
+if(keystrokes>0){
+
+accuracy=(correctChars/keystrokes)*100;
+
+}
+
+const result={
+
+exam:examName,
+
+title:passageData.title,
+
+duration:duration,
+
+typed:typedText,
+
+original:originalText,
+
+grossWPM:gross.toFixed(2),
+
+netWPM:net.toFixed(2),
+
+accuracy:accuracy.toFixed(2),
+
+errors:errors,
+
+keystrokes:keystrokes,
+
+completed:new Date().toLocaleString()
+
+};
+
+localStorage.setItem(
+
+"typingResult",
+
+JSON.stringify(result)
+
+);
+
+alert(
+
+"Test Completed.\n\nGross WPM : "+gross.toFixed(0)+
+
+"\nNet WPM : "+net.toFixed(0)+
+
+"\nAccuracy : "+accuracy.toFixed(1)+"%"
+
+);
+
+location.href="result.html";
+
+}
+
+document.getElementById("submitBtn")
+
+.addEventListener("click",function(){
+
+if(confirm("Submit your typing test?")){
+
+submitTest();
+
+}
+
+});
+
+document.getElementById("resetBtn")
+
+.addEventListener("click",function(){
+
+if(confirm("Reset the current test?")){
+
+location.reload();
+
+}
+
+});
+
+/* -------- Fullscreen -------- */
+
+async function fullscreen(){
+
+try{
+
+await document.documentElement.requestFullscreen();
+
+}catch(e){}
+
+}
+
+fullscreen();
+
+/* -------- Prevent accidental close -------- */
+
+window.onbeforeunload=function(){
+
+return "Typing test is running.";
+
+};
+
+/* -------- Blur Detection -------- */
+
+let overlay=document.getElementById("pauseOverlay");
+
+window.addEventListener("blur",function(){
+
+overlay.style.display="flex";
+
+});
+
+document.getElementById("resumeBtn")
+
+.onclick=function(){
+
+overlay.style.display="none";
+
+input.focus();
+
+};
+
+document.getElementById("exitBtn")
+
+.onclick=function(){
+
+window.onbeforeunload=null;
+
+history.back();
+
+};
+
+/* -------- Auto Save every second -------- */
+
+setInterval(function(){
+
+localStorage.setItem(
+
+"typingDraft",
+
+input.value
+
+);
+
+},1000);
+
+/* -------- Restore Draft -------- */
+
+const draft=localStorage.getItem("typingDraft");
+
+if(draft){
+
+input.value=draft;
+
+highlight();
+
+}
+
+/* -------- Disable Drag -------- */
+
+document.addEventListener("dragstart",e=>{
+
+e.preventDefault();
+
+});
+
+/* -------- Character Counter Color -------- */
+
+setInterval(function(){
+
+let remain=originalText.length-input.value.length;
+
+if(remain<50){
+
+document.getElementById("typedChars").style.color="#dc2626";
+
+}else{
+
+document.getElementById("typedChars").style.color="#111827";
+
+}
+
+},500);
+
+/* -------- Progress Title -------- */
+
+setInterval(function(){
+
+document.title=
+
+"("+document.getElementById("progress").textContent+") Typing Examination";
+
+},1000);
+
+/* -------- Keep Focus -------- */
+
+setInterval(function(){
+
+input.focus();
+
+},1500);
+
+/* -------- Shortcuts -------- */
+
+document.addEventListener("keydown",function(e){
+
+if(e.altKey||e.metaKey){
+
+e.preventDefault();
+
+}
+
+});
+
+/* -------- End -------- */
+
+</script>
+
+</body>
+</html>
