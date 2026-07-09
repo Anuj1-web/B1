@@ -1215,19 +1215,9 @@ reader.readAsText(file);
 }
 
 
-else if(
-file.name.endsWith(".pdf")
-){
+else if(file.name.endsWith(".pdf")){
 
-
-alert(
-"PDF support loaded. Text extraction will process the file."
-);
-
-
-readPDF(file);
-
-
+extractPDF(file);
 
 }
 
@@ -1249,41 +1239,65 @@ alert(
 
 
 
-function readPDF(file){
+async function extractPDF(file){
+
+try{
+
+let arrayBuffer = await file.arrayBuffer();
+
+let pdf = await pdfjsLib.getDocument({
+    data: arrayBuffer
+}).promise;
 
 
-
-/*
-PDF text extraction placeholder.
-Browser compatible PDF processing
-can be added using pdf.js library.
-*/
+let text = "";
 
 
-let reader=
-new FileReader();
+for(let pageNumber=1; pageNumber<=pdf.numPages; pageNumber++){
+
+let page = await pdf.getPage(pageNumber);
+
+let content = await page.getTextContent();
 
 
+content.items.forEach(item=>{
 
-reader.onload=function(){
+text += item.str + " ";
 
+});
 
-
-document.getElementById("text")
-.value=
-
-"PDF DOCUMENT IMPORTED\n\n"+
-"Please verify extracted content before saving.";
+}
 
 
+if(text.trim()===""){
 
-};
+alert(
+"Unable to extract text. This PDF may be scanned image based."
+);
+
+return;
+
+}
 
 
+document.getElementById("text").value=text.trim();
 
-reader.readAsArrayBuffer(file);
+
+alert(
+"PDF text extracted successfully. Review and save."
+);
 
 
+}
+catch(error){
+
+console.error(error);
+
+alert(
+"PDF extraction failed."
+);
+
+}
 
 }
 
@@ -2561,17 +2575,7 @@ document.body.classList.toggle(
 </script>
 
 
-<!--
-OPTIONAL PDF.JS SUPPORT
-
-Add before closing body
-when hosting online:
-
-<script src=
-"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
-</script>
-
--->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 </body>
 
