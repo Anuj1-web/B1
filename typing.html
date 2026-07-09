@@ -34,7 +34,8 @@ font-family:'Poppins',sans-serif;
 
 :root{
 
---primary:#1d4ed8;
+
+--primary:#2563eb;
 
 --dark:#0f172a;
 
@@ -52,37 +53,53 @@ font-family:'Poppins',sans-serif;
 
 --danger:#dc2626;
 
+
 }
+
+
 
 
 
 body{
 
+
 height:100vh;
+
 
 overflow:hidden;
 
+
 background:var(--bg);
+
 
 color:var(--text);
 
+
 }
+
+
+
 
 
 
 /* ================= HEADER ================= */
 
 
+
 header{
 
 
-height:72px;
+height:70px;
 
 
 background:linear-gradient(
+
 135deg,
+
 #2563eb,
+
 #0f172a
+
 );
 
 
@@ -98,14 +115,16 @@ align-items:center;
 justify-content:space-between;
 
 
-padding:0 25px;
+padding:0 22px;
 
 
 box-shadow:
-0 5px 18px rgba(0,0,0,.2);
+
+0 5px 20px rgba(0,0,0,.25);
 
 
 }
+
 
 
 
@@ -115,36 +134,51 @@ box-shadow:
 
 display:flex;
 
+
 align-items:center;
 
-gap:15px;
+
+gap:14px;
 
 
 }
+
+
 
 
 
 .logo-icon{
 
-font-size:40px;
+
+font-size:38px;
+
 
 }
+
+
 
 
 
 .logo h2{
 
-font-size:23px;
+
+font-size:22px;
+
 
 }
+
+
 
 
 
 .logo p{
 
+
 font-size:12px;
 
+
 opacity:.8;
+
 
 }
 
@@ -152,51 +186,73 @@ opacity:.8;
 
 
 
-.exam-info{
+
+.header-right{
 
 
 display:flex;
 
+
 align-items:center;
 
-gap:40px;
+
+gap:25px;
 
 
 }
 
 
 
-.info-box{
+
+
+.info{
+
 
 text-align:center;
 
-}
-
-
-
-.info-box h3{
-
-font-size:26px;
 
 }
 
 
 
-.info-box span{
+
+
+.info h3{
+
+
+font-size:24px;
+
+
+}
+
+
+
+
+
+.info span{
+
 
 font-size:11px;
 
+
 opacity:.8;
 
+
 }
+
+
+
 
 
 
 #timer{
 
+
 color:#fde047;
 
+
 letter-spacing:2px;
+
 
 }
 
@@ -204,36 +260,66 @@ letter-spacing:2px;
 
 
 
-/* ================= MAIN EXAM AREA ================= */
+#fullscreenBtn{
 
 
-.exam-container{
+background:#ffffff;
 
 
-height:
-
-calc(100vh - 72px - 70px);
+color:#1e3a8a;
 
 
-display:grid;
+padding:10px 18px;
 
 
-grid-template-rows:1fr 1fr;
+border-radius:8px;
 
 
-gap:12px;
+font-weight:600;
+
+
+border:none;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+
+/* ================= MAIN ================= */
+
+
+
+.exam-area{
+
+
+height:calc(100vh - 140px);
 
 
 padding:12px;
 
 
+display:grid;
+
+
+grid-template-rows:45% 55%;
+
+
+gap:12px;
+
+
 }
 
 
 
 
 
-.box{
+
+
+.panel{
 
 
 background:white;
@@ -245,18 +331,18 @@ border-radius:14px;
 border:1px solid var(--border);
 
 
+overflow:hidden;
+
+
 display:flex;
 
 
 flex-direction:column;
 
 
-overflow:hidden;
-
-
 box-shadow:
 
-0 5px 15px rgba(0,0,0,.06);
+0 5px 18px rgba(0,0,0,.06);
 
 
 }
@@ -265,10 +351,10 @@ box-shadow:
 
 
 
-.box-header{
+.panel-title{
 
 
-height:50px;
+height:48px;
 
 
 background:#f8fafc;
@@ -298,12 +384,14 @@ font-weight:600;
 
 
 
-.box-header small{
+.panel-title span:last-child{
+
+
+font-size:12px;
 
 
 color:var(--muted);
 
-font-size:12px;
 
 }
 
@@ -314,29 +402,32 @@ font-size:12px;
 /* ================= PASSAGE ================= */
 
 
-.passage-wrapper{
+
+.passage-container{
 
 
 flex:1;
 
 
-overflow:auto;
+overflow-y:auto;
 
 
-padding:25px;
+padding:22px;
 
 
 }
 
 
 
+
+
 #originalText{
 
 
-font-size:19px;
+font-size:18px;
 
 
-line-height:2;
+line-height:2.1;
 
 
 white-space:pre-wrap;
@@ -354,16 +445,20 @@ color:#334155;
 
 
 
+
 /* ================= TYPING ================= */
 
 
-.typing-wrapper{
+
+.typing-container{
 
 
 flex:1;
 
 
 }
+
+
 
 
 
@@ -376,31 +471,30 @@ width:100%;
 height:100%;
 
 
+resize:none;
+
+
 border:none;
 
 
 outline:none;
 
 
-resize:none;
+padding:22px;
 
 
-padding:25px;
+font-size:18px;
 
 
-font-size:19px;
-
-
-line-height:2;
+line-height:2.1;
 
 
 color:#111827;
 
 
-background:#fff;
-
-
 }
+
+
 
 
 
@@ -421,7 +515,7 @@ background:#fffdf5;
 
 
 
-.bottom-bar{
+.footer{
 
 
 height:70px;
@@ -436,10 +530,10 @@ border-top:1px solid var(--border);
 display:flex;
 
 
-align-items:center;
-
-
 justify-content:flex-end;
+
+
+align-items:center;
 
 
 gap:15px;
@@ -453,32 +547,32 @@ padding:0 25px;
 
 
 
-
 button{
-
-
-padding:13px 28px;
 
 
 border:none;
 
 
-border-radius:9px;
-
-
-font-size:15px;
+cursor:pointer;
 
 
 font-weight:600;
 
 
-cursor:pointer;
+font-size:15px;
+
+
+padding:12px 26px;
+
+
+border-radius:8px;
 
 
 transition:.3s;
 
 
 }
+
 
 
 
@@ -489,6 +583,7 @@ transform:translateY(-2px);
 
 
 }
+
 
 
 
@@ -505,6 +600,7 @@ color:white;
 
 
 
+
 #submitBtn{
 
 
@@ -515,6 +611,7 @@ color:white;
 
 
 }
+
 
 
 
@@ -548,41 +645,44 @@ border-radius:20px;
 
 
 
-/* ================= RESPONSIVE ================= */
+
+
+/* ================= MOBILE ================= */
 
 
 
 @media(max-width:900px){
 
 
-.exam-info{
+
+.header-right{
 
 
-gap:15px;
-
-
-}
-
-
-
-.exam-container{
-
-
-overflow:auto;
-
-
-height:auto;
+gap:10px;
 
 
 }
 
 
 
+.exam-area{
+
+
+grid-template-rows:40% 60%;
+
+
 }
+
+
+}
+
+
+
 
 
 
 </style>
+
 
 </head>
 
@@ -591,22 +691,22 @@ height:auto;
 
 
 
-<header>
 
+
+
+<header>
 
 
 <div class="logo">
 
 
 <div class="logo-icon">
-
 ⌨️
-
 </div>
 
 
-
 <div>
+
 
 <h2>
 Typing Examination
@@ -614,9 +714,7 @@ Typing Examination
 
 
 <p id="examName">
-
 Loading Examination...
-
 </p>
 
 
@@ -629,23 +727,21 @@ Loading Examination...
 
 
 
-<div class="exam-info">
 
 
-<div class="info-box">
+<div class="header-right">
+
+
+<div class="info">
 
 
 <h3 id="timer">
-
 00:00
-
 </h3>
 
 
 <span>
-
 TIME REMAINING
-
 </span>
 
 
@@ -653,24 +749,36 @@ TIME REMAINING
 
 
 
-<div class="info-box">
+
+
+<div class="info">
 
 
 <h3 id="candidate">
-
 Candidate
-
 </h3>
 
 
 <span>
-
 USER
-
 </span>
 
 
 </div>
+
+
+
+
+
+<button id="fullscreenBtn">
+
+
+⛶ Full Screen
+
+
+</button>
+
+
 
 
 
@@ -684,17 +792,20 @@ USER
 
 
 
-<div class="exam-container">
+
+
+<div class="exam-area">
 
 
 
-<!-- PASSAGE SECTION -->
 
 
-<div class="box">
+<!-- PASSAGE -->
+
+<div class="panel">
 
 
-<div class="box-header">
+<div class="panel-title">
 
 
 <span>
@@ -702,16 +813,16 @@ Question Passage
 </span>
 
 
-<small>
-Scroll manually
-</small>
+<span>
+Manual Scroll
+</span>
 
 
 </div>
 
 
 
-<div class="passage-wrapper">
+<div class="passage-container">
 
 
 <div id="originalText">
@@ -732,35 +843,30 @@ Loading Passage...
 
 
 
-<!-- TYPING SECTION -->
+
+<!-- TYPING -->
+
+<div class="panel">
 
 
-<div class="box">
-
-
-<div class="box-header">
+<div class="panel-title">
 
 
 <span>
-
 Typing Area
-
 </span>
 
 
-<small>
-
-Enter text exactly
-
-</small>
+<span>
+Start From Beginning
+</span>
 
 
 </div>
 
 
 
-
-<div class="typing-wrapper">
+<div class="typing-container">
 
 
 <textarea
@@ -775,7 +881,7 @@ autocorrect="off"
 
 autocapitalize="off"
 
-placeholder="Start typing here..."
+placeholder="Type the passage here..."
 
 ></textarea>
 
@@ -788,6 +894,7 @@ placeholder="Start typing here..."
 
 
 
+
 </div>
 
 
@@ -795,7 +902,8 @@ placeholder="Start typing here..."
 
 
 
-<div class="bottom-bar">
+
+<div class="footer">
 
 
 <button id="resetBtn">
@@ -805,6 +913,7 @@ Reset Test
 </button>
 
 
+
 <button id="submitBtn">
 
 Submit Test
@@ -812,13 +921,14 @@ Submit Test
 </button>
 
 
+
 </div>
 <script>
 
 
-/* =================================
-   LOAD EXAM DATA
-================================= */
+/* ======================================
+   LOAD SELECTED EXAM DATA
+====================================== */
 
 
 const passageData =
@@ -861,7 +971,9 @@ if(!passageData){
 
 
 alert(
+
 "No passage selected."
+
 );
 
 
@@ -874,13 +986,19 @@ location.href="index.html";
 
 
 
-const originalText = passageData.text;
+const originalText =
+
+passageData.text;
+
+
+
 
 
 
 document.getElementById("examName").textContent =
 
 examName;
+
 
 
 
@@ -893,15 +1011,41 @@ originalText;
 
 
 
-/* =================================
-   VARIABLES
-================================= */
+
+/* ======================================
+   CLEAN START EVERY TIME
+====================================== */
 
 
 const typingArea =
 
 document.getElementById("typingArea");
 
+
+
+// Always empty when new exam starts
+
+typingArea.value="";
+
+
+
+// Remove any previous temporary text
+
+localStorage.removeItem(
+
+"typingDraft"
+
+);
+
+
+
+
+
+
+
+/* ======================================
+   TIMER VARIABLES
+====================================== */
 
 
 let totalSeconds =
@@ -914,30 +1058,27 @@ let timerInterval = null;
 
 
 
-let started = false;
+let started=false;
 
 
 
-let examFinished = false;
+let examFinished=false;
 
 
 
-let typedText = "";
-
-
+let typedText="";
 
 
 
 
-/* =================================
-   TIMER DISPLAY
-================================= */
 
 
 document.getElementById("timer").textContent =
 
 String(duration).padStart(2,"0")
+
 +
+
 ":00";
 
 
@@ -946,11 +1087,16 @@ String(duration).padStart(2,"0")
 
 
 
+
+/* ======================================
+   START TIMER
+====================================== */
+
+
 function startTimer(){
 
 
-timerInterval = setInterval(function(){
-
+timerInterval = setInterval(()=>{
 
 
 if(totalSeconds<=0){
@@ -969,19 +1115,17 @@ return;
 
 
 
-
 totalSeconds--;
 
 
 
-
-let minutes =
+let min =
 
 Math.floor(totalSeconds/60);
 
 
 
-let seconds =
+let sec =
 
 totalSeconds%60;
 
@@ -990,12 +1134,15 @@ totalSeconds%60;
 
 document.getElementById("timer").textContent =
 
+String(min).padStart(2,"0")
 
-String(minutes).padStart(2,"0")
 +
+
 ":"
+
 +
-String(seconds).padStart(2,"0");
+
+String(sec).padStart(2,"0");
 
 
 
@@ -1014,9 +1161,9 @@ String(seconds).padStart(2,"0");
 
 
 
-/* =================================
-   START TEST ON FIRST INPUT
-================================= */
+/* ======================================
+   TYPING START
+====================================== */
 
 
 typingArea.addEventListener(
@@ -1054,26 +1201,77 @@ typedText=this.value;
 
 
 
-/* =================================
-   KEEP ONLY TYPED TEXT
-================================= */
 
 
-typingArea.addEventListener(
-
-"keydown",
-
-function(e){
+/* ======================================
+   FULLSCREEN BUTTON
+====================================== */
 
 
+const fullscreenBtn =
 
-if(examFinished){
-
-
-e.preventDefault();
+document.getElementById("fullscreenBtn");
 
 
-return;
+
+
+
+fullscreenBtn.addEventListener(
+
+"click",
+
+async function(){
+
+
+
+try{
+
+
+
+if(!document.fullscreenElement){
+
+
+
+await document.documentElement.requestFullscreen();
+
+
+
+fullscreenBtn.textContent=
+
+"⛶ Exit Full Screen";
+
+
+
+}
+
+else{
+
+
+
+await document.exitFullscreen();
+
+
+
+fullscreenBtn.textContent=
+
+"⛶ Full Screen";
+
+
+}
+
+
+
+}
+
+catch(e){
+
+
+
+alert(
+
+"Fullscreen mode not supported."
+
+);
 
 
 }
@@ -1090,9 +1288,49 @@ return;
 
 
 
-/* =================================
-   RESTORE FOCUS
-================================= */
+
+
+/* ======================================
+   AUTO UPDATE BUTTON TEXT
+====================================== */
+
+
+document.addEventListener(
+
+"fullscreenchange",
+
+function(){
+
+
+
+if(!document.fullscreenElement){
+
+
+
+fullscreenBtn.textContent=
+
+"⛶ Full Screen";
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/* ======================================
+   FOCUS CONTROL
+====================================== */
 
 
 window.onload=function(){
@@ -1102,6 +1340,7 @@ typingArea.focus();
 
 
 };
+
 
 
 
@@ -1121,9 +1360,27 @@ typingArea.focus();
 
 
 
-/* =================================
-   DISABLE COPY PASTE
-================================= */
+
+/* ======================================
+   SECURITY
+====================================== */
+
+
+
+document.addEventListener(
+
+"contextmenu",
+
+e=>{
+
+e.preventDefault();
+
+}
+
+);
+
+
+
 
 
 document.addEventListener(
@@ -1140,6 +1397,8 @@ e.preventDefault();
 
 
 
+
+
 document.addEventListener(
 
 "cut",
@@ -1151,6 +1410,8 @@ e.preventDefault();
 }
 
 );
+
+
 
 
 
@@ -1169,12 +1430,6 @@ e.preventDefault();
 
 
 
-
-
-
-/* =================================
-   KEYBOARD SECURITY
-================================= */
 
 
 document.addEventListener(
@@ -1203,7 +1458,11 @@ e.preventDefault();
 
 
 
-if(e.key==="F12"){
+if(
+
+e.key==="F12"
+
+){
 
 
 e.preventDefault();
@@ -1213,7 +1472,11 @@ e.preventDefault();
 
 
 
-if(e.key==="Tab"){
+if(
+
+e.key==="Tab"
+
+){
 
 
 e.preventDefault();
@@ -1227,112 +1490,15 @@ e.preventDefault();
 
 );
 
-
-
-
-
-
-
-
-/* =================================
-   FULLSCREEN
-================================= */
-
-
-async function startFullscreen(){
-
-
-try{
-
-
-await document.documentElement.requestFullscreen();
-
-
-}
-
-catch(e){}
-
-
-
-}
-
-
-
-startFullscreen();
-
-
-
-
-
-
-
-/* =================================
-   AUTO SAVE TYPING
-================================= */
-
-
-setInterval(function(){
-
-
-
-if(started && !examFinished){
-
-
-localStorage.setItem(
-
-"typingDraft",
-
-typingArea.value
-
-);
-
-
-}
-
-
-
-},2000);
-
-
-
-
-
-
-
-/* =================================
-   RESTORE UNSUBMITTED TEXT
-================================= */
-
-
-const oldDraft =
-
-localStorage.getItem(
-
-"typingDraft"
-
-);
-
-
-
-if(oldDraft){
-
-
-typingArea.value = oldDraft;
-
-
-typedText = oldDraft;
-
-
-}
 
 
 
 
  
 
-/* =================================
-   SUBMIT TEST
-================================= */
+/* ======================================
+   SUBMIT EXAM
+====================================== */
 
 
 function submitTest(){
@@ -1377,19 +1543,19 @@ duration,
 
 
 
-originalText:
+passage:
 
 originalText,
 
 
 
-typedText:
+typed:
 
 typingArea.value,
 
 
 
-submittedAt:
+submittedTime:
 
 new Date().toLocaleString()
 
@@ -1400,6 +1566,8 @@ new Date().toLocaleString()
 
 
 
+
+// Store final answer
 
 localStorage.setItem(
 
@@ -1413,13 +1581,14 @@ JSON.stringify(result)
 
 
 
-// remove temporary typing data
+// Remove temporary data
 
 localStorage.removeItem(
 
 "typingDraft"
 
 );
+
 
 
 
@@ -1441,9 +1610,9 @@ location.href=
 
 
 
-/* =================================
+/* ======================================
    SUBMIT BUTTON
-================================= */
+====================================== */
 
 
 document
@@ -1458,22 +1627,22 @@ function(){
 
 
 
-let confirmSubmit =
+if(
 
 confirm(
 
-"Are you sure you want to submit the examination?"
+"Submit your typing examination?"
 
-);
+)
 
+){
 
-
-if(confirmSubmit){
 
 
 submitTest();
 
 
+
 }
 
 
@@ -1490,9 +1659,11 @@ submitTest();
 
 
 
-/* =================================
+
+
+/* ======================================
    RESET TEST
-================================= */
+====================================== */
 
 
 document
@@ -1507,17 +1678,19 @@ function(){
 
 
 
-let reset =
+let choice =
 
 confirm(
 
-"Reset current examination?"
+"Reset this examination and start again?"
 
 );
 
 
 
-if(reset){
+
+
+if(choice){
 
 
 
@@ -1529,17 +1702,7 @@ typingArea.value="";
 
 
 
-localStorage.removeItem(
-
-"typingDraft"
-
-);
-
-
-
-totalSeconds =
-
-duration*60;
+typedText="";
 
 
 
@@ -1547,11 +1710,31 @@ started=false;
 
 
 
-document.getElementById("timer").textContent =
+totalSeconds=
+
+duration*60;
+
+
+
+document.getElementById("timer").textContent=
 
 String(duration).padStart(2,"0")
+
 +
+
 ":00";
+
+
+
+
+
+localStorage.removeItem(
+
+"typingDraft"
+
+);
+
+
 
 
 
@@ -1575,20 +1758,29 @@ typingArea.focus();
 
 
 
-/* =================================
-   PREVENT ACCIDENTAL EXIT
-================================= */
+/* ======================================
+   PREVENT ACCIDENTAL CLOSE
+====================================== */
 
 
-window.onbeforeunload=function(e){
+window.onbeforeunload=function(){
 
 
-if(!examFinished){
+
+if(
+
+started &&
+
+!examFinished
+
+){
 
 
-return "Your examination is running.";
+return "Examination is running.";
+
 
 }
+
 
 
 };
@@ -1601,9 +1793,11 @@ return "Your examination is running.";
 
 
 
-/* =================================
-   TAB SWITCH WARNING
-================================= */
+
+
+/* ======================================
+   TAB CHANGE WARNING
+====================================== */
 
 
 document.addEventListener(
@@ -1628,7 +1822,7 @@ started &&
 
 alert(
 
-"Please do not leave the examination window."
+"Please stay on the examination screen."
 
 );
 
@@ -1650,58 +1844,46 @@ alert(
 
 
 
-/* =================================
-   STOP EXAM CLEANLY
-================================= */
 
 
-function endExam(){
+/* ======================================
+   LOCK AFTER SUBMISSION
+====================================== */
+
+
+function finishExam(){
 
 
 examFinished=true;
 
 
-clearInterval(timerInterval);
-
 
 typingArea.disabled=true;
+
+
+
+clearInterval(timerInterval);
+
 
 
 }
 
  
 
-/* =================================
+/* ======================================
    FINAL CLEANUP
-================================= */
+====================================== */
 
 
 
-// Remove focus issues after exam end
+// Remove any leftover temporary typing data
 
-function lockExam(){
-
-
-typingArea.blur();
-
-
-typingArea.disabled=true;
-
-
-}
-
-
-
-
-
-// Clear old data before new test
-
-function clearOldResult(){
+function clearTemporaryData(){
 
 
 localStorage.removeItem(
 
-"typingResult"
+"typingDraft"
 
 );
 
@@ -1712,19 +1894,24 @@ localStorage.removeItem(
 
 
 
-// Keep exam title updated
 
-setInterval(function(){
+// Keep browser title professional
+
+setInterval(()=>{
 
 
 if(!examFinished){
 
 
+
 document.title =
 
-"Typing Examination - "
+"Typing Examination | "
+
 +
+
 document.getElementById("timer").textContent;
+
 
 
 }
@@ -1739,20 +1926,45 @@ document.getElementById("timer").textContent;
 
 
 
-/* =================================
+
+/* ======================================
    INITIAL SETTINGS
-================================= */
+====================================== */
+
 
 
 typingArea.focus();
 
 
 
+// Ensure no old answer remains
+
+typingArea.value="";
 
 
-/* =================================
-   COMPLETE
-================================= */
+
+
+// Remove previous unfinished attempt
+
+clearTemporaryData();
+
+
+
+
+
+
+
+/* ======================================
+   FINAL READY STATE
+====================================== */
+
+
+console.log(
+
+"Typing Examination Loaded Successfully"
+
+);
+
 
 
 </script>
@@ -1760,6 +1972,7 @@ typingArea.focus();
 
 
 </body>
+
 
 </html>
 
