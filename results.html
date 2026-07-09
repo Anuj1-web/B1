@@ -1130,12 +1130,10 @@ function normalizeToken(token){
 /* =====================================
    WORD MATCHING ENGINE
 ===================================== */
-/* =====================================
-   WORD MATCHING ENGINE (IMPROVED LCS)
-===================================== */
 
 
 function compareText(original, typed){
+
 
 
     const result = {
@@ -1165,6 +1163,8 @@ function compareText(original, typed){
 
 
 
+
+
     const originalWords =
 
     original.filter(
@@ -1172,6 +1172,7 @@ function compareText(original, typed){
         item => /\w/.test(item)
 
     );
+
 
 
 
@@ -1190,181 +1191,12 @@ function compareText(original, typed){
 
 
 
-    const m = originalWords.length;
+    let i = 0;
 
-    const n = typedWords.length;
+    let j = 0;
 
 
 
-
-
-
-    /*
-       Create LCS table
-
-       Finds longest matching
-       word sequence
-
-    */
-
-
-    let dp = Array.from(
-
-        {length:m+1},
-
-        ()=>Array(n+1).fill(0)
-
-    );
-
-
-
-
-
-
-    for(let i=1;i<=m;i++){
-
-
-        for(let j=1;j<=n;j++){
-
-
-            if(
-
-                normalizeToken(originalWords[i-1])
-
-                ===
-
-                normalizeToken(typedWords[j-1])
-
-            ){
-
-
-                dp[i][j] =
-
-                dp[i-1][j-1] + 1;
-
-
-            }
-
-            else{
-
-
-                dp[i][j] =
-
-                Math.max(
-
-                    dp[i-1][j],
-
-                    dp[i][j-1]
-
-                );
-
-
-            }
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-    /*
-       Backtracking
-
-       Finds correct positions
-
-    */
-
-
-    let matches = [];
-
-
-
-    let i=m;
-
-    let j=n;
-
-
-
-
-
-    while(i>0 && j>0){
-
-
-
-        if(
-
-            normalizeToken(originalWords[i-1])
-
-            ===
-
-            normalizeToken(typedWords[j-1])
-
-        ){
-
-
-
-            matches.unshift({
-
-                original:i-1,
-
-                typed:j-1
-
-            });
-
-
-
-            i--;
-
-            j--;
-
-
-        }
-
-
-        else if(
-
-            dp[i-1][j]
-
-            >
-
-            dp[i][j-1]
-
-        ){
-
-
-
-            i--;
-
-
-        }
-
-        else{
-
-
-            j--;
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-    let originalIndex = 0;
-
-    let typedIndex = 0;
-
-    let matchIndex = 0;
 
 
 
@@ -1372,19 +1204,40 @@ function compareText(original, typed){
 
     while(
 
-        originalIndex < m
-
-        ||
-
-        typedIndex < n
+        i < originalWords.length
 
     ){
 
 
 
-        let match =
+        let originalWord =
 
-        matches[matchIndex];
+        normalizeToken(
+
+            originalWords[i]
+
+        );
+
+
+
+        let typedWord =
+
+
+        j < typedWords.length
+
+        ?
+
+        normalizeToken(
+
+            typedWords[j]
+
+        )
+
+        :
+
+        "";
+
+
 
 
 
@@ -1392,22 +1245,14 @@ function compareText(original, typed){
 
 
         /*
-           Correct word found
+          Correct word
 
         */
 
 
         if(
 
-            match
-
-            &&
-
-            match.original === originalIndex
-
-            &&
-
-            match.typed === typedIndex
+            originalWord === typedWord
 
         ){
 
@@ -1415,34 +1260,21 @@ function compareText(original, typed){
 
             result.original.push({
 
-
-                token:
-
-                originalWords[originalIndex],
-
+                token:originalWords[i],
 
                 type:"correct"
 
-
             });
-
 
 
 
             result.typed.push({
 
-
-                token:
-
-                typedWords[typedIndex],
-
+                token:typedWords[j],
 
                 type:"correct"
 
-
             });
-
-
 
 
 
@@ -1450,54 +1282,186 @@ function compareText(original, typed){
 
 
 
+            i++;
 
-            originalIndex++;
-
-            typedIndex++;
-
-            matchIndex++;
-
+            j++;
 
 
         }
+
+
+
+
+
+        /*
+          Search ahead
+
+          Prevent shifting errors
+
+        */
+
+
+        else{
+
+
+
+            let found = -1;
+
+
+
+            for(
+
+                let k=j+1;
+
+                k<typedWords.length;
+
+                k++
+
+            ){
+
+
+
+                if(
+
+                    normalizeToken(
+
+                        typedWords[k]
+
+                    )
+
+                    ===
+
+                    originalWord
+
+                ){
+
+
+
+                    found=k;
+
+                    break;
+
+
+                }
+
+
+            }
+
+
+
+
+
+
+
+            if(found !== -1){
+
+
+
+                while(j < found){
+
+
+
+                    result.typed.push({
+
+                        token:typedWords[j],
+
+                        type:"extra"
+
+                    });
+
+
+
+                    result.extraWords++;
+
+                    result.mistakes++;
+
+
+
+                    j++;
+
+
+                }
+
+
+
+
+            }
+
+
+
+
+
+
+
+            else if(j < typedWords.length){
+
+
+
+                result.original.push({
+
+                    token:originalWords[i],
+
+                    type:"wrong"
+
+                });
+
+
+
+                result.typed.push({
+
+                    token:typedWords[j],
+
+                    type:"wrong"
+
+                });
+
+
+
+                result.wrongWords++;
+
+                result.mistakes++;
+
+
+
+                i++;
+
+                j++;
+
+
+            }
+
+
+
+
+
+
+
+            else{
+
+
+
                 /*
-           Extra typed words
+                   Remaining passage
 
-           Do not disturb
-           following matches
+                   NOT mistakes
 
-        */
+                */
 
 
-        else if(
+                result.original.push({
 
-            match
+                    token:originalWords[i],
 
-            &&
+                    type:"missing"
 
-            match.typed === typedIndex
-
-        ){
+                });
 
 
 
-            result.original.push({
+                i++;
 
 
-                token:
-
-                originalWords[originalIndex],
-
-
-                type:"missing"
-
-
-            });
-
-
-
-            originalIndex++;
-
+            }
 
 
 
@@ -1505,203 +1469,48 @@ function compareText(original, typed){
 
 
 
+    }
 
-        else if(
 
-            match
 
-            &&
 
-            match.original > originalIndex
 
-        ){
 
 
 
-            result.typed.push({
+    /*
+       Remaining typed words
 
+       Extra typing
 
-                token:
+    */
 
-                typedWords[typedIndex],
 
+    while(
 
-                type:"extra"
+        j < typedWords.length
 
+    ){
 
-            });
 
 
+        result.typed.push({
 
-            result.extraWords++;
+            token:typedWords[j],
 
-            result.mistakes++;
+            type:"extra"
 
+        });
 
 
-            typedIndex++;
 
+        result.extraWords++;
 
+        result.mistakes++;
 
 
-        }
 
-
-
-
-        /*
-           Wrong word replacement
-
-        */
-
-
-        else if(
-
-            typedIndex < n
-
-            &&
-
-            originalIndex < m
-
-        ){
-
-
-
-            result.original.push({
-
-
-                token:
-
-                originalWords[originalIndex],
-
-
-                type:"wrong"
-
-
-            });
-
-
-
-
-
-            result.typed.push({
-
-
-                token:
-
-                typedWords[typedIndex],
-
-
-                type:"wrong"
-
-
-            });
-
-
-
-
-
-            result.wrongWords++;
-
-            result.mistakes++;
-
-
-
-
-            originalIndex++;
-
-            typedIndex++;
-
-
-
-        }
-
-
-
-
-
-        /*
-           Remaining missing words
-
-        */
-
-
-        else if(
-
-            originalIndex < m
-
-        ){
-
-
-
-            result.original.push({
-
-
-                token:
-
-                originalWords[originalIndex],
-
-
-                type:"missing"
-
-
-            });
-
-
-
-            originalIndex++;
-
-
-
-        }
-
-
-
-
-
-        /*
-           Remaining extra words
-
-        */
-
-
-        else if(
-
-            typedIndex < n
-
-        ){
-
-
-
-            result.typed.push({
-
-
-                token:
-
-                typedWords[typedIndex],
-
-
-                type:"extra"
-
-
-            });
-
-
-
-            result.extraWords++;
-
-            result.mistakes++;
-
-
-
-            typedIndex++;
-
-
-
-        }
-
-
-
+        j++;
 
 
     }
@@ -1714,6 +1523,7 @@ function compareText(original, typed){
 
 
 }
+
 
 
 
