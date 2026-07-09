@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,7 +8,8 @@
 
 <title>Typing Examination</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 
 <style>
 
@@ -18,37 +20,49 @@ box-sizing:border-box;
 font-family:'Poppins',sans-serif;
 }
 
+
 :root{
 
 --primary:#2563eb;
+--dark:#0f172a;
 --success:#16a34a;
 --danger:#dc2626;
---warning:#f59e0b;
 
 --bg:#eef2f7;
 --card:#ffffff;
---border:#d8e0eb;
---text:#1f2937;
---muted:#6b7280;
+--border:#dbe4ef;
+--text:#1e293b;
+--muted:#64748b;
 
 }
+
 
 body{
 
 background:var(--bg);
+color:var(--text);
+
 height:100vh;
 overflow:hidden;
-color:var(--text);
 
 }
 
+
+
+/* ================= HEADER ================= */
+
+
 header{
 
-height:72px;
+height:70px;
 
-background:#1e3a8a;
+background:linear-gradient(
+135deg,
+#2563eb,
+#0f172a
+);
 
-color:#fff;
+color:white;
 
 display:flex;
 
@@ -58,94 +72,112 @@ justify-content:space-between;
 
 padding:0 25px;
 
-box-shadow:0 4px 15px rgba(0,0,0,.15);
+box-shadow:0 5px 20px rgba(0,0,0,.2);
 
 }
+
 
 .logo{
 
 display:flex;
 align-items:center;
-gap:15px;
+gap:14px;
 
 }
+
+
+.logo-icon{
+
+font-size:38px;
+
+}
+
 
 .logo h2{
 
-font-size:24px;
-
-font-weight:700;
+font-size:23px;
 
 }
 
+
 .logo p{
 
-font-size:13px;
+font-size:12px;
 opacity:.8;
 
 }
 
+
+
 .examInfo{
 
 display:flex;
-gap:35px;
 align-items:center;
+gap:35px;
 
 }
 
-.examCard{
+
+.infoBox{
 
 text-align:center;
 
 }
 
-.examCard h3{
 
-font-size:22px;
+.infoBox h3{
 
-font-weight:700;
+font-size:24px;
 
 }
 
-.examCard span{
 
-font-size:12px;
+.infoBox span{
 
+font-size:11px;
 opacity:.8;
 
 }
 
+
+
 #timer{
 
-color:#ffeb3b;
-
-font-size:30px;
-
-font-weight:700;
+color:#fde047;
 
 letter-spacing:2px;
 
 }
 
+
+
+/* ================= MAIN AREA ================= */
+
+
 .main{
+
+height:calc(100vh - 70px - 75px);
+
+padding:12px;
 
 display:grid;
 
-grid-template-columns:1fr 1fr;
+grid-template-rows:1fr 1fr;
 
-height:calc(100vh - 72px);
-
-gap:14px;
-
-padding:14px;
+gap:12px;
 
 }
 
+
+
+/* ================= PANELS ================= */
+
+
 .panel{
 
-background:var(--card);
+background:white;
 
-border-radius:12px;
+border-radius:14px;
 
 border:1px solid var(--border);
 
@@ -155,11 +187,15 @@ flex-direction:column;
 
 overflow:hidden;
 
+box-shadow:0 5px 15px rgba(0,0,0,.05);
+
 }
+
+
 
 .panelHeader{
 
-height:55px;
+height:48px;
 
 background:#f8fafc;
 
@@ -171,27 +207,38 @@ align-items:center;
 
 justify-content:space-between;
 
-padding:0 20px;
+padding:0 18px;
 
 font-weight:600;
 
 }
 
-.panelBody{
+
+.panelHeader span:last-child{
+
+font-size:13px;
+
+color:var(--muted);
+
+}
+
+
+
+
+/* ================= PASSAGE ================= */
+
+
+.passageArea{
 
 flex:1;
 
 overflow:auto;
 
-padding:25px;
+padding:20px;
 
-line-height:2.15;
+font-size:18px;
 
-font-size:20px;
-
-}
-
-#originalText{
+line-height:2;
 
 white-space:pre-wrap;
 
@@ -199,50 +246,69 @@ word-break:break-word;
 
 }
 
-.correct{
 
-background:#d1fae5;
-color:#166534;
 
-}
+#originalText{
 
-.wrong{
-
-background:#fecaca;
-color:#991b1b;
+color:#334155;
 
 }
 
-.current{
 
-background:#bfdbfe;
-color:#1e3a8a;
+
+/* ================= TYPING AREA ================= */
+
+
+.typingBox{
+
+flex:1;
+
+position:relative;
 
 }
+
 
 textarea{
 
 width:100%;
+
 height:100%;
+
 border:none;
+
 outline:none;
+
 resize:none;
 
-font-size:20px;
+padding:20px;
 
-line-height:2.15;
+font-size:18px;
 
-padding:25px;
+line-height:2;
 
 color:#111827;
 
+background:#fff;
+
 }
+
+
+textarea:focus{
+
+background:#fffdf5;
+
+}
+
+
+
+/* ================= STATS ================= */
+
 
 .statsBar{
 
-height:72px;
+height:75px;
 
-background:#fff;
+background:white;
 
 border-top:1px solid var(--border);
 
@@ -252,19 +318,23 @@ grid-template-columns:repeat(7,1fr);
 
 }
 
+
+
 .stat{
 
 display:flex;
-
-flex-direction:column;
 
 align-items:center;
 
 justify-content:center;
 
+flex-direction:column;
+
 border-right:1px solid var(--border);
 
 }
+
+
 
 .stat:last-child{
 
@@ -272,27 +342,34 @@ border:none;
 
 }
 
+
+
 .stat h2{
 
-font-size:24px;
-
-font-weight:700;
+font-size:22px;
 
 }
 
+
+
 .stat span{
 
-font-size:12px;
+font-size:11px;
 
 color:var(--muted);
 
 }
 
+
+
+/* ================= BUTTON AREA ================= */
+
+
 .bottomBar{
 
 height:65px;
 
-background:#fff;
+background:white;
 
 display:flex;
 
@@ -300,29 +377,43 @@ justify-content:flex-end;
 
 align-items:center;
 
-padding:0 20px;
-
 gap:15px;
+
+padding:0 20px;
 
 border-top:1px solid var(--border);
 
 }
 
+
+
 button{
 
-padding:12px 22px;
+padding:12px 25px;
 
 border:none;
 
 border-radius:8px;
 
-cursor:pointer;
+font-size:15px;
 
 font-weight:600;
 
-font-size:15px;
+cursor:pointer;
+
+transition:.3s;
 
 }
+
+
+
+button:hover{
+
+transform:translateY(-2px);
+
+}
+
+
 
 #submitBtn{
 
@@ -332,6 +423,8 @@ color:white;
 
 }
 
+
+
 #resetBtn{
 
 background:#dc2626;
@@ -340,13 +433,18 @@ color:white;
 
 }
 
+
+
+/* ================= SCROLL ================= */
+
+
 ::-webkit-scrollbar{
 
 width:8px;
 
-height:8px;
-
 }
+
+
 
 ::-webkit-scrollbar-thumb{
 
@@ -356,702 +454,1014 @@ border-radius:20px;
 
 }
 
-#typingArea{
 
-caret-color:#2563eb;
 
-}
+/* ================= MOBILE ================= */
 
-#typingArea:focus{
 
-background:#fffefb;
+@media(max-width:900px){
 
-}
 
-.status{
+header{
 
-padding:4px 10px;
-
-border-radius:20px;
-
-background:#dbeafe;
-
-color:#2563eb;
-
-font-size:13px;
+padding:0 12px;
 
 }
 
-.overlay{
 
-position:fixed;
+.examInfo{
 
-inset:0;
-
-background:rgba(0,0,0,.55);
-
-display:none;
-
-align-items:center;
-
-justify-content:center;
-
-z-index:100;
+gap:10px;
 
 }
 
-.dialog{
-
-width:480px;
-
-background:white;
-
-border-radius:14px;
-
-padding:30px;
-
-text-align:center;
-
-}
-
-.dialog h2{
-
-margin-bottom:20px;
-
-}
-
-.dialog p{
-
-line-height:1.8;
-
-color:#555;
-
-margin-bottom:25px;
-
-}
-
-.dialog button{
-
-margin:8px;
-
-}
-
-#resumeBtn{
-
-background:#2563eb;
-
-color:white;
-
-}
-
-#exitBtn{
-
-background:#dc2626;
-
-color:white;
-
-}
-
-@media(max-width:1000px){
 
 .main{
 
-grid-template-columns:1fr;
+height:auto;
+
+overflow:auto;
 
 }
 
+
 .statsBar{
 
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:repeat(3,1fr);
 
 height:auto;
 
 }
 
+
 .stat{
 
-padding:15px;
+padding:10px;
 
 }
 
+
 }
+
+
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <header>
 
+
 <div class="logo">
 
-<div style="font-size:42px">
+<div class="logo-icon">
 ⌨️
 </div>
 
+
 <div>
 
-<h2>Typing Examination</h2>
+<h2>
+Typing Examination
+</h2>
 
-<p id="examName">Loading...</p>
+
+<p id="examName">
+Loading Examination...
+</p>
+
 
 </div>
 
 </div>
+
+
 
 <div class="examInfo">
 
-<div class="examCard">
 
-<h3 id="timer">00:00</h3>
+<div class="infoBox">
 
-<span>TIME REMAINING</span>
+<h3 id="timer">
+00:00
+</h3>
 
-</div>
-
-<div class="examCard">
-
-<h3 id="candidate">Candidate</h3>
-
-<span>CANDIDATE</span>
-
-</div>
-
-<div class="examCard">
-
-<div class="status">
-
-Typing Test Running
-
-</div>
-
-</div>
-
-</div>
-
-</header>
-
-<div class="main">
-
-<div class="panel">
-
-<div class="panelHeader">
-
-<span>Question Passage</span>
-
-<span id="wordCountLabel">
-
-0 Words
-
+<span>
+TIME LEFT
 </span>
 
 </div>
 
-<div
-class="panelBody"
-id="originalText">
+
+
+<div class="infoBox">
+
+<h3 id="candidate">
+Candidate
+</h3>
+
+<span>
+USER
+</span>
+
+</div>
+
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+<div class="main">
+
+
+<!-- PASSAGE PANEL -->
+
+
+<div class="panel">
+
+
+<div class="panelHeader">
+
+<span>
+Question Passage
+</span>
+
+
+<span id="wordCountLabel">
+0 Words
+</span>
+
+
+</div>
+
+
+
+<div class="passageArea">
+
+
+<div id="originalText">
 
 Loading passage...
 
 </div>
 
+
 </div>
+
+
+</div>
+
+
+
+
+
+<!-- TYPING PANEL -->
+
 
 <div class="panel">
 
+
 <div class="panelHeader">
 
-<span>Your Typing</span>
 
-<span id="typedChars">
-
-0 Characters
-
+<span>
+Your Typing
 </span>
 
+
+<span id="typedChars">
+0 Characters
+</span>
+
+
 </div>
+
+
+
+<div class="typingBox">
+
 
 <textarea
+
 id="typingArea"
+
 spellcheck="false"
+
 autocomplete="off"
+
 autocorrect="off"
-autocapitalize="off">
 
-</textarea>
+autocapitalize="off"
+
+placeholder="Start typing here..."
+
+></textarea>
+
 
 </div>
 
+
 </div>
+
+
+</div>
+
+
+
+
 
 <div class="statsBar">
+
 
 <div class="stat">
 
 <h2 id="grossWPM">
-
 0
-
 </h2>
 
-<span>Gross WPM</span>
+<span>
+Gross WPM
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="netWPM">
-
 0
-
 </h2>
 
-<span>Net WPM</span>
+<span>
+Net WPM
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="accuracy">
+100%
+</h2>
 
-100%</h2>
-
-<span>Accuracy</span>
+<span>
+Accuracy
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="errors">
+0
+</h2>
 
-0</h2>
-
-<span>Errors</span>
+<span>
+Errors
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="keystrokes">
+0
+</h2>
 
-0</h2>
-
-<span>Keystrokes</span>
+<span>
+Keystrokes
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="wordsTyped">
+0
+</h2>
 
-0</h2>
-
-<span>Words</span>
+<span>
+Words
+</span>
 
 </div>
+
+
 
 <div class="stat">
 
 <h2 id="progress">
+0%
+</h2>
 
-0%</h2>
-
-<span>Completed</span>
+<span>
+Completed
+</span>
 
 </div>
 
+
 </div>
+
+
+
+
 
 <div class="bottomBar">
 
+
 <button id="resetBtn">
-
 Reset Test
-
 </button>
+
 
 <button id="submitBtn">
-
 Submit Test
-
 </button>
 
-</div>
-
-<div class="overlay" id="pauseOverlay">
-
-<div class="dialog">
-
-<h2>
-
-Leave Examination?
-
-</h2>
-
-<p>
-
-The typing examination is currently running.
-Leaving now may result in loss of your progress.
-
-</p>
-
-<button id="resumeBtn">
-
-Continue Test
-
-</button>
-
-<button id="exitBtn">
-
-Exit Anyway
-
-</button>
 
 </div>
-
-</div>
-
 <script>
 
-const passageData=JSON.parse(localStorage.getItem("selectedPassage"));
 
-const examName=localStorage.getItem("selectedExam")||"Typing Examination";
+/* ==============================
+   LOAD SELECTED PASSAGE
+============================== */
 
-const duration=parseInt(localStorage.getItem("selectedDuration"))||10;
 
-document.getElementById("examName").textContent=examName;
+const passageData =
+JSON.parse(
+localStorage.getItem("selectedPassage")
+);
 
-document.getElementById("candidate").textContent="Candidate";
+
+const examName =
+localStorage.getItem("selectedExam")
+||
+"Typing Examination";
+
+
+const duration =
+parseInt(
+localStorage.getItem("selectedDuration")
+)
+||
+10;
+
+
 
 if(!passageData){
 
-alert("No passage selected.");
+alert(
+"No passage selected."
+);
 
 location.href="index.html";
 
 }
 
-const originalText=passageData.text;
 
-document.getElementById("originalText").textContent=originalText;
 
-document.getElementById("wordCountLabel").textContent=
+const originalText =
+passageData.text;
 
-originalText.trim().split(/\s+/).length+" Words";
 
-let totalSeconds=duration*60;
+
+document.getElementById("examName").textContent =
+examName;
+
+
+
+document.getElementById("candidate").textContent =
+"Candidate";
+
+
+
+document.getElementById("originalText").textContent =
+originalText;
+
+
+
+document.getElementById("wordCountLabel").textContent =
+
+originalText
+.trim()
+.split(/\s+/)
+.length
++
+" Words";
+
+
+
+
+
+/* ==============================
+ VARIABLES
+============================== */
+
+
+const input =
+document.getElementById("typingArea");
+
+
+let totalSeconds =
+duration * 60;
+
 
 let timerInterval;
 
+
 let started=false;
 
-let errors=0;
 
 let keystrokes=0;
 
+
+let errors=0;
+
+
 let correctChars=0;
+
 
 let typedText="";
 
-const input=document.getElementById("typingArea");
 
-const passage=document.getElementById("originalText");
+
+
+
+/* ==============================
+ TIMER
+============================== */
+
+
+document.getElementById("timer").textContent =
+
+String(duration).padStart(2,"0")
++
+":00";
+
+
+
+
 function startTimer(){
 
-timerInterval=setInterval(function(){
+
+timerInterval =
+setInterval(()=>{
+
 
 if(totalSeconds<=0){
 
+
 clearInterval(timerInterval);
+
 
 submitTest();
 
+
 return;
 
+
 }
+
+
 
 totalSeconds--;
 
-let min=Math.floor(totalSeconds/60);
 
-let sec=totalSeconds%60;
 
-document.getElementById("timer").textContent=
+let min =
+Math.floor(totalSeconds/60);
 
-String(min).padStart(2,"0")+":"+
 
+
+let sec =
+totalSeconds%60;
+
+
+
+document.getElementById("timer").textContent =
+
+String(min).padStart(2,"0")
++
+":"
++
 String(sec).padStart(2,"0");
+
+
 
 },1000);
 
-}
-
-document.getElementById("timer").textContent=
-
-String(duration).padStart(2,"0")+":00";
-
-function escapeHTML(str){
-
-return str
-
-.replace(/&/g,"&amp;")
-
-.replace(/</g,"&lt;")
-
-.replace(/>/g,"&gt;");
 
 }
 
-function highlight(){
 
-typedText=input.value;
 
-let html="";
+
+
+/* ==============================
+ TYPING CHECK ENGINE
+============================== */
+
+
+function calculateTyping(){
+
+
+
+typedText =
+input.value;
+
+
 
 errors=0;
 
+
 correctChars=0;
 
-for(let i=0;i<originalText.length;i++){
 
-let expected=originalText[i];
 
-let typed=typedText[i];
+for(
+let i=0;
+i<typedText.length;
+i++
+){
 
-if(typed==null){
 
-html+="<span>"+escapeHTML(expected)+"</span>";
+if(
+typedText[i]
+===
+originalText[i]
+){
 
-continue;
-
-}
-
-if(typed===expected){
 
 correctChars++;
 
-html+="<span class='correct'>"+escapeHTML(expected)+"</span>";
 
 }
-
 else{
+
 
 errors++;
 
-html+="<span class='wrong'>"+escapeHTML(expected)+"</span>";
 
 }
 
-}
-
-passage.innerHTML=html;
-
-let current=passage.querySelectorAll("span")[typedText.length];
-
-if(current){
-
-current.classList.add("current");
-
-current.scrollIntoView({
-
-behavior:"smooth",
-
-block:"center"
-
-});
 
 }
+
+
+
+
 
 updateStats();
 
-}
 
-function updateStats(){
-
-keystrokes=input.value.length;
-
-let elapsed=(duration*60-totalSeconds)/60;
-
-if(elapsed<=0) elapsed=1/60;
-
-let gross=(keystrokes/5)/elapsed;
-
-let net=((correctChars/5)/elapsed);
-
-if(net<0) net=0;
-
-let accuracy=0;
-
-if(keystrokes>0){
-
-accuracy=(correctChars/keystrokes)*100;
 
 }
 
-let words=input.value.trim().split(/\s+/);
 
-if(input.value.trim()=="") words=[];
 
-let progress=(keystrokes/originalText.length)*100;
 
-if(progress>100) progress=100;
 
-document.getElementById("grossWPM").textContent=
+/* ==============================
+ AUTO PASSAGE SCROLL
+============================== */
 
-gross.toFixed(0);
 
-document.getElementById("netWPM").textContent=
+function scrollPassage(){
 
-net.toFixed(0);
 
-document.getElementById("accuracy").textContent=
+let ratio =
 
-accuracy.toFixed(1)+"%";
+input.value.length
+/
+originalText.length;
 
-document.getElementById("errors").textContent=
 
-errors;
 
-document.getElementById("keystrokes").textContent=
+let passageBox =
+document.querySelector(".passageArea");
 
-keystrokes;
 
-document.getElementById("wordsTyped").textContent=
 
-words.length;
+passageBox.scrollTop =
 
-document.getElementById("typedChars").textContent=
+passageBox.scrollHeight
+*
+ratio;
 
-keystrokes+" Characters";
 
-document.getElementById("progress").textContent=
-
-progress.toFixed(0)+"%";
 
 }
 
-input.addEventListener("input",function(){
+
+
+
+
+
+
+/* ==============================
+ INPUT EVENT
+============================== */
+
+
+input.addEventListener(
+"input",
+()=>{
+
+
 
 if(!started){
 
+
 started=true;
+
 
 startTimer();
 
-}
-
-highlight();
-
-});
-
-input.focus();
-
-window.onload=function(){
-
-input.focus();
-
-};
-
-window.onclick=function(){
-
-input.focus();
-
-};
-
-document.addEventListener("contextmenu",e=>{
-
-e.preventDefault();
-
-});
-
-document.addEventListener("copy",e=>{
-
-e.preventDefault();
-
-});
-
-document.addEventListener("cut",e=>{
-
-e.preventDefault();
-
-});
-
-document.addEventListener("paste",e=>{
-
-e.preventDefault();
-
-});
-
-document.addEventListener("keydown",function(e){
-
-if(e.ctrlKey){
-
-e.preventDefault();
 
 }
 
-if(e.key==="F12"){
 
-e.preventDefault();
+
+calculateTyping();
+
+
+scrollPassage();
+
+
 
 }
 
-if(e.key==="Tab"){
+);
 
-e.preventDefault();
+
+
+
+
+
+
+/* ==============================
+ STATISTICS
+============================== */
+
+
+function updateStats(){
+
+
+
+keystrokes =
+input.value.length;
+
+
+
+let elapsed =
+
+(duration*60-totalSeconds)/60;
+
+
+
+if(elapsed<=0){
+
+elapsed=1/60;
 
 }
 
-});
 
-function submitTest(){
 
-clearInterval(timerInterval);
 
-let elapsed=(duration*60-totalSeconds)/60;
 
-if(elapsed<=0) elapsed=1/60;
+let gross =
 
-let gross=(keystrokes/5)/elapsed;
+(keystrokes/5)
+/elapsed;
 
-let net=(correctChars/5)/elapsed;
 
-if(net<0) net=0;
+
+let net =
+
+(correctChars/5)
+/elapsed;
+
+
+
+if(net<0){
+
+net=0;
+
+}
+
+
+
 
 let accuracy=0;
 
+
+
 if(keystrokes>0){
 
-accuracy=(correctChars/keystrokes)*100;
+
+accuracy =
+
+(correctChars/keystrokes)
+*
+100;
+
 
 }
 
+
+
+
+
+let words =
+
+input.value.trim();
+
+
+
+if(words===""){
+
+words=0;
+
+}
+else{
+
+
+words =
+input.value
+.trim()
+.split(/\s+/)
+.length;
+
+
+}
+
+
+
+
+
+
+let progress =
+
+(input.value.length
+/
+originalText.length)
+*
+100;
+
+
+
+if(progress>100){
+
+progress=100;
+
+}
+
+
+
+
+
+
+document.getElementById("grossWPM").textContent =
+
+gross.toFixed(0);
+
+
+
+
+document.getElementById("netWPM").textContent =
+
+net.toFixed(0);
+
+
+
+
+document.getElementById("accuracy").textContent =
+
+accuracy.toFixed(1)
++
+"%";
+
+
+
+
+document.getElementById("errors").textContent =
+
+errors;
+
+
+
+
+document.getElementById("keystrokes").textContent =
+
+keystrokes;
+
+
+
+
+document.getElementById("wordsTyped").textContent =
+
+words;
+
+
+
+
+document.getElementById("typedChars").textContent =
+
+keystrokes
++
+" Characters";
+
+
+
+
+document.getElementById("progress").textContent =
+
+progress.toFixed(0)
++
+"%";
+
+
+
+}
+
+
+
+
+
+
+
+/* ==============================
+ INITIAL FOCUS
+============================== */
+
+
+window.onload=function(){
+
+
+input.focus();
+
+
+};
+
+
+
+
+
+window.onclick=function(){
+
+
+input.focus();
+
+
+};
+
+
+
+
+
+
+/* ==============================
+   SUBMIT TEST
+============================== */
+
+
+function submitTest(){
+
+
+clearInterval(timerInterval);
+
+
+
+let elapsed =
+
+(duration*60-totalSeconds)/60;
+
+
+
+if(elapsed<=0){
+
+elapsed=1/60;
+
+}
+
+
+
+let gross =
+
+(keystrokes/5)
+/elapsed;
+
+
+
+let net =
+
+(correctChars/5)
+/elapsed;
+
+
+
+if(net<0){
+
+net=0;
+
+}
+
+
+
+let accuracy=0;
+
+
+
+if(keystrokes>0){
+
+
+accuracy =
+
+(correctChars/keystrokes)
+*
+100;
+
+
+}
+
+
+
+
+
 const result={
+
 
 exam:examName,
 
+
 title:passageData.title,
+
 
 duration:duration,
 
-typed:typedText,
 
 original:originalText,
 
+
+typed:typedText,
+
+
 grossWPM:gross.toFixed(2),
+
 
 netWPM:net.toFixed(2),
 
+
 accuracy:accuracy.toFixed(2),
+
 
 errors:errors,
 
+
 keystrokes:keystrokes,
 
-completed:new Date().toLocaleString()
+
+wordsTyped:
+input.value.trim()===""
+?
+0
+:
+input.value.trim().split(/\s+/).length,
+
+
+
+completed:
+
+new Date().toLocaleString()
+
+
 
 };
+
+
+
+
 
 localStorage.setItem(
 
@@ -1061,99 +1471,353 @@ JSON.stringify(result)
 
 );
 
+
+
+
 alert(
 
-"Test Completed.\n\nGross WPM : "+gross.toFixed(0)+
-
+"Typing Test Completed\n\n"+
+"Gross WPM : "+gross.toFixed(0)+
 "\nNet WPM : "+net.toFixed(0)+
-
 "\nAccuracy : "+accuracy.toFixed(1)+"%"
 
 );
 
-location.href="result.html";
+
+
+
+location.href="results.html";
+
+
 
 }
 
-document.getElementById("submitBtn")
 
-.addEventListener("click",function(){
 
-if(confirm("Submit your typing test?")){
+
+
+
+
+/* ==============================
+ SUBMIT BUTTON
+============================== */
+
+
+document
+
+.getElementById("submitBtn")
+
+.addEventListener(
+
+"click",
+
+()=>{
+
+
+if(
+confirm(
+"Submit your typing test?"
+)
+
+){
+
 
 submitTest();
 
-}
-
-});
-
-document.getElementById("resetBtn")
-
-.addEventListener("click",function(){
-
-if(confirm("Reset the current test?")){
-
-location.reload();
 
 }
 
-});
 
-/* -------- Fullscreen -------- */
+}
 
-async function fullscreen(){
+);
+
+
+
+
+
+
+
+/* ==============================
+ RESET BUTTON
+============================== */
+
+
+document
+
+.getElementById("resetBtn")
+
+.addEventListener(
+
+"click",
+
+()=>{
+
+
+if(
+confirm(
+"Reset current examination?"
+)
+
+){
+
+
+clearInterval(timerInterval);
+
+
+input.value="";
+
+
+totalSeconds=duration*60;
+
+
+started=false;
+
+
+keystrokes=0;
+
+
+errors=0;
+
+
+correctChars=0;
+
+
+typedText="";
+
+
+updateStats();
+
+
+
+document.getElementById("timer").textContent =
+
+String(duration).padStart(2,"0")
++
+":00";
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+/* ==============================
+ FULLSCREEN MODE
+============================== */
+
+
+async function enterFullscreen(){
+
 
 try{
 
+
 await document.documentElement.requestFullscreen();
 
-}catch(e){}
 
 }
 
-fullscreen();
+catch(e){}
 
-/* -------- Prevent accidental close -------- */
 
-window.onbeforeunload=function(){
 
-return "Typing test is running.";
+}
 
-};
 
-/* -------- Blur Detection -------- */
 
-let overlay=document.getElementById("pauseOverlay");
+enterFullscreen();
 
-window.addEventListener("blur",function(){
 
-overlay.style.display="flex";
 
-});
 
-document.getElementById("resumeBtn")
 
-.onclick=function(){
 
-overlay.style.display="none";
 
-input.focus();
+/* ==============================
+ PREVENT COPYING
+============================== */
 
-};
 
-document.getElementById("exitBtn")
+document.addEventListener(
 
-.onclick=function(){
+"contextmenu",
 
-window.onbeforeunload=null;
+e=>{
 
-history.back();
+e.preventDefault();
 
-};
+}
 
-/* -------- Auto Save every second -------- */
+);
 
-setInterval(function(){
+
+
+
+document.addEventListener(
+
+"copy",
+
+e=>{
+
+e.preventDefault();
+
+}
+
+);
+
+
+
+document.addEventListener(
+
+"cut",
+
+e=>{
+
+e.preventDefault();
+
+}
+
+);
+
+
+
+document.addEventListener(
+
+"paste",
+
+e=>{
+
+e.preventDefault();
+
+}
+
+);
+
+
+
+
+
+
+
+/* ==============================
+ KEYBOARD SECURITY
+============================== */
+
+
+document.addEventListener(
+
+"keydown",
+
+e=>{
+
+
+if(e.ctrlKey){
+
+e.preventDefault();
+
+}
+
+
+
+if(e.key==="F12"){
+
+e.preventDefault();
+
+}
+
+
+
+if(e.key==="Tab"){
+
+e.preventDefault();
+
+}
+
+
+
+if(
+e.altKey ||
+e.metaKey
+){
+
+e.preventDefault();
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+/* ==============================
+ TAB SWITCH DETECTION
+============================== */
+
+
+let examActive=true;
+
+
+
+document.addEventListener(
+
+"visibilitychange",
+
+()=>{
+
+
+if(
+document.hidden &&
+examActive
+){
+
+
+alert(
+
+"Warning: Do not leave the examination window."
+
+);
+
+
+}
+
+
+}
+
+);
+
+
+
+
+
+
+
+/* ==============================
+ AUTO SAVE DRAFT
+============================== */
+
+
+setInterval(
+
+()=>{
+
 
 localStorage.setItem(
 
@@ -1163,79 +1827,243 @@ input.value
 
 );
 
-},1000);
 
-/* -------- Restore Draft -------- */
 
-const draft=localStorage.getItem("typingDraft");
+},
 
-if(draft){
+1000
 
-input.value=draft;
+);
 
-highlight();
+
+
+
+
+
+
+/* ==============================
+ RESTORE DRAFT
+============================== */
+
+
+let savedDraft =
+
+localStorage.getItem(
+"typingDraft"
+);
+
+
+
+if(savedDraft){
+
+
+input.value=savedDraft;
+
+
+calculateTyping();
+
 
 }
 
-/* -------- Disable Drag -------- */
 
-document.addEventListener("dragstart",e=>{
 
-e.preventDefault();
 
-});
 
-/* -------- Character Counter Color -------- */
 
-setInterval(function(){
 
-let remain=originalText.length-input.value.length;
+/* ==============================
+ TITLE PROGRESS
+============================== */
 
-if(remain<50){
 
-document.getElementById("typedChars").style.color="#dc2626";
+setInterval(
 
-}else{
+()=>{
 
-document.getElementById("typedChars").style.color="#111827";
 
-}
+document.title =
 
-},500);
+"Typing Test - "
++
+document.getElementById("progress").textContent;
 
-/* -------- Progress Title -------- */
 
-setInterval(function(){
 
-document.title=
+},
 
-"("+document.getElementById("progress").textContent+") Typing Examination";
+1000
 
-},1000);
+);
 
-/* -------- Keep Focus -------- */
 
-setInterval(function(){
+
+
+
+
+
+/* ==============================
+ KEEP FOCUS
+============================== */
+
+
+setInterval(
+
+()=>{
+
+
+if(started){
 
 input.focus();
 
-},1500);
+}
 
-/* -------- Shortcuts -------- */
 
-document.addEventListener("keydown",function(e){
+},
 
-if(e.altKey||e.metaKey){
+2000
 
-e.preventDefault();
+);
+
+
+
+
+/* ==============================
+ FINAL PERFORMANCE CLEANUP
+============================== */
+
+
+// Remove old draft after successful submission
+
+function clearTypingDraft(){
+
+localStorage.removeItem(
+"typingDraft"
+);
 
 }
 
-});
 
-/* -------- End -------- */
+
+
+
+// Stop all exam activity
+
+function stopExam(){
+
+examActive=false;
+
+clearInterval(timerInterval);
+
+clearTypingDraft();
+
+}
+
+
+
+
+
+
+/* ==============================
+ UPDATE SUBMIT FUNCTION HOOK
+============================== */
+
+
+const oldSubmitTest = submitTest;
+
+
+submitTest=function(){
+
+
+stopExam();
+
+
+oldSubmitTest();
+
+
+};
+
+
+
+
+
+
+
+/* ==============================
+ CHARACTER REMAINING INDICATOR
+============================== */
+
+
+setInterval(()=>{
+
+
+let remaining =
+
+originalText.length -
+input.value.length;
+
+
+
+if(remaining<0){
+
+remaining=0;
+
+}
+
+
+
+document.getElementById("typedChars").textContent =
+
+input.value.length
++
+" Characters";
+
+
+
+},500);
+
+
+
+
+
+
+
+/* ==============================
+ PREVENT TEXT SELECTION
+============================== */
+
+
+document
+.getElementById("originalText")
+.style.userSelect="none";
+
+
+
+
+
+
+
+/* ==============================
+ INITIAL STAT LOAD
+============================== */
+
+
+updateStats();
+
+
+
+
+
+
+
+/* ==============================
+ END OF APPLICATION
+============================== */
+
 
 </script>
 
+
 </body>
+
 </html>
+
