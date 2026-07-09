@@ -5,15 +5,18 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TypingMaster Pro | Examination Portal</title>
+<title>
+TypingMaster Pro | Typing Examination Portal
+</title>
 
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 
 <style>
+
 
 *{
 
@@ -25,56 +28,83 @@ font-family:'Poppins',sans-serif;
 }
 
 
+
 :root{
 
+
 --primary:#2563eb;
---primary-dark:#1e40af;
+
+--primary-dark:#1d4ed8;
+
 --success:#16a34a;
 
---background:#f1f5f9;
+
+--bg:#f1f5f9;
+
 --card:#ffffff;
 
+
 --text:#0f172a;
+
 --muted:#64748b;
 
---border:#dbe4f0;
+
+--border:#dbe4ef;
+
 
 --input:#ffffff;
 
+
 --shadow:
-0 15px 35px rgba(15,23,42,.10);
+0 15px 40px rgba(15,23,42,.12);
+
 
 }
+
 
 
 
 body.dark{
 
---background:#020617;
+
+--bg:#020617;
 
 --card:#0f172a;
 
+
 --text:#f8fafc;
+
 
 --muted:#cbd5e1;
 
+
 --border:#334155;
 
+
 --input:#1e293b;
+
 
 }
 
 
 
+
+
 body{
 
-background:var(--background);
-
-color:var(--text);
 
 min-height:100vh;
 
+background:var(--bg);
+
+color:var(--text);
+
+display:flex;
+
+flex-direction:column;
+
 transition:.3s;
+
 
 }
 
@@ -83,7 +113,9 @@ transition:.3s;
 
 header{
 
-height:80px;
+
+height:82px;
+
 
 background:
 
@@ -93,23 +125,33 @@ linear-gradient(
 #0f172a
 );
 
+
+color:white;
+
+
 display:flex;
 
 align-items:center;
 
 justify-content:space-between;
 
-padding:0 50px;
 
-color:white;
+padding:0 45px;
+
 
 box-shadow:var(--shadow);
+
+
+flex-shrink:0;
+
 
 }
 
 
 
-.brand{
+
+.logo{
+
 
 display:flex;
 
@@ -117,89 +159,109 @@ align-items:center;
 
 gap:15px;
 
-}
-
-
-
-.brand-icon{
-
-font-size:42px;
 
 }
 
 
 
-.brand h1{
+.logo-icon{
+
+
+font-size:40px;
+
+
+}
+
+
+
+.logo h1{
+
 
 font-size:28px;
 
 font-weight:800;
 
+
 }
 
 
 
-.brand p{
+.logo p{
+
 
 font-size:13px;
 
 opacity:.85;
 
+
 }
+
+
 
 
 
 .header-actions{
 
+
 display:flex;
 
 gap:15px;
 
+
 }
+
 
 
 
 .header-actions button{
 
+
 border:none;
 
-padding:12px 20px;
+padding:12px 22px;
 
 border-radius:10px;
 
-cursor:pointer;
-
 font-weight:600;
 
-font-size:14px;
+cursor:pointer;
+
 
 }
 
 
 
-.theme{
+.theme-btn{
+
 
 background:white;
 
 color:#111827;
 
+
 }
 
 
 
-.admin{
+.admin-btn{
+
 
 background:#10b981;
 
 color:white;
 
+
 }
+
+
 
 
 
 .main{
 
-min-height:calc(100vh - 80px);
+
+flex:1;
+
 
 display:flex;
 
@@ -207,67 +269,97 @@ justify-content:center;
 
 align-items:center;
 
+
 padding:40px 20px;
 
+
 }
+
+
 
 
 
 .exam-card{
 
-width:600px;
+
+width:620px;
+
 
 background:var(--card);
 
-border-radius:24px;
-
-padding:40px;
-
-box-shadow:var(--shadow);
 
 border:1px solid var(--border);
 
+
+border-radius:24px;
+
+
+padding:40px;
+
+
+box-shadow:var(--shadow);
+
+
 }
 
 
 
-.card-title{
+
+
+.card-header{
+
 
 text-align:center;
 
+
 margin-bottom:35px;
+
 
 }
 
 
 
-.card-title h2{
+.card-header h2{
+
 
 font-size:28px;
 
+
 }
 
 
 
-.card-title p{
+.card-header p{
 
-color:var(--muted);
 
 margin-top:8px;
 
+color:var(--muted);
+
+
+font-size:14px;
+
+
 }
+
+
 
 
 
 .form-group{
 
+
 margin-bottom:25px;
+
 
 }
 
 
 
+
+
 label{
+
 
 display:block;
 
@@ -275,53 +367,113 @@ font-weight:600;
 
 margin-bottom:10px;
 
+
 }
+
 
 
 
 select,
 input{
 
+
 width:100%;
 
-padding:15px;
+
+height:52px;
+
 
 border-radius:12px;
 
+
 border:1px solid var(--border);
+
 
 background:var(--input);
 
+
 color:var(--text);
+
+
+padding:0 15px;
+
 
 font-size:15px;
 
+
 outline:none;
 
-}
-
-
-
-select option{
-
-background:var(--card);
-
-color:var(--text);
 
 }
+
 
 
 
 select:focus,
 input:focus{
 
+
 border-color:var(--primary);
+
+
+}
+
+<style>
+
+
+/* ==========================
+   TIMER CONTROL
+========================== */
+
+
+.timer-box{
+
+background:var(--bg);
+
+border:1px solid var(--border);
+
+border-radius:16px;
+
+padding:18px;
+
+display:flex;
+
+flex-direction:row;
+
+align-items:center;
+
+justify-content:center;
+
+gap:20px;
+
+width:100%;
 
 }
 
 
 
-.duration-control{
+
+.timer-btn{
+
+height:50px;
+
+width:50px;
+
+flex:0 0 50px;
+
+border-radius:50%;
+
+border:none;
+
+background:var(--primary);
+
+color:white;
+
+font-size:28px;
+
+font-weight:700;
+
+cursor:pointer;
 
 display:flex;
 
@@ -329,117 +481,200 @@ align-items:center;
 
 justify-content:center;
 
-gap:15px;
+transition:.25s;
+
+}
+
+
+.timer-btn:hover{
+
+
+background:var(--primary-dark);
+
+
+transform:scale(1.08);
+
 
 }
 
 
 
-.duration-control button{
 
-height:45px;
-
-width:45px;
-
-border:none;
-
-border-radius:50%;
-
-background:var(--primary);
-
-color:white;
-
-font-size:25px;
-
-cursor:pointer;
-
-}
+.timer-display{
 
 
+min-width:180px;
 
-#duration{
-
-width:120px;
 
 text-align:center;
 
-font-size:20px;
+
+font-size:22px;
+
 
 font-weight:700;
 
-}
 
+color:var(--text);
 
-
-.duration-text{
-
-text-align:center;
-
-margin-top:8px;
-
-color:var(--muted);
-
-font-size:13px;
-
-}
-
-
-<style>
-
-
-.passage-box{
-
-position:relative;
 
 }
 
 
 
-.passage-list{
+.timer-display small{
 
-display:none;
-
-position:absolute;
-
-top:75px;
-
-left:0;
-
-right:0;
-
-background:var(--card);
-
-border:1px solid var(--border);
-
-border-radius:12px;
-
-max-height:250px;
-
-overflow-y:auto;
-
-z-index:20;
-
-box-shadow:var(--shadow);
-
-}
-
-
-
-.passage-list.active{
 
 display:block;
 
+
+font-size:12px;
+
+
+color:var(--muted);
+
+
+font-weight:500;
+
+
+margin-top:5px;
+
+
 }
+
+
+
+
+/* ==========================
+   PASSAGE DROPDOWN
+========================== */
+
+
+
+.passage-wrapper{
+
+
+position:relative;
+
+
+}
+
+
+
+.passage-input{
+
+
+cursor:pointer;
+
+
+}
+
+
+
+.passage-dropdown{
+
+
+position:absolute;
+
+
+top:58px;
+
+
+left:0;
+
+
+right:0;
+
+
+background:var(--card);
+
+
+border:1px solid var(--border);
+
+
+border-radius:14px;
+
+
+box-shadow:var(--shadow);
+
+
+z-index:50;
+
+
+display:none;
+
+
+overflow:hidden;
+
+
+}
+
+
+
+.passage-dropdown.active{
+
+
+display:block;
+
+
+}
+
+
+
+
+
+.dropdown-search{
+
+
+padding:12px;
+
+
+border-bottom:1px solid var(--border);
+
+
+}
+
+
+
+.dropdown-search input{
+
+
+height:44px;
+
+
+}
+
+
+
+.passage-results{
+
+
+max-height:260px;
+
+
+overflow-y:auto;
+
+
+}
+
+
 
 
 
 .passage-item{
 
-padding:15px;
+
+padding:14px 16px;
+
+
+border-bottom:1px solid var(--border);
+
 
 cursor:pointer;
 
-border-bottom:1px solid var(--border);
+
+transition:.2s;
+
 
 }
 
@@ -447,7 +682,9 @@ border-bottom:1px solid var(--border);
 
 .passage-item:last-child{
 
+
 border-bottom:none;
+
 
 }
 
@@ -455,115 +692,189 @@ border-bottom:none;
 
 .passage-item:hover{
 
-background:rgba(37,99,235,.1);
+
+background:rgba(37,99,235,.10);
+
 
 }
+
 
 
 
 .passage-item h4{
 
+
 font-size:15px;
+
 
 color:var(--text);
 
+
 }
 
 
 
-.passage-item span{
+
+.passage-item p{
+
 
 font-size:12px;
 
+
 color:var(--muted);
 
+
+margin-top:5px;
+
+
 }
+
+
+
+
 
 
 
 .selected-passage{
 
-margin-top:15px;
+
+margin-top:18px;
+
 
 padding:18px;
 
-border-radius:12px;
+
+border-radius:14px;
+
 
 background:rgba(37,99,235,.08);
 
+
 border:1px solid #93c5fd;
+
 
 display:none;
 
+
 }
 
 
 
-.selected-passage.active{
+
+.selected-passage.show{
+
 
 display:block;
 
+
 }
+
+
 
 
 
 .selected-passage h3{
 
-color:var(--primary);
 
 font-size:18px;
 
+
+color:var(--primary);
+
+
 }
 
 
 
-.preview{
+
+
+.selected-passage span{
+
+
+font-size:13px;
+
+
+color:var(--muted);
+
+
+}
+
+
+
+
+
+
+.preview-box{
+
 
 margin-top:20px;
 
-padding:18px;
 
 height:160px;
 
+
 overflow:auto;
 
-border-radius:12px;
 
-background:var(--background);
+padding:18px;
+
+
+border-radius:14px;
+
+
+background:var(--bg);
+
 
 border:1px solid var(--border);
 
-line-height:1.8;
 
 font-size:14px;
 
+
+line-height:1.8;
+
+
 }
+
+
 
 
 
 .start-btn{
 
-margin-top:30px;
 
 width:100%;
 
-padding:16px;
+
+height:55px;
+
+
+margin-top:25px;
+
 
 border:none;
 
+
 border-radius:14px;
+
 
 background:var(--success);
 
+
 color:white;
+
 
 font-size:18px;
 
+
 font-weight:700;
+
 
 cursor:pointer;
 
+
 transition:.3s;
+
 
 }
 
@@ -571,51 +882,80 @@ transition:.3s;
 
 .start-btn:hover{
 
+
 transform:translateY(-3px);
 
-box-shadow:0 10px 20px rgba(22,163,74,.25);
 
 }
 
 
 
-.notice{
 
-margin-top:25px;
+
+.instructions{
+
+
+margin-top:20px;
+
 
 padding:15px;
 
+
 border-radius:12px;
+
 
 background:rgba(37,99,235,.08);
 
-color:var(--muted);
 
 font-size:13px;
 
+
 line-height:1.8;
+
+
+color:var(--muted);
+
 
 }
 
 
 
-.notice strong{
+
+.instructions strong{
+
 
 color:var(--text);
 
+
 }
+
+
 
 
 
 footer{
 
-text-align:center;
 
-padding:20px;
+height:55px;
+
+
+display:flex;
+
+
+align-items:center;
+
+
+justify-content:center;
+
 
 color:var(--muted);
 
+
 font-size:14px;
+
+
+flex-shrink:0;
+
 
 }
 
@@ -627,15 +967,19 @@ font-size:14px;
 
 header{
 
+
 padding:0 15px;
+
 
 }
 
 
 
-.brand h1{
+.logo h1{
+
 
 font-size:20px;
+
 
 }
 
@@ -643,10 +987,34 @@ font-size:20px;
 
 .exam-card{
 
+
+width:100%;
+
+
 padding:25px;
+
 
 }
 
+
+
+.timer-box{
+
+
+gap:12px;
+
+
+}
+
+
+
+.timer-display{
+
+
+min-width:120px;
+
+
+}
 
 
 }
@@ -654,7 +1022,6 @@ padding:25px;
 
 
 </style>
-
 </head>
 
 
@@ -664,10 +1031,10 @@ padding:25px;
 <header>
 
 
-<div class="brand">
+<div class="logo">
 
 
-<div class="brand-icon">
+<div class="logo-icon">
 
 ⌨️
 
@@ -676,18 +1043,13 @@ padding:25px;
 
 <div>
 
-
 <h1>
-
 TypingMaster Pro
-
 </h1>
 
 
 <p>
-
 Professional Typing Examination Portal
-
 </p>
 
 
@@ -698,12 +1060,14 @@ Professional Typing Examination Portal
 
 
 
+
+
 <div class="header-actions">
 
 
 <button
 
-class="theme"
+class="theme-btn"
 
 onclick="toggleTheme()">
 
@@ -712,15 +1076,18 @@ onclick="toggleTheme()">
 </button>
 
 
+
+
 <button
 
-class="admin"
+class="admin-btn"
 
 onclick="openAdmin()">
 
 Admin Portal
 
 </button>
+
 
 
 </div>
@@ -731,13 +1098,17 @@ Admin Portal
 
 
 
-<div class="main">
+
+
+<main class="main">
+
 
 
 <div class="exam-card">
 
 
-<div class="card-title">
+
+<div class="card-header">
 
 
 <h2>
@@ -749,12 +1120,13 @@ Typing Test Setup
 
 <p>
 
-Configure your examination before starting
+Select examination details before starting
 
 </p>
 
 
 </div>
+
 
 
 
@@ -770,59 +1142,60 @@ Select Examination
 </label>
 
 
+
 <select id="exam">
 
 
-<option>
+<option value="SSC CHSL">
 
 SSC CHSL
 
 </option>
 
 
-<option>
+<option value="SSC CGL DEST">
 
 SSC CGL DEST
 
 </option>
 
 
-<option>
+<option value="SSC CPO">
 
 SSC CPO
 
 </option>
 
 
-<option>
+<option value="RRB NTPC">
 
 RRB NTPC
 
 </option>
 
 
-<option>
+<option value="Stenographer">
 
 Stenographer
 
 </option>
 
 
-<option>
+<option value="CPCT">
 
 CPCT
 
 </option>
 
 
-<option>
+<option value="DP HCM">
 
 DP HCM
 
 </option>
 
 
-<option>
+<option value="Custom Examination">
 
 Custom Examination
 
@@ -832,7 +1205,11 @@ Custom Examination
 </select>
 
 
+
 </div>
+
+
+
 
 
 
@@ -843,51 +1220,51 @@ Custom Examination
 
 <label>
 
-Select Test Duration
+Test Duration
 
 </label>
 
 
 
-<div class="duration-control">
 
+<div class="timer-box">
 
-<button onclick="changeTime(-1)">
-
+<button 
+class="timer-btn"
+onclick="changeTime(-1)">
 −
-
 </button>
 
 
-<input
+<div class="timer-display">
 
-id="duration"
+<span id="duration">
+10
+</span>
 
-value="10"
+Minutes
 
-readonly>
+<small>
+Select between 1 - 20 minutes
+</small>
+
+</div>
 
 
-<button onclick="changeTime(1)">
-
+<button 
+class="timer-btn"
+onclick="changeTime(1)">
 +
-
 </button>
 
 
-
-</div>
-
-
-<div class="duration-text">
-
-Allowed time: 1 minute to 20 minutes
-
 </div>
 
 
 
 </div>
+
+
 
 
 
@@ -904,7 +1281,35 @@ Select Typing Passage
 
 
 
-<div class="passage-box">
+
+<div class="passage-wrapper">
+
+
+
+<input
+
+id="passageInput"
+
+class="passage-input"
+
+placeholder="Click here to select passage"
+
+readonly>
+
+
+
+
+<div
+
+class="passage-dropdown"
+
+id="passageDropdown">
+
+
+
+
+
+<div class="dropdown-search">
 
 
 
@@ -912,17 +1317,29 @@ Select Typing Passage
 
 id="passageSearch"
 
-placeholder="Search and select passage..."
+placeholder="Search passage...">
 
-autocomplete="off">
+
+
+</div>
+
+
+
 
 
 
 <div
 
-id="passageList"
+class="passage-results"
 
-class="passage-list">
+id="passageResults">
+
+
+
+</div>
+
+
+
 
 </div>
 
@@ -935,35 +1352,51 @@ class="passage-list">
 
 <div
 
-id="selectedPassage"
+class="selected-passage"
 
-class="selected-passage">
+id="selectedPassage">
 
 
-<h3 id="selectedTitle">
+
+<h3
+
+id="selectedTitle">
 
 </h3>
 
 
-<p id="selectedDetails">
 
-</p>
+<span
+
+id="selectedInfo">
+
+</span>
+
 
 
 </div>
+
+
+
 
 
 
 
 <div
 
-id="preview"
+class="preview-box"
 
-class="preview">
+id="preview">
+
 
 Select a passage to preview.
 
+
 </div>
+
+
+
+
 
 
 
@@ -974,7 +1407,9 @@ class="start-btn"
 onclick="startTyping()">
 
 
+
 START TYPING TEST
+
 
 
 </button>
@@ -982,43 +1417,73 @@ START TYPING TEST
 
 
 
-<div class="notice">
 
 
-<strong>Instructions:</strong>
+
+<div class="instructions">
+
+
+<strong>
+
+Exam Instructions
+
+</strong>
 
 
 <br>
 
-• Ensure keyboard and system are ready before starting.
+
+• Select the correct examination before starting.
+
 
 <br>
 
-• Test will open in examination mode.
+
+• Set typing duration between 1 and 20 minutes.
+
 
 <br>
 
-• Time will start after typing begins.
+
+• Choose your passage from the dropdown list.
+
 
 <br>
 
-• Copy and paste functions are disabled during test.
+
+• Timer will follow your selected duration.
+
+
+<br>
+
+
+• Avoid refreshing during the typing test.
+
 
 
 </div>
 
 
 
+
+
+
 </div>
 
 
-</div>
+
+</main>
+
+
+
 
 
 
 <footer>
 
+
 TypingMaster Pro © 2026 | Offline Examination System
+
 
 </footer>
 <script>
@@ -1039,11 +1504,9 @@ let currentTime=10;
 
 
 
-/*
-=====================================
-THEME SYSTEM
-=====================================
-*/
+/* ==========================
+   THEME CONTROL
+========================== */
 
 
 function toggleTheme(){
@@ -1068,6 +1531,7 @@ document.body.classList.contains("dark")
 if(
 localStorage.getItem("typingTheme")
 ==="true"
+
 ){
 
 document.body.classList.add("dark");
@@ -1079,11 +1543,10 @@ document.body.classList.add("dark");
 
 
 
-/*
-=====================================
-ADMIN PAGE REDIRECT
-=====================================
-*/
+
+/* ==========================
+   ADMIN PAGE
+========================== */
 
 
 function openAdmin(){
@@ -1099,11 +1562,10 @@ window.location.href="admin.html";
 
 
 
-/*
-=====================================
-TIME CONTROL
-=====================================
-*/
+
+/* ==========================
+   TIMER CONTROL
+========================== */
 
 
 function changeTime(value){
@@ -1115,7 +1577,9 @@ currentTime += value;
 
 if(currentTime < 1){
 
-currentTime=1;
+
+currentTime = 1;
+
 
 }
 
@@ -1123,7 +1587,9 @@ currentTime=1;
 
 if(currentTime > 20){
 
-currentTime=20;
+
+currentTime = 20;
+
 
 }
 
@@ -1131,9 +1597,7 @@ currentTime=20;
 
 document
 .getElementById("duration")
-.value=
-currentTime;
-
+.innerHTML=currentTime;
 
 
 }
@@ -1143,11 +1607,10 @@ currentTime;
 
 
 
-/*
-=====================================
-EXAM CHANGE
-=====================================
-*/
+
+/* ==========================
+   EXAM CHANGE
+========================== */
 
 
 document
@@ -1162,8 +1625,14 @@ selectedPassage=null;
 
 
 document
+.getElementById("passageInput")
+.value="";
+
+
+
+document
 .getElementById("selectedPassage")
-.classList.remove("active");
+.classList.remove("show");
 
 
 
@@ -1174,14 +1643,34 @@ document
 
 
 
+});
+
+
+
+
+
+
+
+
+/* ==========================
+   OPEN PASSAGE DROPDOWN
+========================== */
+
+
 document
-.getElementById("passageSearch")
-.value="";
+.getElementById("passageInput")
+.addEventListener(
+"click",
+function(){
+
+
+document
+.getElementById("passageDropdown")
+.classList.add("active");
 
 
 
 loadPassages();
-
 
 
 });
@@ -1191,55 +1680,86 @@ loadPassages();
 
 
 
-/*
-=====================================
-LOAD PASSAGES FROM ADMIN
-=====================================
-*/
 
 
-function loadPassages(keyword=""){
+/* ==========================
+   SEARCH PASSAGES
+========================== */
+
+
+document
+.getElementById("passageSearch")
+.addEventListener(
+"input",
+function(){
+
+
+loadPassages(
+this.value.toLowerCase()
+);
+
+
+});
 
 
 
-let exam=
+
+
+
+
+
+function loadPassages(keyword="")
+{
+
+
+let exam =
 document
 .getElementById("exam")
 .value;
 
 
 
-let list=
+
+let results =
 document
-.getElementById("passageList");
+.getElementById("passageResults");
 
 
 
-list.innerHTML="";
+results.innerHTML="";
 
 
 
-let filtered=
+
+let filtered =
 passages.filter(
 p=>{
 
 
-return p.exam===exam &&
+return (
 
+p.exam===exam
+
+&&
 
 (
+
 keyword===""
+
 ||
+
 p.title
 .toLowerCase()
 .includes(keyword)
 
-);
-
-
-}
+)
 
 );
+
+
+});
+
+
 
 
 
@@ -1248,21 +1768,23 @@ p.title
 if(filtered.length===0){
 
 
-list.innerHTML=`
+results.innerHTML=`
 
 <div class="passage-item">
 
 <h4>
 
-No Passage Found
+No Passage Available
 
 </h4>
 
-<span>
 
-Please ask admin to add passages.
+<p>
 
-</span>
+Add passages from Admin Portal
+
+</p>
+
 
 </div>
 
@@ -1275,11 +1797,15 @@ return;
 
 
 
+
+
+
+
 filtered.forEach(
 p=>{
 
 
-list.innerHTML+=`
+results.innerHTML+=`
 
 <div
 
@@ -1295,7 +1821,7 @@ ${p.title}
 </h4>
 
 
-<span>
+<p>
 
 ${p.exam}
 
@@ -1305,21 +1831,20 @@ ${countWords(p.text)}
 
 Words
 
-</span>
+</p>
 
 
 </div>
 
-
 `;
 
 
-}
-
-);
+});
 
 
 }
+
+
 
 
 
@@ -1342,128 +1867,87 @@ return text
 
 
 
-/*
-=====================================
-PASSAGE SEARCH
-=====================================
-*/
 
-
-document
-.getElementById("passageSearch")
-.addEventListener(
-"focus",
-function(){
-
-
-document
-.getElementById("passageList")
-.classList.add("active");
-
-
-
-loadPassages();
-
-
-
-});
-
-
-
-
-
-document
-.getElementById("passageSearch")
-.addEventListener(
-"input",
-function(){
-
-
-document
-.getElementById("passageList")
-.classList.add("active");
-
-
-
-loadPassages(
-this.value.toLowerCase()
-);
-
-
-
-});
-
-
-
-
-
-
-/*
-=====================================
-SELECT PASSAGE
-=====================================
-*/
+/* ==========================
+   SELECT PASSAGE
+========================== */
 
 
 function selectPassage(id){
 
 
 
-selectedPassage=
+selectedPassage =
 passages.find(
 p=>p.id==id
 );
 
 
 
+
 if(!selectedPassage)
+
 return;
 
 
 
+
+
 document
-.getElementById("passageSearch")
-.value=
+.getElementById("passageInput")
+.value =
 selectedPassage.title;
+
+
 
 
 
 document
 .getElementById("selectedPassage")
-.classList.add("active");
+.classList.add("show");
+
+
 
 
 
 document
 .getElementById("selectedTitle")
-.innerHTML=
+.innerHTML =
 selectedPassage.title;
 
 
 
-document
-.getElementById("selectedDetails")
-.innerHTML=
 
-"Exam: "
+
+document
+.getElementById("selectedInfo")
+.innerHTML =
+
+"Exam : "
 +
 selectedPassage.exam
 +
-" | Words: "
+" | Words : "
 +
 countWords(selectedPassage.text);
 
 
 
+
+
+
+
 document
 .getElementById("preview")
-.innerHTML=
+.innerHTML =
 selectedPassage.text;
 
 
 
+
+
 document
-.getElementById("passageList")
+.getElementById("passageDropdown")
 .classList.remove("active");
 
 
@@ -1475,11 +1959,43 @@ document
 
 
 
-/*
-=====================================
-START TEST
-=====================================
-*/
+
+/* ==========================
+   CLOSE DROPDOWN
+========================== */
+
+
+document.addEventListener(
+"click",
+function(e){
+
+
+
+if(
+!e.target.closest(".passage-wrapper")
+){
+
+
+document
+.getElementById("passageDropdown")
+.classList.remove("active");
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+/* ==========================
+   START TEST
+========================== */
 
 
 function startTyping(){
@@ -1490,15 +2006,15 @@ if(!selectedPassage){
 
 
 alert(
-"Please select a passage before starting."
+"Please select a passage first."
 );
-
 
 
 return;
 
 
 }
+
 
 
 
@@ -1509,6 +2025,7 @@ localStorage.setItem(
 JSON.stringify(selectedPassage)
 
 );
+
 
 
 
@@ -1524,6 +2041,8 @@ document
 
 
 
+
+
 localStorage.setItem(
 
 "selectedDuration",
@@ -1536,8 +2055,7 @@ currentTime
 
 
 
-window.location.href=
-"typing.html";
+window.location.href="typing.html";
 
 
 }
@@ -1547,58 +2065,10 @@ window.location.href=
 
 
 
-/*
-=====================================
-CLOSE DROPDOWN
-=====================================
-*/
 
-
-document
-.addEventListener(
-"click",
-function(e){
-
-
-if(
-!e.target.closest(".passage-box")
-){
-
-
-document
-.getElementById("passageList")
-.classList.remove("active");
-
-
-}
-
-
-
-});
-
-
-
-
-
-
-/*
-=====================================
-INITIAL LOAD
-=====================================
-*/
-
-
-loadPassages();
-
-
-
-
-
-/*
-=====================================
-AUTO UPDATE AFTER ADMIN CHANGES
-=====================================
-*/
+/* ==========================
+   AUTO SYNC
+========================== */
 
 
 window.addEventListener(
@@ -1606,37 +2076,20 @@ window.addEventListener(
 function(){
 
 
-passages=
+passages =
 JSON.parse(
+
 localStorage.getItem("typing_passages")
+
 )
 ||[];
 
 
 
-loadPassages();
-
-
 });
 
 
 
-
-
-/*
-=====================================
-SECURITY BASIC PROTECTION
-=====================================
-*/
-
-
-document.addEventListener(
-"contextmenu",
-function(e){
-
-e.preventDefault();
-
-});
 
 
 </script>
