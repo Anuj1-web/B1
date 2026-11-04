@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Info – learn a little, every day</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#f4f7f6;--card:#fff;--ink:#10243a;--mute:#5b6b7b;--line:#dbe3e8;--acc:#0e8f7e;--sun:#ffc933;--red:#ef5b5b;--r:14px}
+:root[data-theme=dark]{--bg:#0d1824;--card:#15263a;--ink:#eaf1f6;--mute:#9fb0c0;--line:#27405a;--acc:#35c4af}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1824;--card:#15263a;--ink:#eaf1f6;--mute:#9fb0c0;--line:#27405a;--acc:#35c4af}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+h1,h2,h3,.logo{font-family:'Bricolage Grotesque',Figtree,sans-serif;line-height:1.1;margin:0}
+a{color:inherit}button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:14px;height:62px}
+.logo{font-weight:800;font-size:1.35rem;text-decoration:none;white-space:nowrap}.logo b{color:var(--acc)}
+nav{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+nav a{padding:7px 12px;border-radius:99px;text-decoration:none;color:var(--mute);white-space:nowrap;font-weight:500}
+nav a:hover,nav a.on{background:var(--ink);color:var(--bg)}
+.ib{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 12px;cursor:pointer}
+.btn{border:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block}
+.btn.acc{background:var(--acc);color:#fff}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.red{background:var(--red);color:#fff}.btn.sm{padding:5px 12px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hero{padding:54px 0 30px}.hero h1{font-size:clamp(2.3rem,7vw,4.4rem);font-weight:800;max-width:14ch}
+.hero h1 mark{background:var(--sun);color:#10243a;padding:0 .12em;border-radius:8px}
+.hero p{color:var(--mute);max-width:52ch;font-size:1.1rem}
+.search{display:flex;gap:8px;margin-top:22px;max-width:560px}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.cat{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--k);border-radius:var(--r);padding:20px;text-decoration:none;display:block;transition:transform .15s}
+.cat:hover{transform:translateY(-3px)}.cat .ic{font-size:2.2rem}.cat h3{margin:8px 0 4px;font-size:1.25rem}.cat small{color:var(--mute)}
+.sec{margin:38px 0 14px;display:flex;justify-content:space-between;align-items:baseline}.sec h2{font-size:1.6rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.card:hover{border-color:var(--acc)}
+.th{aspect-ratio:16/9;background:linear-gradient(135deg,var(--k,#0e8f7e),#10243a);display:grid;place-items:center;font-size:2.6rem;background-size:cover;background-position:center;position:relative}
+.badge{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.65);color:#fff;font-size:.75rem;padding:2px 9px;border-radius:99px}
+.cb{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}.cb h3{font-size:1.05rem}
+.cb p{margin:0;color:var(--mute);font-size:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;justify-content:space-between;color:var(--mute);font-size:.85rem;margin-top:auto}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.tag{border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:.8rem;cursor:pointer;background:var(--card)}.tag.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.view{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:20px}
+@media(max-width:860px){.view{grid-template-columns:1fr}}
+.player{background:#000;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;width:100%}.player iframe,.player video{width:100%;height:100%;border:0;display:block}
+.pdf{height:78vh;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}.pdf iframe{width:100%;height:100%;border:0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.liked{background:var(--red);color:#fff;border-color:var(--red)}
+.art{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;white-space:pre-wrap;max-width:75ch}
+.mini{display:flex;gap:10px;padding:8px;border-radius:10px;cursor:pointer;text-decoration:none}.mini:hover{background:var(--card)}.mini .t{width:80px;aspect-ratio:16/9;border-radius:8px;background:var(--k,#0e8f7e) center/cover;flex:none;display:grid;place-items:center}
+.empty{border:2px dashed var(--line);border-radius:var(--r);padding:36px;text-align:center;color:var(--mute)}
+footer{margin:60px 0 30px;color:var(--mute);font-size:.9rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:18px}
+.tabs{display:flex;gap:6px;margin:20px 0;flex-wrap:wrap}
+.f{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.f label{display:grid;gap:4px;font-size:.85rem;color:var(--mute)}.f .full{grid-column:1/-1}
+table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.tw{overflow-x:auto}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;z-index:50;display:none}
+#toast.err{background:var(--red);color:#fff}
+.load{padding:60px;text-align:center;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a class="logo" href="#/">The Little <b>Info</b></a>
+  <nav id="nav" aria-label="Sections"></nav>
+  <a class="ib" href="#/saved" title="Saved items">🔖</a>
+  <button class="ib" id="theme" aria-label="Toggle dark mode">🌓</button>
+</div></header>
+<main class="wrap" id="app"><div class="load">Loading…</div></main>
+<div class="wrap"><footer><span>© The Little Info — learn a little, every day.</span><a href="#/admin">Admin</a></footer></div>
+<div id="toast" role="status"></div>
+<script>
+const CFG={url:'https://qhqukohdvafmfavukknu.supabase.co',key:'sb_publishable_gMyJ6TfiY2d-Jh0Qk0btWA_vxlowVN0'};
+const sb=supabase.createClient(CFG.url,CFG.key);
+const $=s=>document.querySelector(s),app=$('#app');
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KC={videos:'#ef5b5b',notes:'#0e8f7e',revision:'#e8b100',articles:'#3b6fd4',links:'#7a5af8',quizzes:'#d9468f',tests:'#10243a'};
+const TI={video:'🎬',youtube:'▶️',pdf:'📄',article:'📰',link:'🔗'};
+const ls={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const cid=(()=>{let c=ls.get('li_cid');if(!c){c=crypto.randomUUID();ls.set('li_cid',c)}return c})();
+let cats=[],sess=null,adminOK=false,tab='cats',openQ=null;
+function toast(m,err){const t=$('#toast');t.textContent=m;t.className=err?'err':'';t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',3200)}
+async function q(p){const{data,error}=await p;if(error){toast(error.message,1);throw error}return data}
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const yt=u=>(u||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
+const fd=f=>Object.fromEntries(new FormData(f));
+$('#theme').onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).getPropertyValue('--bg').trim()==='#0d1824';d.dataset.theme=dark?'light':'dark';ls.set('li_theme',d.dataset.theme)};
+if(ls.get('li_theme'))document.documentElement.dataset.theme=ls.get('li_theme');
+
+async function loadCats(){cats=await q(sb.from('categories').select('*').order('sort_order'));
+  $('#nav').innerHTML=cats.filter(c=>c.is_published).map(c=>`<a href="#/c/${e(c.slug)}" data-s="${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('')}
+
+function card(i){const c=cats.find(x=>x.id===i.category_id),k=KC[c?.kind]||'#0e8f7e';
+  return `<article class="card" tabindex="0" role="link" data-go="#/i/${i.id}" style="--k:${k}"><div class="th" style="${i.thumbnail_url?`background-image:url('${e(i.thumbnail_url)}')`:''}">${i.thumbnail_url?'':TI[i.type]}<span class="badge">${i.type}</span></div><div class="cb"><h3>${e(i.title)}</h3><p>${e(i.description)}</p><div class="meta"><span>${e(c?.name||'')}</span><span>♥ ${i.likes_count||0}</span></div></div></article>`}
+function aCard(a){const n=a.questions?.[0]?.count||0;
+  return `<article class="card" style="--k:${a.kind==='test'?'#10243a':'#d9468f'}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>Pass ${a.pass_percent}%</span></div><button class="btn sm acc" data-soon>Start ${a.kind}</button></div></article>`}
+app.addEventListener('click',ev=>{
+  if(ev.target.closest('[data-soon]')){toast('The ${kind} engine arrives in the next update'.replace('${kind}','quiz & test'));return}
+  const g=ev.target.closest('[data-go]');if(g&&!ev.target.closest('button,a'))location.hash=g.dataset.go});
+app.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.dataset.go)location.hash=ev.target.dataset.go});
+
+async function home(){
+  const [items,as]=await Promise.all([q(sb.from('items').select('*').order('created_at',{ascending:false}).limit(60)),q(sb.from('assessments').select('category_id'))]);
+  const cnt={};items.forEach(i=>cnt[i.category_id]=(cnt[i.category_id]||0)+1);as.forEach(a=>cnt[a.category_id]=(cnt[a.category_id]||0)+1);
+  app.innerHTML=`<section class="hero"><h1>Learn a little, <mark>every day.</mark></h1><p>Video lessons, notes, revision sheets, quizzes and tests — all in one calm place.</p>
+  <form class="search" id="sf"><input id="sq" type="search" placeholder="Search notes, videos, topics…" aria-label="Search"><button class="btn acc">Search</button></form></section>
+  <div class="grid">${cats.filter(c=>c.is_published).map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#0e8f7e'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${e(c.description||'')} · ${cnt[c.id]||0} items</small></a>`).join('')}</div>
+  <div class="sec"><h2>Fresh on the shelf</h2></div><div class="grid" id="latest">${items.slice(0,9).map(card).join('')||'<div class="empty">Nothing here yet. Add content from the admin page.</div>'}</div>`;
+  $('#sf').onsubmit=async ev=>{ev.preventDefault();const t=$('#sq').value.trim();if(!t)return;
+    const r=await q(sb.from('items').select('*').or(`title.ilike.%${t.replace(/[%,()]/g,' ')}%,description.ilike.%${t.replace(/[%,()]/g,' ')}%`).limit(40));
+    $('#latest').innerHTML=r.map(card).join('')||'<div class="empty">No matches. Try another word.</div>';$('.sec h2').textContent=`Results for “${t}”`}}
+
+async function catPage(s){
+  const c=cats.find(x=>x.slug===s);if(!c){app.innerHTML='<div class="empty">Section not found.</div>';return}
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.s===s));
+  const [items,as]=await Promise.all([q(sb.from('items').select('*').eq('category_id',c.id).order('created_at',{ascending:false})),q(sb.from('assessments').select('*,questions(count)').eq('category_id',c.id).order('created_at',{ascending:false}))]);
+  const tags=[...new Set(items.flatMap(i=>i.tags||[]))];let tg='',tx='';
+  app.innerHTML=`<div class="hero" style="padding-bottom:10px"><h1 style="font-size:clamp(2rem,5vw,3.2rem)">${e(c.icon)} ${e(c.name)}</h1><p>${e(c.description||'')}</p>
+  <div class="search"><input id="cq" type="search" placeholder="Filter in ${e(c.name)}…" aria-label="Filter"></div></div>
+  ${tags.length?`<div class="tags" id="tg">${tags.map(t=>`<span class="tag" tabindex="0" data-t="${e(t)}">${e(t)}</span>`).join('')}</div>`:''}
+  <div class="grid" id="list"></div>`;
+  const draw=()=>{const f=items.filter(i=>(!tg||(i.tags||[]).includes(tg))&&(!tx||(i.title+i.description).toLowerCase().includes(tx)));
+    $('#list').innerHTML=(f.map(card).join('')+as.map(aCard).join(''))||`<div class="empty" style="grid-column:1/-1">Nothing in this section yet.</div>`};
+  draw();$('#cq').oninput=ev=>{tx=ev.target.value.toLowerCase();draw()};
+  $('#tg')?.addEventListener('click',ev=>{const t=ev.target.closest('.tag');if(!t)return;tg=tg===t.dataset.t?'':t.dataset.t;document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('on',x.dataset.t===tg));draw()})}
+
+async function viewer(id){
+  const i=(await q(sb.from('items').select('*').eq('id',id).limit(1)))[0];if(!i){app.innerHTML='<div class="empty">Item not found.</div>';return}
+  const c=cats.find(x=>x.id===i.category_id),rel=await q(sb.from('items').select('*').eq('category_id',i.category_id).neq('id',id).limit(6));
+  const rv=ls.get('li_recent',[]).filter(x=>x!==id);rv.unshift(id);ls.set('li_recent',rv.slice(0,20));
+  let liked=ls.get('li_liked',[]).includes(id),saved=ls.get('li_saved',[]).includes(id),n=i.likes_count||0;
+  const y=i.type==='youtube'?yt(i.url):null;let media='';
+  if(i.type==='youtube')media=y?`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${y}?rel=0" allow="accelerometer;autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen title="${e(i.title)}"></iframe></div>`:'<div class="empty">Invalid YouTube link.</div>';
+  else if(i.type==='video')media=`<div class="player"><video id="vp" src="${e(i.url)}" controls playsinline preload="metadata" ${i.thumbnail_url?`poster="${e(i.thumbnail_url)}"`:''}></video></div><div class="acts"><label>Speed <select id="sp" style="width:auto;display:inline-block">${[.5,.75,1,1.25,1.5,2].map(s=>`<option ${s==1?'selected':''}>${s}</option>`).join('')}</select></label><button class="btn ghost sm" id="pip">Picture in picture</button></div>`;
+  else if(i.type==='pdf')media=`<div class="pdf"><iframe src="${e(i.url)}#toolbar=1&view=FitH" title="${e(i.title)}"></iframe></div>`;
+  else if(i.type==='article')media=`<div class="art">${e(i.body)}</div>`;
+  else media=`<div class="empty"><p>This opens an external page.</p><a class="btn acc" target="_blank" rel="noopener" href="${e(i.url)}">Open link</a></div>`;
+  app.innerHTML=`<p><a href="#/c/${e(c?.slug||'')}">← ${e(c?.name||'Back')}</a></p><div class="view"><div><h1 style="font-size:clamp(1.6rem,4vw,2.4rem)">${e(i.title)}</h1><div class="tags">${(i.tags||[]).map(t=>`<span class="tag">${e(t)}</span>`).join('')}</div>${media}
+  <div class="acts"><button class="btn ghost sm" id="lk">♥ <span id="ln">${n}</span></button><button class="btn ghost sm" id="sv">🔖 Save</button><button class="btn ghost sm" id="sh">Share</button>${i.url&&['pdf','video'].includes(i.type)?`<a class="btn ghost sm" href="${e(i.url)}" download target="_blank" rel="noopener">Download</a><a class="btn ghost sm" href="${e(i.url)}" target="_blank" rel="noopener">Open full screen</a>`:''}</div>
+  <p style="color:var(--mute);max-width:70ch">${e(i.description)}</p></div>
+  <aside><h3 style="margin-bottom:8px">More in ${e(c?.name||'this section')}</h3>${rel.map(r=>`<a class="mini" href="#/i/${r.id}" style="--k:${KC[c?.kind]||'#0e8f7e'}"><div class="t" ${r.thumbnail_url?`style="background-image:url('${e(r.thumbnail_url)}')"`:''}>${r.thumbnail_url?'':TI[r.type]}</div><div><b>${e(r.title)}</b><br><small>♥ ${r.likes_count||0}</small></div></a>`).join('')||'<small>Nothing else yet.</small>'}</aside></div>`;
+  const paint=()=>{$('#lk').classList.toggle('liked',liked);$('#sv').textContent=saved?'🔖 Saved':'🔖 Save';$('#ln').textContent=n};paint();
+  $('#lk').onclick=async()=>{const l=ls.get('li_liked',[]);
+    if(liked){await q(sb.from('item_likes').delete().eq('item_id',id).eq('client_id',cid));liked=false;n=Math.max(0,n-1);ls.set('li_liked',l.filter(x=>x!==id))}
+    else{const{error}=await sb.from('item_likes').insert({item_id:id,client_id:cid});if(error&&error.code!=='23505'){toast(error.message,1);return}liked=true;if(!error)n++;ls.set('li_liked',[...l,id])}paint()};
+  $('#sv').onclick=()=>{let s=ls.get('li_saved',[]);saved?s=s.filter(x=>x!==id):s.push(id);ls.set('li_saved',s);saved=!saved;paint();toast(saved?'Saved to your bookmarks':'Removed from bookmarks')};
+  $('#sh').onclick=async()=>{const u=location.href;try{navigator.share?await navigator.share({title:i.title,url:u}):(await navigator.clipboard.writeText(u),toast('Link copied'))}catch{}};
+  const vp=$('#vp');if(vp){const k='li_pos_'+id;vp.onloadedmetadata=()=>{const p=ls.get(k,0);if(p>5&&p<vp.duration-5)vp.currentTime=p};vp.ontimeupdate=()=>ls.set(k,Math.floor(vp.currentTime));
+    $('#sp').onchange=ev=>vp.playbackRate=+ev.target.value;$('#pip').onclick=()=>document.pictureInPictureEnabled?vp.requestPictureInPicture():toast('Not supported here',1)}}
+
+async function saved(){const ids=ls.get('li_saved',[]);const items=ids.length?await q(sb.from('items').select('*').in('id',ids)):[];
+  app.innerHTML=`<div class="sec"><h2>🔖 Your saved items</h2></div><div class="grid">${items.map(card).join('')||'<div class="empty" style="grid-column:1/-1">Nothing saved yet. Tap “Save” on any item.</div>'}</div>`}
+
+/* ---------- ADMIN ---------- */
+const fl=(n,l,v='',t='text',x='')=>`<label>${l}<input name="${n}" type="${t}" value="${e(v)}" ${x}></label>`;
+const sel=(n,l,o,v='')=>`<label>${l}<select name="${n}">${o.map(([a,b])=>`<option value="${e(a)}" ${a==v?'selected':''}>${e(b)}</option>`).join('')}</select></label>`;
+async function checkAdmin(){const{data}=await sb.auth.getSession();sess=data.session;adminOK=false;
+  if(sess){const{data:r}=await sb.from('admins').select('user_id').limit(1);adminOK=!!r?.length}}
+async function admin(){
+  await checkAdmin();
+  if(!sess){app.innerHTML=`<div class="panel" style="max-width:420px;margin:50px auto"><h2>Admin sign in</h2><form id="lf" class="f" style="grid-template-columns:1fr;margin-top:14px">${fl('email','Email','','email','required')}${fl('password','Password (min 6)','','password','required minlength=6')}<button class="btn acc">Sign in</button><button type="button" class="btn ghost" id="su">Create account</button></form></div>`;
+    $('#lf').onsubmit=async ev=>{ev.preventDefault();const{error}=await sb.auth.signInWithPassword(fd(ev.target));if(error)return toast(error.message,1);admin()};
+    $('#su').onclick=async()=>{const f=$('#lf');if(!f.reportValidity())return;const{data,error}=await sb.auth.signUp(fd(f));if(error)return toast(error.message,1);toast(data.session?'Account created':'Check your email to confirm, then sign in');if(data.session)admin()};return}
+  if(!adminOK){app.innerHTML=`<div class="panel" style="max-width:520px;margin:50px auto"><h2>No admin access yet</h2><p>You're signed in as <b>${e(sess.user.email)}</b>. If this is the first setup, claim the admin role. It works once, only while no admin exists.</p><button class="btn acc" id="cl">Claim admin</button> <button class="btn ghost" id="so">Sign out</button></div>`;
+    $('#cl').onclick=async()=>{const ok=await q(sb.rpc('claim_first_admin'));toast(ok?'You are the admin':'An admin already exists',!ok);admin()};
+    $('#so').onclick=async()=>{await sb.auth.signOut();admin()};return}
+  app.innerHTML=`<div class="sec"><h2>Admin panel</h2><button class="btn ghost sm" id="so">Sign out</button></div><div class="tabs">${[['cats','Categories'],['items','Content'],['as','Quizzes & Tests']].map(([k,l])=>`<button class="btn ${tab===k?'':'ghost'} sm" data-tab="${k}">${l}</button>`).join('')}</div><div id="ad"></div>`;
+  $('#so').onclick=async()=>{await sb.auth.signOut();admin()};
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;admin()});
+  await loadCats();({cats:aCats,items:aItems,as:aAs})[tab]()}
+
+async function aCats(){let ed=null;
+  const draw=()=>{$('#ad').innerHTML=`<form class="panel f" id="cf"><h3 class="full">${ed?'Edit':'New'} category</h3>${fl('name','Name',ed?.name,'text','required')}${sel('kind','Type',['videos','notes','revision','articles','links','quizzes','tests'].map(x=>[x,x]),ed?.kind)}${fl('icon','Icon (emoji)',ed?.icon||'📚')}${fl('sort_order','Order',ed?.sort_order??cats.length+1,'number')}<label class="full">Description<input name="description" value="${e(ed?.description)}"></label><div class="full"><button class="btn acc">${ed?'Save changes':'Add category'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>
+  <div class="panel tw"><table><tr><th>Category<th>Type<th>Order<th>Live<th></tr>${cats.map(c=>`<tr><td>${e(c.icon)} ${e(c.name)}<td>${c.kind}<td>${c.sort_order}<td><input type="checkbox" data-pub="${c.id}" ${c.is_published?'checked':''} style="width:auto"><td><button class="btn ghost sm" data-ed="${c.id}">Edit</button> <button class="btn red sm" data-del="${c.id}">Delete</button></tr>`).join('')}</table></div>`;
+    $('#cf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);v.sort_order=+v.sort_order||0;
+      await q(ed?sb.from('categories').update(v).eq('id',ed.id):sb.from('categories').insert({...v,slug:slug(v.name)+'-'+Math.random().toString(36).slice(2,5)}));toast('Saved');ed=null;await loadCats();draw()};
+    $('#cx')?.addEventListener('click',()=>{ed=null;draw()});
+    document.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{ed=cats.find(c=>c.id===b.dataset.ed);draw();scrollTo(0,0)});
+    document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=async()=>{await q(sb.from('categories').update({is_published:b.checked}).eq('id',b.dataset.pub));await loadCats()});
+    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this category and everything inside it?'))return;await q(sb.from('categories').delete().eq('id',b.dataset.del));toast('Deleted');await loadCats();draw()})};draw()}
+
+async function aItems(){let ed=null,fc='';
+  const draw=async()=>{const list=await q((fc?sb.from('items').select('*').eq('category_id',fc):sb.from('items').select('*')).order('created_at',{ascending:false}).limit(200));
+    $('#ad').innerHTML=`<form class="panel f" id="if"><h3 class="full">${ed?'Edit':'Add'} content</h3>${sel('category_id','Category',cats.map(c=>[c.id,c.icon+' '+c.name]),ed?.category_id||fc)}${sel('type','Format',[['video','Video file (mp4)'],['youtube','YouTube video'],['pdf','PDF notes / sheet'],['article','Written article'],['link','External link']],ed?.type)}${fl('title','Title',ed?.title,'text','required')}${fl('tags','Tags (comma separated)',(ed?.tags||[]).join(', '))}
+    <label class="full">URL (paste, or upload below)<input name="url" id="uurl" value="${e(ed?.url)}" placeholder="https://…"></label><label>Upload file (video / PDF)<input type="file" id="upf" accept="video/*,application/pdf"></label>${fl('thumbnail_url','Thumbnail URL',ed?.thumbnail_url)}<label>Upload thumbnail<input type="file" id="upt" accept="image/*"></label>
+    <label class="full">Description<textarea name="description">${e(ed?.description)}</textarea></label><label class="full">Article text (for “Written article”)<textarea name="body" style="min-height:140px">${e(ed?.body)}</textarea></label><div class="full"><button class="btn acc">${ed?'Save changes':'Publish content'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>
+    <div class="panel"><label>Filter list by category<select id="fc"><option value="">All</option>${cats.map(c=>`<option value="${c.id}" ${c.id==fc?'selected':''}>${e(c.name)}</option>`).join('')}</select></label><div class="tw"><table><tr><th>Title<th>Type<th>♥<th>Live<th></tr>${list.map(i=>`<tr><td>${e(i.title)}<td>${i.type}<td>${i.likes_count}<td><input type="checkbox" data-pub="${i.id}" ${i.is_published?'checked':''} style="width:auto"><td><button class="btn ghost sm" data-ed="${i.id}">Edit</button> <button class="btn red sm" data-del="${i.id}">Delete</button></tr>`).join('')}</table></div></div>`;
+    const up=(inp,target)=>inp.onchange=async()=>{const f=inp.files[0];if(!f)return;toast('Uploading…');const p=`${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
+      const{error}=await sb.storage.from('content').upload(p,f);if(error)return toast(error.message,1);$(target).value=sb.storage.from('content').getPublicUrl(p).data.publicUrl;toast('Uploaded — now press Publish')};
+    up($('#upf'),'#uurl');up($('#upt'),'[name=thumbnail_url]');
+    $('#fc').onchange=ev=>{fc=ev.target.value;draw()};$('#cx')?.addEventListener('click',()=>{ed=null;draw()});
+    $('#if').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);v.tags=v.tags.split(',').map(t=>t.trim()).filter(Boolean);['url','thumbnail_url','body','description'].forEach(k=>v[k]=v[k]||null);
+      await q(ed?sb.from('items').update(v).eq('id',ed.id):sb.from('items').insert(v));toast('Saved');ed=null;draw()};
+    document.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{ed=list.find(i=>i.id===b.dataset.ed);draw();scrollTo(0,0)});
+    document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('items').update({is_published:b.checked}).eq('id',b.dataset.pub)));
+    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this item?'))return;await q(sb.from('items').delete().eq('id',b.dataset.del));toast('Deleted');draw()})};draw()}
+
+async function aAs(){
+  const draw=async()=>{const list=await q(sb.from('assessments').select('*,questions(count)').order('created_at',{ascending:false}));
+    const qc=cats.filter(c=>['quizzes','tests'].includes(c.kind));
+    $('#ad').innerHTML=`<form class="panel f" id="af"><h3 class="full">New quiz or test</h3>${sel('category_id','Category',(qc.length?qc:cats).map(c=>[c.id,c.icon+' '+c.name]))}${sel('kind','Kind',[['quiz','Quiz'],['test','Test']])}${fl('title','Title','','text','required')}${fl('duration_minutes','Time limit (minutes)','','number')}${fl('pass_percent','Pass mark %',40,'number')}${fl('negative_marking','Negative marking per wrong answer',0,'number','step=0.25')}<label class="full">Description<input name="description"></label><div class="full"><button class="btn acc">Create</button></div></form>
+    ${list.map(a=>`<div class="panel"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><b>${e(a.title)}</b> <span class="tag">${a.kind}</span> <small>${a.questions[0].count} questions</small></div><div><label style="display:inline"><input type="checkbox" data-pub="${a.id}" ${a.is_published?'checked':''} style="width:auto"> Live</label> <button class="btn ghost sm" data-q="${a.id}">Questions</button> <button class="btn red sm" data-del="${a.id}">Delete</button></div></div><div id="q${a.id}"></div></div>`).join('')}`;
+    $('#af').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);v.duration_minutes=+v.duration_minutes||null;v.pass_percent=+v.pass_percent;v.negative_marking=+v.negative_marking;await q(sb.from('assessments').insert(v));toast('Created');draw()};
+    document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('assessments').update({is_published:b.checked}).eq('id',b.dataset.pub)));
+    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete with all its questions?'))return;await q(sb.from('assessments').delete().eq('id',b.dataset.del));draw()});
+    document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{openQ=openQ===b.dataset.q?null:b.dataset.q;qPanels()});qPanels()};
+  const qPanels=async()=>{document.querySelectorAll('[id^=q]').forEach(d=>{if(d.id.length>20)d.innerHTML=''});if(!openQ)return;const box=$('#q'+openQ);if(!box)return;
+    const qs=await q(sb.from('questions').select('*').eq('assessment_id',openQ).order('sort_order'));
+    box.innerHTML=`<hr style="border:0;border-top:1px solid var(--line)"><ol>${qs.map(x=>`<li>${e(x.question)} <small>(answer ${'ABCD'[x.correct_index]})</small> <button class="btn red sm" data-dq="${x.id}">✕</button></li>`).join('')}</ol>
+    <form class="f" id="qf">${fl('question','Question','','text','required')}${[0,1,2,3].map(i=>fl('o'+i,'Option '+'ABCD'[i],'','text',i<2?'required':'')).join('')}${sel('c','Correct answer',[[0,'A'],[1,'B'],[2,'C'],[3,'D']])}${fl('marks','Marks',1,'number','step=0.5')}<label class="full">Explanation (shown after answering)<input name="explanation"></label><div class="full"><button class="btn acc sm">Add question</button></div></form>
+    <details style="margin-top:12px"><summary>Bulk add (one per line)</summary><p><small>Format: Question | A | B | C | D | correct letter | explanation</small></p><textarea id="bulk"></textarea><button class="btn sm acc" id="bb">Import lines</button></details>`;
+    $('#qf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);await q(sb.from('questions').insert({assessment_id:openQ,question:v.question,options:[v.o0,v.o1,v.o2,v.o3].filter(Boolean),correct_index:+v.c,marks:+v.marks||1,explanation:v.explanation||null,sort_order:qs.length}));toast('Question added');draw()};
+    $('#bb').onclick=async()=>{const rows=$('#bulk').value.split('\n').map(l=>l.split('|').map(s=>s.trim())).filter(r=>r.length>=6).map((r,i)=>({assessment_id:openQ,question:r[0],options:r.slice(1,5).filter(Boolean),correct_index:Math.max(0,'ABCD'.indexOf(r[5].toUpperCase())),explanation:r[6]||null,sort_order:qs.length+i}));
+      if(!rows.length)return toast('No valid lines found',1);await q(sb.from('questions').insert(rows));toast(rows.length+' questions added');draw()};
+    document.querySelectorAll('[data-dq]').forEach(b=>b.onclick=async()=>{await q(sb.from('questions').delete().eq('id',b.dataset.dq));draw()})};
+  draw()}
+
+async function route(){
+  const p=location.hash.replace(/^#\//,'').split('/');scrollTo(0,0);
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('on'));
+  app.innerHTML='<div class="load">Loading…</div>';
+  try{if(!cats.length)await loadCats();
+    if(p[0]==='c')await catPage(p[1]);else if(p[0]==='i')await viewer(p[1]);else if(p[0]==='admin')await admin();else if(p[0]==='saved')await saved();else await home()}
+  catch(err){console.error(err);app.innerHTML='<div class="empty">Something went wrong loading this page. Check your connection and refresh.</div>'}}
+window.addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>
