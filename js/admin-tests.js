@@ -9,9 +9,9 @@ async function aAs(){
     const list=await q(sb.from('assessments').select('*,questions(count),sections(count)').order('created_at',{ascending:false}));
     const qc=cats.filter(c=>['quizzes','tests'].includes(c.kind)),A=edA;
     $('#ad').innerHTML=`<form class="panel f" id="af"><h3 class="full">${A?'Edit settings':'New quiz or test'}</h3>
-    ${sel('category_id','Category',(qc.length?qc:cats).map(c=>[c.id,c.icon+' '+c.name]),A?.category_id)}
+    ${sel('category_id','Category',(qc.length?qc:cats).map(c=>[c.id,c.icon+' '+c.name]),A?.category_id)}${placeHTML(A?.category_id||(qc[0]||cats[0])?.id,A?.folder_id)}
     ${sel('kind','Kind',[['quiz','Quiz — one question at a time, instant feedback'],['test','Test — exam window with question palette']],A?.kind)}
-    ${fl('title','Title',A?.title,'text','required')}
+    ${fl('title','Title',A?.title,'text','required')}${fl('sort_order','Position in folder (1 = first)',A?.sort_order??0,'number')}
     ${sel('mode','Test format (tests only)',MODES,A?.mode)}
     ${fl('duration_minutes','Total time in minutes (blank = no limit)',A?.duration_minutes??'','number','min=1')}
     ${fl('pass_percent','Pass mark %',A?.pass_percent??40,'number','min=0 max=100')}
@@ -21,12 +21,13 @@ async function aAs(){
     <label class="full">Extra instructions shown before the start<textarea name="instructions">${e(A?.instructions)}</textarea></label>
     <p class="full" style="margin:0;color:var(--mute);font-size:.85rem">“Separate timer for each section” ignores the total time above and uses each section's own time. “One timer” keeps sections as groups only.</p>
     <div class="full"><button class="btn acc">${A?'Save changes':'Create'}</button> ${A?'<button type="button" class="btn ghost" id="xa">Cancel</button>':''}</div></form>
-    ${list.map(a=>`<div class="panel"><div class="ah"><div><b>${e(a.title)}</b> <span class="tag">${a.kind}</span> ${a.kind==='test'?`<span class="tag">${MLAB[a.mode]}</span>`:''} <small>${a.questions[0].count} questions${a.sections[0].count?` · ${a.sections[0].count} sections`:''}</small></div>
+    ${list.map(a=>`<div class="panel"><div class="ah"><div><b>${e(a.title)}</b> <span class="tag">${a.kind}</span> ${a.kind==='test'?`<span class="tag">${MLAB[a.mode]}</span>`:''} <small>${a.questions[0].count} questions${a.sections[0].count?` · ${a.sections[0].count} sections`:''}</small><br>${loc(a.folder_id)}</div>
     <div class="acts" style="margin:0"><label style="display:inline"><input type="checkbox" data-pub="${a.id}" ${a.is_published?'checked':''} style="width:auto"> Live</label><button class="btn ghost sm" data-m="${a.id}">${openQ===a.id?'Close':'Manage'}</button><button class="btn ghost sm" data-ea="${a.id}">Settings</button><a class="btn ghost sm" href="#/exam/${a.id}" target="_blank">Preview</a><button class="btn red sm" data-del="${a.id}">Delete</button></div></div><div id="m${a.id}"></div></div>`).join('')||'<div class="empty">No quizzes or tests yet. Create one above.</div>'}`;
-    $('#af').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);
-      Object.assign(v,{duration_minutes:+v.duration_minutes||null,pass_percent:+v.pass_percent,negative_marking:+v.negative_marking||0,shuffle_questions:v.shuffle_questions==='true',description:v.description||null,instructions:v.instructions||null});
+    $('#af').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);if(!placeCheck(v))return;
+      Object.assign(v,{sort_order:+v.sort_order||0,duration_minutes:+v.duration_minutes||null,pass_percent:+v.pass_percent,negative_marking:+v.negative_marking||0,shuffle_questions:v.shuffle_questions==='true',description:v.description||null,instructions:v.instructions||null});
       if(v.kind==='quiz')v.mode='mixed';
       await q(A?sb.from('assessments').update(v).eq('id',A.id):sb.from('assessments').insert(v));toast('Saved');edA=null;draw()};
+    bindPlace($('#af'));
     $('#xa')?.addEventListener('click',()=>{edA=null;draw()});
     document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('assessments').update({is_published:b.checked}).eq('id',b.dataset.pub)));
     document.querySelectorAll('[data-ea]').forEach(b=>b.onclick=()=>{edA=list.find(a=>a.id===b.dataset.ea);draw();scrollTo(0,0)});

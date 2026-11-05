@@ -39,7 +39,7 @@ function intro(a,secs,qs){
     m==='sectional_timer'?'Every section has its own timer. When it ends you move on automatically and cannot go back.':'',
     m==='single_timer'?'One timer runs for the whole test. You can switch between sections freely.':'',
     saved?'':'',a.instructions||''].filter(Boolean);
-  app.innerHTML=`<p><a href="#/">← Home</a></p><div class="panel" style="max-width:760px;margin:10px auto"><h1 style="font-size:clamp(1.6rem,4vw,2.4rem)">${e(a.title)}</h1><p style="color:var(--mute)">${e(a.description)}</p>
+  app.innerHTML=`<p><a href="${a.folder_id?'#/f/'+a.folder_id:'#/'}">← Back</a></p><div class="panel" style="max-width:760px;margin:10px auto"><h1 style="font-size:clamp(1.6rem,4vw,2.4rem)">${e(a.title)}</h1><p style="color:var(--mute)">${e(a.description)}</p>
   <div class="stats"><div><b>${Q.length}</b>Questions</div><div><b>${+tot.toFixed(2)}</b>Total marks</div><div><b>${e(time)}</b>Time</div><div><b>${a.pass_percent}%</b>To pass</div></div>
   ${S.length>1?`<div class="tw"><table><tr><th>Section<th>Questions<th>Time</tr>${S.map(s=>`<tr><td>${e(s.title)}<td>${s.qs.length}<td>${m==='sectional_timer'?(s.dur?s.dur+' min':'No limit'):'—'}</tr>`).join('')}</table></div>`:''}
   <h3 style="margin:16px 0 6px">Before you begin</h3><ul>${rules.map(r=>`<li>${e(r)}</li>`).join('')}</ul>
@@ -141,7 +141,7 @@ function result(r,took){
   app.innerHTML=`<div class="panel res"><div class="badge2 ${r.pass?'pass':'fail'}">${r.pass?'Passed':'Not passed yet'}</div><h1>${+r.score.toFixed(2)} <small>/ ${+r.total.toFixed(2)}</small></h1><p style="color:var(--mute)">${e(a.title)} · ${Math.round(pct)}% (pass mark ${a.pass_percent}%)</p>
   <div class="stats"><div><b>${r.correct}</b>Correct</div><div><b>${r.wrong}</b>Wrong</div><div><b>${r.skipped}</b>Skipped</div><div><b>${acc}%</b>Accuracy</div><div><b>${mmss(took)}</b>Time taken</div></div>
   ${secRows?`<div class="tw"><table><tr><th>Section<th>Correct<th>Wrong<th>Skipped<th>Marks</tr>${secRows}</table></div>`:''}
-  <div class="acts"><button class="btn acc" id="again">Try again</button><a class="btn ghost" href="#/">Back to home</a></div></div>
+  <div class="acts"><button class="btn acc" id="again">Try again</button><a class="btn ghost" href="${a.folder_id?'#/f/'+a.folder_id:'#/'}">Back</a></div></div>
   <div class="sec"><h2>Review your answers</h2><div class="tags" id="rf">${[['all','All'],['wrong','Wrong'],['skip','Skipped'],['right','Correct']].map(([k,l],i)=>`<span class="tag${i?'':' on'}" data-f="${k}" tabindex="0">${l}</span>`).join('')}</div></div><div id="rl"></div>`;
   const draw=f=>{$('#rl').innerHTML=st.Q.map((x,n)=>{const v=rev[x.id],t=v.chosen==null?'skip':v.chosen===v.correct_index?'right':'wrong';if(f!=='all'&&f!==t)return'';
     return `<div class="panel rv ${t}"><div class="qh"><span>Q${n+1}${st.S.length>1?' · '+e(st.S[x.si].title):''}</span><span class="mk">${t==='right'?'+'+x.marks:t==='wrong'?'−'+neg:'0'}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
