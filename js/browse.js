@@ -33,7 +33,7 @@ async function folderPage(id){
   const f=t.folder,k=KC[t.cat?.kind]||'#0e8f7e';hl(t.cat?.slug);
   const kids=t.all.filter(z=>z.parent_id===id);
   const[full,items,as]=await Promise.all([kids.length?q(sb.from('folders').select('*').in('id',kids.map(z=>z.id)).order('sort_order').order('created_at')):[],
-    q(sb.from('items').select('*').eq('folder_id',id).order('sort_order').order('created_at')),
+    q(sb.from('items').select(ICOLS).eq('folder_id',id).order('sort_order').order('created_at')),
     q(sb.from('assessments').select('*,questions(count)').eq('folder_id',id).order('sort_order').order('created_at'))]);
   const cnt=await direct(full.map(z=>z.id)),subs=full.length?await q(sb.from('folders').select('parent_id').in('parent_id',full.map(z=>z.id))):[];
   const content=items.map(card).join('')+as.map(aCard).join('');

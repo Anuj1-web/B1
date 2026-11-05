@@ -12,8 +12,11 @@ async function q(p){const{data,error}=await p;if(error){toast(error.message,1);t
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const yt=u=>(u||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
 const fd=f=>Object.fromEntries(new FormData(f));
-$('#theme').onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).getPropertyValue('--bg').trim()==='#0d1824';d.dataset.theme=dark?'light':'dark';ls.set('li_theme',d.dataset.theme)};
+$('#theme').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;d.dataset.theme=dark?'light':'dark';ls.set('li_theme',d.dataset.theme)};
 if(ls.get('li_theme'))document.documentElement.dataset.theme=ls.get('li_theme');
 
 
 const need=src=>need.c[src]||(need.c[src]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>{delete need.c[src];no(new Error('Could not load '+src))};document.head.appendChild(s)}));need.c={};
+
+const ICOLS='id,category_id,folder_id,title,description,type,url,body,thumbnail_url,tags,is_published,created_at,duration,sort_order';
+const SK='<div class="sk-wrap"><div class="sk h"></div><div class="sk r"></div><div class="sk r"></div></div>';
