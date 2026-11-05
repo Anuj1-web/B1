@@ -42,23 +42,3 @@ async function aItems(){let ed=null,fc='';
     document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('items').update({is_published:b.checked}).eq('id',b.dataset.pub)));
     document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this item?'))return;await q(sb.from('items').delete().eq('id',b.dataset.del));toast('Deleted');draw()})};draw()}
 
-async function aAs(){
-  const draw=async()=>{const list=await q(sb.from('assessments').select('*,questions(count)').order('created_at',{ascending:false}));
-    const qc=cats.filter(c=>['quizzes','tests'].includes(c.kind));
-    $('#ad').innerHTML=`<form class="panel f" id="af"><h3 class="full">New quiz or test</h3>${sel('category_id','Category',(qc.length?qc:cats).map(c=>[c.id,c.icon+' '+c.name]))}${sel('kind','Kind',[['quiz','Quiz'],['test','Test']])}${fl('title','Title','','text','required')}${fl('duration_minutes','Time limit (minutes)','','number')}${fl('pass_percent','Pass mark %',40,'number')}${fl('negative_marking','Negative marking per wrong answer',0,'number','step=0.25')}<label class="full">Description<input name="description"></label><div class="full"><button class="btn acc">Create</button></div></form>
-    ${list.map(a=>`<div class="panel"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><b>${e(a.title)}</b> <span class="tag">${a.kind}</span> <small>${a.questions[0].count} questions</small></div><div><label style="display:inline"><input type="checkbox" data-pub="${a.id}" ${a.is_published?'checked':''} style="width:auto"> Live</label> <button class="btn ghost sm" data-q="${a.id}">Questions</button> <button class="btn red sm" data-del="${a.id}">Delete</button></div></div><div id="q${a.id}"></div></div>`).join('')}`;
-    $('#af').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);v.duration_minutes=+v.duration_minutes||null;v.pass_percent=+v.pass_percent;v.negative_marking=+v.negative_marking;await q(sb.from('assessments').insert(v));toast('Created');draw()};
-    document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('assessments').update({is_published:b.checked}).eq('id',b.dataset.pub)));
-    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete with all its questions?'))return;await q(sb.from('assessments').delete().eq('id',b.dataset.del));draw()});
-    document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{openQ=openQ===b.dataset.q?null:b.dataset.q;qPanels()});qPanels()};
-  const qPanels=async()=>{document.querySelectorAll('[id^=q]').forEach(d=>{if(d.id.length>20)d.innerHTML=''});if(!openQ)return;const box=$('#q'+openQ);if(!box)return;
-    const qs=await q(sb.from('questions').select('*').eq('assessment_id',openQ).order('sort_order'));
-    box.innerHTML=`<hr style="border:0;border-top:1px solid var(--line)"><ol>${qs.map(x=>`<li>${e(x.question)} <small>(answer ${'ABCD'[x.correct_index]})</small> <button class="btn red sm" data-dq="${x.id}">✕</button></li>`).join('')}</ol>
-    <form class="f" id="qf">${fl('question','Question','','text','required')}${[0,1,2,3].map(i=>fl('o'+i,'Option '+'ABCD'[i],'','text',i<2?'required':'')).join('')}${sel('c','Correct answer',[[0,'A'],[1,'B'],[2,'C'],[3,'D']])}${fl('marks','Marks',1,'number','step=0.5')}<label class="full">Explanation (shown after answering)<input name="explanation"></label><div class="full"><button class="btn acc sm">Add question</button></div></form>
-    <details style="margin-top:12px"><summary>Bulk add (one per line)</summary><p><small>Format: Question | A | B | C | D | correct letter | explanation</small></p><textarea id="bulk"></textarea><button class="btn sm acc" id="bb">Import lines</button></details>`;
-    $('#qf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);await q(sb.from('questions').insert({assessment_id:openQ,question:v.question,options:[v.o0,v.o1,v.o2,v.o3].filter(Boolean),correct_index:+v.c,marks:+v.marks||1,explanation:v.explanation||null,sort_order:qs.length}));toast('Question added');draw()};
-    $('#bb').onclick=async()=>{const rows=$('#bulk').value.split('\n').map(l=>l.split('|').map(s=>s.trim())).filter(r=>r.length>=6).map((r,i)=>({assessment_id:openQ,question:r[0],options:r.slice(1,5).filter(Boolean),correct_index:Math.max(0,'ABCD'.indexOf(r[5].toUpperCase())),explanation:r[6]||null,sort_order:qs.length+i}));
-      if(!rows.length)return toast('No valid lines found',1);await q(sb.from('questions').insert(rows));toast(rows.length+' questions added');draw()};
-    document.querySelectorAll('[data-dq]').forEach(b=>b.onclick=async()=>{await q(sb.from('questions').delete().eq('id',b.dataset.dq));draw()})};
-  draw()}
-

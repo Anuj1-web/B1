@@ -15,3 +15,5 @@ const fd=f=>Object.fromEntries(new FormData(f));
 $('#theme').onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).getPropertyValue('--bg').trim()==='#0d1824';d.dataset.theme=dark?'light':'dark';ls.set('li_theme',d.dataset.theme)};
 if(ls.get('li_theme'))document.documentElement.dataset.theme=ls.get('li_theme');
 
+
+const need=src=>need.c[src]||(need.c[src]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>{delete need.c[src];no(new Error('Could not load '+src))};document.head.appendChild(s)}));need.c={};

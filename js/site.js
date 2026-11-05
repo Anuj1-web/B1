@@ -4,9 +4,8 @@ async function loadCats(){cats=await q(sb.from('categories').select('*').order('
 function card(i){const c=cats.find(x=>x.id===i.category_id),k=KC[c?.kind]||'#0e8f7e';
   return `<article class="card" tabindex="0" role="link" data-go="#/i/${i.id}" style="--k:${k}"><div class="th" style="${i.thumbnail_url?`background-image:url('${e(i.thumbnail_url)}')`:''}">${i.thumbnail_url?'':TI[i.type]}<span class="badge">${i.type}</span></div><div class="cb"><h3>${e(i.title)}</h3><p>${e(i.description)}</p><div class="meta"><span>${e(c?.name||'')}</span><span>♥ ${i.likes_count||0}</span></div></div></article>`}
 function aCard(a){const n=a.questions?.[0]?.count||0;
-  return `<article class="card" style="--k:${a.kind==='test'?'#10243a':'#d9468f'}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>Pass ${a.pass_percent}%</span></div><button class="btn sm acc" data-soon>Start ${a.kind}</button></div></article>`}
+  return `<article class="card" style="--k:${a.kind==='test'?'#10243a':'#d9468f'}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>${a.kind==='test'&&a.mode==='sectional_timer'?'Sectional timers':a.kind==='test'&&a.mode==='single_timer'?'Sections':'Pass '+a.pass_percent+'%'}</span></div><a class="btn sm acc" href="#/exam/${a.id}">Start ${a.kind}</a></div></article>`}
 app.addEventListener('click',ev=>{
-  if(ev.target.closest('[data-soon]')){toast('The ${kind} engine arrives in the next update'.replace('${kind}','quiz & test'));return}
   const g=ev.target.closest('[data-go]');if(g&&!ev.target.closest('button,a'))location.hash=g.dataset.go});
 app.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.dataset.go)location.hash=ev.target.dataset.go});
 
