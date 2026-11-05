@@ -4,13 +4,17 @@ const OL='ABCDEF';
 const SN={nv:'Not visited',na:'Not answered',a:'Answered',mr:'Marked for review',amr:'Answered & marked for review'};
 const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-window.exCleanup=()=>{if(st?.tick)clearInterval(st.tick);st=null;document.body.classList.remove('focus');window.onbeforeunload=null};
+window.exCleanup=()=>{if(st?.tick)clearInterval(st.tick);st=null;document.body.classList.remove('focus','pal-open');window.onbeforeunload=null};
+function lightbox(src){const d=document.createElement('div');d.className='lb';d.innerHTML=`<img src="${e(src)}" alt="Enlarged figure"><button aria-label="Close">✕</button>`;d.onclick=()=>d.remove();document.body.appendChild(d)}
+document.addEventListener('click',ev=>{const i=ev.target.closest('[data-zoom]');if(i)lightbox(i.src)});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){document.querySelector('.lb')?.remove();document.body.classList.remove('pal-open')}});
+const figure=x=>x.image_url?`<figure class="qimg"><img src="${e(x.image_url)}" alt="Figure for this question" data-zoom loading="lazy"><figcaption>Tap the figure to enlarge</figcaption></figure>`:'';
 
 async function exam(id){
   const a=(await q(sb.from('assessments').select('*').eq('id',id).limit(1)))[0];
   if(!a){app.innerHTML='<div class="empty">This quiz or test was not found, or is not live yet.</div>';return}
   const [secs,qs]=await Promise.all([q(sb.from('sections').select('*').eq('assessment_id',id).order('sort_order')),
-    q(sb.from('questions').select('id,section_id,question,options,marks,sort_order').eq('assessment_id',id).order('sort_order'))]);
+    q(sb.from('questions').select('id,section_id,question,options,marks,sort_order,image_url').eq('assessment_id',id).order('sort_order'))]);
   if(!qs.length){app.innerHTML='<div class="empty">No questions have been added yet. Check back soon.</div>';return}
   intro(a,secs,qs)}
 
@@ -61,16 +65,17 @@ function tick(){if(!st||st.done)return;const now=Date.now(),parts=[];let low=fal
 /* ---------- test window ---------- */
 function stat(i){const id=st.Q[i].id,an=id in st.ans,mk=st.mark.has(id);return mk?(an?'amr':'mr'):an?'a':st.vis.has(id)?'na':'nv'}
 function testUI(){
-  app.innerHTML=`<div class="ex"><div class="ex-top"><b>${e(st.a.title)}</b><span id="tm" class="tm"></span><button class="btn red sm" id="sub">Submit test</button></div><div class="ex-tabs" id="tabs"></div>
-  <div class="ex-main"><section class="ex-q" id="qa"></section><aside class="ex-pal"><div id="leg" class="leg"></div><div id="pal" class="pal"></div></aside></div><div class="ex-foot" id="ft"></div></div>`;
+  app.innerHTML=`<div class="ex"><div class="ex-top"><b>${e(st.a.title)}</b><span id="tm" class="tm"></span><button class="btn red sm" id="sub">Submit test</button><button class="ib pbtn" id="pbtn" aria-label="Open question palette" aria-expanded="false">☰</button></div><div class="ex-tabs" id="tabs"></div>
+  <div class="ex-main"><section class="ex-q" id="qa"></section><aside class="ex-pal" id="xpal" aria-label="Question palette"><div class="phead"><b>Question palette</b><button class="ib" id="pclose" aria-label="Close palette">✕</button></div><div id="leg" class="leg"></div><div id="pal" class="pal"></div><button class="btn red psub" id="sub2">Submit test</button></aside></div><div class="pscrim" id="pscrim"></div><div class="ex-foot" id="ft"></div></div>`;
   const root=$('.ex');
-  $('#sub').onclick=()=>submitAsk();
+  const pal=o=>{document.body.classList.toggle('pal-open',o);$('#pbtn').setAttribute('aria-expanded',o)};
+  $('#sub').onclick=$('#sub2').onclick=()=>{pal(false);submitAsk()};$('#pbtn').onclick=()=>pal(true);$('#pclose').onclick=$('#pscrim').onclick=()=>pal(false);
   root.onchange=ev=>{if(ev.target.name==='o'){st.ans[st.Q[st.cur].id]=+ev.target.value;persist();paint(true)}};
   root.onclick=ev=>{const b=ev.target.closest('button');if(!b)return;const d=b.dataset,x=st.Q[st.cur];
-    if(d.j!==undefined)go(+d.j);else if(d.s!==undefined)go(secStart(+d.s));
+    if(d.j!==undefined){pal(false);go(+d.j)}else if(d.s!==undefined)go(secStart(+d.s));
     else if(d.act==='prev')go(st.cur-1);
     else if(d.act==='save')go(Math.min(st.cur+1,rangeOf().hi-1));
-    else if(d.act==='mark'){st.mark.has(x.id)?st.mark.delete(x.id):st.mark.add(x.id);go(Math.min(st.cur+1,rangeOf().hi-1))}
+    else if(d.act==='mark'){st.mark.has(x.id)?st.mark.delete(x.id):st.mark.add(x.id);persist();paint(true)}
     else if(d.act==='clear'){delete st.ans[x.id];persist();paint()}
     else if(d.act==='sec')nextSec(false)};
   paint()}
@@ -80,15 +85,16 @@ function paint(keepScroll){
   const i=st.cur,x=st.Q[i],s=st.S[x.si],{lo,hi}=rangeOf();st.vis.add(x.id);
   $('#tabs').innerHTML=st.S.length>1?st.S.map((t,si)=>`<button class="stab${si===x.si?' on':''}" data-s="${si}" ${st.m==='sectional_timer'&&si!==x.si?'disabled':''}>${st.m==='sectional_timer'&&si<x.si?'🔒 ':''}${e(t.title)}</button>`).join(''):'';
   const neg=st.a.negative_marking>0?` / −${st.a.negative_marking}`:'';
-  $('#qa').innerHTML=`<div class="qh"><span>Question ${i-lo+1} of ${hi-lo}${st.S.length>1?' · '+e(s.title):''}</span><span class="mk">+${x.marks}${neg}</span></div><div class="qt">${e(x.question)}</div>
+  $('#qa').innerHTML=`<div class="qh"><span>Question ${i-lo+1} of ${hi-lo}${st.S.length>1?' · '+e(s.title):''}</span><span class="mk">+${x.marks}${neg}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
   <div class="opts">${x.options.map((o,k)=>`<label class="opt${st.ans[x.id]===k?' sel':''}"><input type="radio" name="o" value="${k}" ${st.ans[x.id]===k?'checked':''}><span class="ol">${OL[k]}</span><span>${e(o)}</span></label>`).join('')}</div>`;
   const cnt={nv:0,na:0,a:0,mr:0,amr:0};let pal='';
   for(let j=lo;j<hi;j++){const t=stat(j);cnt[t]++;pal+=`<button class="pn p-${t}${j===i?' cur':''}" data-j="${j}" aria-label="Question ${j-lo+1}: ${SN[t]}">${j-lo+1}</button>`}
   $('#pal').innerHTML=pal;
   $('#leg').innerHTML=Object.keys(SN).map(t=>`<span><i class="pn p-${t}">${cnt[t]}</i>${SN[t]}</span>`).join('');
   const mk=st.mark.has(x.id),secBtn=st.m==='sectional_timer'&&i===hi-1&&x.si<st.S.length-1;
-  $('#ft').innerHTML=`<div><button class="btn ghost" data-act="mark">${mk?'Unmark review & next':'Mark for review & next'}</button> <button class="btn ghost" data-act="clear" ${x.id in st.ans?'':'disabled'}>Clear response</button></div>
-  <div><button class="btn ghost" data-act="prev" ${i===lo?'disabled':''}>Previous</button> ${secBtn?'<button class="btn" data-act="sec">Submit section</button>':`<button class="btn acc" data-act="save" ${i===hi-1?'disabled':''}>Save &amp; next</button>`}</div>`;
+  $('#ft').innerHTML=`<button class="btn ghost navb" data-act="prev" ${i===lo?'disabled':''} aria-label="Previous question">←</button>
+  <div class="mid"><button class="btn ghost sm" data-act="clear" ${x.id in st.ans?'':'disabled'}>Clear response</button><button class="btn ghost sm${mk?' on':''}" data-act="mark" aria-pressed="${mk}">${mk?'★ Marked for review':'☆ Mark for review'}</button></div>
+  ${secBtn?'<button class="btn navb wide" data-act="sec">Submit section →</button>':`<button class="btn acc navb" data-act="save" ${i===hi-1?'disabled':''} aria-label="Next question">→</button>`}`;
   if(!keepScroll)scrollTo(0,0)}
 function nextSec(auto){
   if(st.sec>=st.S.length-1)return finish(auto);
@@ -112,7 +118,7 @@ function quizUI(){
 function qpaint(){
   const i=st.cur,x=st.Q[i],fb=st.fb[x.id],ch=st.ans[x.id],score=Object.values(st.fb).filter(f=>f.correct).length;
   $('#pb').style.width=(i/st.Q.length*100)+'%';
-  $('#qa').innerHTML=`<div class="qh"><span>Question ${i+1} of ${st.Q.length}</span><span class="mk">Correct so far: ${score}</span></div><div class="qt">${e(x.question)}</div>
+  $('#qa').innerHTML=`<div class="qh"><span>Question ${i+1} of ${st.Q.length}</span><span class="mk">Correct so far: ${score}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
   <div class="opts">${x.options.map((o,k)=>`<button class="opt${fb?(k===fb.correct_index?' ok':k===ch?' bad':''):''}" data-k="${k}" ${fb?'disabled':''}><span class="ol">${OL[k]}</span><span>${e(o)}</span></button>`).join('')}</div>
   ${fb?`<div class="fb ${fb.correct?'ok':'bad'}"><b>${fb.correct===null?'Answer saved.':fb.correct?'Correct!':'Not quite.'}</b>${fb.explanation?'<br>'+e(fb.explanation):''}</div>`:''}`;
   $('#ft').innerHTML=`<span></span><button class="btn acc" data-act="next">${fb?(i<st.Q.length-1?'Next question':'See results'):(i<st.Q.length-1?'Skip':'Finish')}</button>`;
@@ -138,7 +144,7 @@ function result(r,took){
   <div class="acts"><button class="btn acc" id="again">Try again</button><a class="btn ghost" href="#/">Back to home</a></div></div>
   <div class="sec"><h2>Review your answers</h2><div class="tags" id="rf">${[['all','All'],['wrong','Wrong'],['skip','Skipped'],['right','Correct']].map(([k,l],i)=>`<span class="tag${i?'':' on'}" data-f="${k}" tabindex="0">${l}</span>`).join('')}</div></div><div id="rl"></div>`;
   const draw=f=>{$('#rl').innerHTML=st.Q.map((x,n)=>{const v=rev[x.id],t=v.chosen==null?'skip':v.chosen===v.correct_index?'right':'wrong';if(f!=='all'&&f!==t)return'';
-    return `<div class="panel rv ${t}"><div class="qh"><span>Q${n+1}${st.S.length>1?' · '+e(st.S[x.si].title):''}</span><span class="mk">${t==='right'?'+'+x.marks:t==='wrong'?'−'+neg:'0'}</span></div><div class="qt">${e(x.question)}</div>
+    return `<div class="panel rv ${t}"><div class="qh"><span>Q${n+1}${st.S.length>1?' · '+e(st.S[x.si].title):''}</span><span class="mk">${t==='right'?'+'+x.marks:t==='wrong'?'−'+neg:'0'}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
     ${x.options.map((o,k)=>`<div class="opt ${k===v.correct_index?'ok':k===v.chosen?'bad':''}"><span class="ol">${OL[k]}</span><span>${e(o)}${k===v.correct_index?' ✔':''}${k===v.chosen&&k!==v.correct_index?' (your answer)':''}</span></div>`).join('')}
     ${v.explanation?`<div class="fb"><b>Explanation</b><br>${e(v.explanation)}</div>`:''}</div>`}).join('')||'<div class="empty">Nothing in this filter.</div>'};
   draw('all');

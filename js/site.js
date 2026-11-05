@@ -1,5 +1,6 @@
 async function loadCats(){cats=await q(sb.from('categories').select('*').order('sort_order'));
-  $('#nav').innerHTML=cats.filter(c=>c.is_published).map(c=>`<a href="#/c/${e(c.slug)}" data-s="${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('')}
+  const links=cats.filter(c=>c.is_published).map(c=>`<a href="#/c/${e(c.slug)}" data-s="${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('');
+  $('#nav').innerHTML=links;$('#mnav').innerHTML=`<a href="#/">🏠 Home</a>${links}<a href="#/saved">🔖 Saved</a>`}
 
 function card(i){const c=cats.find(x=>x.id===i.category_id),k=KC[c?.kind]||'#0e8f7e';
   return `<article class="card" tabindex="0" role="link" data-go="#/i/${i.id}" style="--k:${k}"><div class="th" style="${i.thumbnail_url?`background-image:url('${e(i.thumbnail_url)}')`:''}">${i.thumbnail_url?'':TI[i.type]}<span class="badge">${i.type}</span></div><div class="cb"><h3>${e(i.title)}</h3><p>${e(i.description)}</p><div class="meta"><span>${e(c?.name||'')}</span><span>♥ ${i.likes_count||0}</span></div></div></article>`}
@@ -14,7 +15,7 @@ async function home(){
   const cnt={};items.forEach(i=>cnt[i.category_id]=(cnt[i.category_id]||0)+1);as.forEach(a=>cnt[a.category_id]=(cnt[a.category_id]||0)+1);
   app.innerHTML=`<section class="hero"><h1>Learn a little, <mark>every day.</mark></h1><p>Video lessons, notes, revision sheets, quizzes and tests — all in one calm place.</p>
   <form class="search" id="sf"><input id="sq" type="search" placeholder="Search notes, videos, topics…" aria-label="Search"><button class="btn acc">Search</button></form></section>
-  <div class="grid">${cats.filter(c=>c.is_published).map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#0e8f7e'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${e(c.description||'')} · ${cnt[c.id]||0} items</small></a>`).join('')}</div>
+  <div class="grid cats">${cats.filter(c=>c.is_published).map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#0e8f7e'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${e(c.description||'')} · ${cnt[c.id]||0} items</small></a>`).join('')}</div>
   <div class="sec"><h2>Fresh on the shelf</h2></div><div class="grid" id="latest">${items.slice(0,9).map(card).join('')||'<div class="empty">Nothing here yet. Add content from the admin page.</div>'}</div>`;
   $('#sf').onsubmit=async ev=>{ev.preventDefault();const t=$('#sq').value.trim();if(!t)return;
     const r=await q(sb.from('items').select('*').or(`title.ilike.%${t.replace(/[%,()]/g,' ')}%,description.ilike.%${t.replace(/[%,()]/g,' ')}%`).limit(40));

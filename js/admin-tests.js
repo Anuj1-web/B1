@@ -54,20 +54,25 @@ async function manage(a,redraw){
   <h4>${E?'Edit question':'Add a question'}</h4>
   <form class="f" id="qf">${secOn?sel('section_id','Section',[['','— No section —'],...sc.map(s=>[s.id,s.title])],E?.section_id||''):''}${fl('marks','Marks',E?.marks??1,'number','step=0.5 min=0')}
   <label class="full">Question<textarea name="question" required>${e(E?.question)}</textarea></label>
+  <label class="full">Figure or diagram for this question (optional) — paste a link or upload<input name="image_url" id="qimg" value="${e(E?.image_url)}" placeholder="https://…"></label>
+  <label>Upload image<input type="file" id="qup" accept="image/*"></label><div id="qprev" style="align-self:end">${E?.image_url?`<img class="qthumb" src="${e(E.image_url)}" alt="Preview">`:''}</div>
   ${[0,1,2,3,4,5].map(i=>fl('o'+i,'Option '+OLB[i]+(i>1?' (optional)':''),E?.options?.[i]||'','text',i<2?'required':'')).join('')}
   ${sel('c','Correct answer',OLB.split('').map((l,i)=>[i,l]),KEY(EK))}
   <label class="full">Explanation (shown in review and in quizzes)<textarea name="explanation">${e(EK.explanation)}</textarea></label>
   <div class="full"><button class="btn acc sm">${E?'Save question':'Add question'}</button> ${E?'<button type="button" class="btn ghost sm" id="xq">Cancel</button>':''}</div></form>
   <details style="margin-top:12px"><summary>Bulk add (one per line)</summary><p><small>Question | A | B | C | D | correct letter | explanation | section name (optional)</small></p><textarea id="bulk"></textarea><button class="btn sm acc" id="bb">Import lines</button></details>
   <h4>Questions</h4>${groups.map(g=>`${secOn?`<div class="gh">${e(g.s?.title||'No section')} <small>${g.items.length} questions${timed&&g.s?` · ${g.s.duration_minutes||'no'} min`:''}</small></div>`:''}
-  ${g.items.map(x=>{n++;const k=key(x);return `<div class="qc"><div><b>Q${n}.</b> ${e(x.question)} <small>(${x.marks} mark${x.marks==1?'':'s'})</small></div><ol type="A" class="qo">${x.options.map((o,i)=>`<li class="${i===k.correct_index?'ok':''}">${e(o)}${i===k.correct_index?' ✔':''}</li>`).join('')}</ol>${k.explanation?`<div class="note">💡 ${e(k.explanation)}</div>`:'<div class="note">No explanation added</div>'}<div class="acts" style="margin:6px 0 0"><button class="btn ghost sm" data-eq="${x.id}">Edit</button><button class="btn red sm" data-dq="${x.id}">Delete</button></div></div>`}).join('')||'<div class="empty">No questions here yet.</div>'}`).join('')}`;
+  ${g.items.map(x=>{n++;const k=key(x);return `<div class="qc"><div><b>Q${n}.</b> ${e(x.question)} <small>(${x.marks} mark${x.marks==1?'':'s'})</small></div>${x.image_url?`<img class="qthumb" src="${e(x.image_url)}" alt="Question figure" loading="lazy">`:''}<ol type="A" class="qo">${x.options.map((o,i)=>`<li class="${i===k.correct_index?'ok':''}">${e(o)}${i===k.correct_index?' ✔':''}</li>`).join('')}</ol>${k.explanation?`<div class="note">💡 ${e(k.explanation)}</div>`:'<div class="note">No explanation added</div>'}<div class="acts" style="margin:6px 0 0"><button class="btn ghost sm" data-eq="${x.id}">Edit</button><button class="btn red sm" data-dq="${x.id}">Delete</button></div></div>`}).join('')||'<div class="empty">No questions here yet.</div>'}`).join('')}`;
   const done=m=>{toast(m);redraw()};
   $('#qf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target),raw=[0,1,2,3,4,5].map(i=>(v['o'+i]||'').trim()),opts=raw.filter(Boolean);
     if(!raw[+v.c])return toast('The correct answer points to an empty option',1);
-    const row={assessment_id:a.id,section_id:v.section_id||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:opts.indexOf(raw[+v.c]),explanation:v.explanation||null};
+    const row={assessment_id:a.id,section_id:v.section_id||null,image_url:(v.image_url||'').trim()||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:opts.indexOf(raw[+v.c]),explanation:v.explanation||null};
     if(E){await q(sb.from('questions').update(row).eq('id',E.id));await q(sb.from('question_keys').upsert({question_id:E.id,...key}))}
     else{const[r]=await q(sb.from('questions').insert({...row,sort_order:qd.length}).select('id'));await q(sb.from('question_keys').insert({question_id:r.id,...key}))}
     edQ=null;done('Question saved')};
+  const prev=()=>{const u=$('#qimg').value.trim();$('#qprev').innerHTML=u?`<img class="qthumb" src="${e(u)}" alt="Preview">`:''};$('#qimg').oninput=prev;
+  $('#qup').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;toast('Uploading image…');const p=`questions/${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
+    const{error}=await sb.storage.from('content').upload(p,f);if(error)return toast(error.message,1);$('#qimg').value=sb.storage.from('content').getPublicUrl(p).data.publicUrl;prev();toast('Image uploaded — now save the question')};
   $('#xq')?.addEventListener('click',()=>{edQ=null;redraw()});
   $('#sf')&&($('#sf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);await q(sb.from('sections').insert({assessment_id:a.id,title:v.title,duration_minutes:+v.duration_minutes||null,sort_order:sc.length}));done('Section added')});
   const swap=async(id,d)=>{const i=sc.findIndex(s=>s.id===id),o=sc[i+d];if(!o)return;await q(sb.from('sections').update({sort_order:d>0?i+1:i-1}).eq('id',id));await q(sb.from('sections').update({sort_order:i}).eq('id',o.id));redraw()};

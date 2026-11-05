@@ -1,5 +1,8 @@
+const menu=o=>{document.body.classList.toggle('menu-open',o);$('#menuBtn').setAttribute('aria-expanded',o)};
+$('#menuBtn').onclick=()=>menu(true);$('#menuX').onclick=$('#scrim').onclick=()=>menu(false);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')menu(false)});
 async function route(){
-  const p=location.hash.replace(/^#\//,'').split('/');scrollTo(0,0);window.exCleanup&&exCleanup();
+  const p=location.hash.replace(/^#\//,'').split('/');menu(false);scrollTo(0,0);window.exCleanup&&exCleanup();
   document.querySelectorAll('nav a').forEach(a=>a.classList.remove('on'));
   app.innerHTML='<div class="load">Loading…</div>';
   try{if(!cats.length)await loadCats();
