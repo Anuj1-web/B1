@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Little Info – learn a little, every day</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,9 +13,12 @@
 <header><div class="wrap bar">
   <a class="logo" href="#/">The Little <b>Info</b></a>
   <nav id="nav" aria-label="Sections"></nav>
-  <a class="ib" href="#/saved" title="Saved items">🔖</a>
+  <a class="ib hsaved" href="#/saved" title="Saved items">🔖</a>
   <button class="ib" id="theme" aria-label="Toggle dark mode">🌓</button>
+  <button class="ib menu" id="menuBtn" aria-label="Open menu" aria-expanded="false">☰</button>
 </div></header>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Menu"><div class="dh"><b>Menu</b><button class="ib" id="menuX" aria-label="Close menu">✕</button></div><nav id="mnav"></nav></aside>
 <main class="wrap" id="app"><div class="load">Loading…</div></main>
 <div class="wrap"><footer><span>© The Little Info — learn a little, every day.</span><a href="#/admin">Admin</a></footer></div>
 <div id="toast" role="status"></div>
