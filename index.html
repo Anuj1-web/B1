@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Little Info – learn a little, every day</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div id="sp" aria-hidden="true"></div>
 <header><div class="wrap bar">
   <a class="logo" href="#/">The Little <b>Info</b></a>
   <nav id="nav" aria-label="Sections"></nav>
@@ -19,12 +20,14 @@
 </div></header>
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Menu"><div class="dh"><b>Menu</b><button class="ib" id="menuX" aria-label="Close menu">✕</button></div><nav id="mnav"></nav></aside>
-<main class="wrap" id="app"><div class="load">Loading…</div></main>
-<div class="wrap"><footer><span>© The Little Info — learn a little, every day.</span><a href="#/admin">Admin</a></footer></div>
+<main class="wrap" id="app"><div class="sk-wrap"><div class="sk h"></div><div class="sk r"></div><div class="sk r"></div></div></main>
+<footer class="site-foot"><div class="wrap foot"><span class="cp">© <span id="yr"></span> <b>The Little Info</b><span class="tl"> — learn a little, every day</span></span><a class="btn ghost sm adm" href="#/admin">🔒 Admin</a></div></footer>
+<button class="totop" id="totop" aria-label="Back to top">↑</button>
 <div id="toast" role="status"></div>
 <script defer src="js/core.js"></script>
 <script defer src="js/site.js"></script>
 <script defer src="js/browse.js"></script>
 <script defer src="js/app.js"></script>
+<script defer src="js/ui.js"></script>
 </body>
 </html>
