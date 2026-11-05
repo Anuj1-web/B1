@@ -143,3 +143,29 @@ header{padding-top:env(safe-area-inset-top)}
   .ex-foot .mid .btn{padding:6px 8px;font-size:.78rem}.navb{min-width:48px;padding:0 10px}
   .panel{padding:14px}.stats{grid-template-columns:repeat(2,1fr)}.card .th{font-size:2rem}
 }
+/* ===== exams / folders / rows ===== */
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:.9rem;color:var(--mute);margin:16px 0 4px}
+.crumbs a{color:var(--mute);text-decoration:none}.crumbs a:hover{color:var(--ink);text-decoration:underline}.crumbs i{font-style:normal;opacity:.55}.crumbs b{color:var(--ink);font-weight:600}
+.cat .ft h3{margin:8px 0 4px;font-size:1.2rem}.cat .ft small{color:var(--mute)}.chev2{display:none}
+.cat .cov{height:96px;margin:-20px -20px 12px;background:var(--k) center/cover;border-radius:8px 8px 0 0}
+.entry .go.chev{display:none}.entry .go.btn{margin:0 14px 14px;align-self:flex-start}
+.entry .th{background-color:var(--k)}
+@media(max-width:860px){
+  .grid.rows{grid-template-columns:1fr;gap:10px}
+  .grid.rows .entry{flex-direction:row;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:16px}
+  .grid.rows .entry .th{width:62px;height:62px;aspect-ratio:auto;flex:none;border-radius:14px;font-size:1.7rem}
+  .grid.rows .entry .badge{display:none}
+  .grid.rows .entry .cb{padding:0;flex:1;min-width:0;gap:2px}
+  .grid.rows .entry .cb h3{font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .grid.rows .entry .cb p{display:none}
+  .grid.rows .entry .meta{margin:0;justify-content:flex-start;gap:12px;font-size:.8rem}
+  .grid.rows .entry .go{display:inline-block;flex:none;margin:0;align-self:center}
+  .grid.rows .entry .go.chev{background:var(--acc);color:#fff;border-radius:99px;padding:6px 14px;font-size:.85rem;font-weight:600}
+  .grid.rows .cat.frow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top-width:1px;border-left:6px solid var(--k);border-radius:16px}
+  .grid.rows .cat.frow:hover{transform:none}
+  .grid.rows .cat .ic{font-size:1.7rem;flex:none}.grid.rows .cat .ft{flex:1;min-width:0}
+  .grid.rows .cat .ft h3{margin:0;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .grid.rows .cat .cov{width:54px;height:54px;margin:0;border-radius:12px;flex:none}
+  .grid.rows .chev2{display:block;font-size:1.6rem;color:var(--mute);flex:none}
+}
+.nw{white-space:nowrap}.cps{width:auto;display:inline-block;padding:5px 8px;font-size:.85rem}
