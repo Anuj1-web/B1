@@ -15,18 +15,15 @@ async function home(){
   const [items,as]=await Promise.all([q(sb.from('items').select(ICOLS).order('created_at',{ascending:false}).limit(60)),q(sb.from('assessments').select('category_id'))]);
   const cnt={};items.forEach(i=>cnt[i.category_id]=(cnt[i.category_id]||0)+1);as.forEach(a=>cnt[a.category_id]=(cnt[a.category_id]||0)+1);
   const live=cats.filter(c=>c.is_published);
+  /* “Fresh on the shelf”: 4 newest items are rendered; CSS shows 2 on phones and up to 4 on larger screens */
   app.innerHTML=`<section class="herobox"><span class="pill">✨ Free study hub</span><h1>Learn a little, <em>every day.</em></h1><p>Video lessons, notes, revision sheets, quizzes and tests — all in one calm place.</p>
-  <form class="search" id="sf" role="search"><input id="sq" type="search" placeholder="Search notes, videos, topics…" aria-label="Search" autocomplete="off"><button class="btn acc">Search</button></form>
-  <div class="chips">${live.slice(0,6).map(c=>`<a class="chip" href="#/c/${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('')}</div></section>
-  <div class="sec"><h2>Explore</h2></div>
+  ${sbar('Search notes, videos, chapters, tests…',1)}
+  <div class="chips" id="chips">${live.slice(0,6).map(c=>`<a class="chip" href="#/c/${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('')}</div></section>
+  <div id="browse"><div class="sec"><h2>Explore</h2></div>
   <div class="grid cats">${live.map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#4f46e5'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${e(c.description||'')}${c.description?' · ':''}${cnt[c.id]||0} items</small></a>`).join('')}</div>
-  <div class="sec"><h2 id="lh">Fresh on the shelf</h2></div><div class="grid rows" id="latest">${items.slice(0,9).map(card).join('')||'<div class="empty">Nothing here yet. Add content from the admin page.</div>'}</div>`;
-  const latest=$('#latest').innerHTML;let tmr;
-  const run=async()=>{const t=$('#sq').value.trim();
-    if(!t){$('#latest').innerHTML=latest;$('#lh').textContent='Fresh on the shelf';return}
-    const z=t.replace(/[%,()]/g,' '),r=await q(sb.from('items').select(ICOLS).or(`title.ilike.%${z}%,description.ilike.%${z}%`).limit(40));
-    $('#latest').innerHTML=r.map(card).join('')||'<div class="empty">No matches. Try another word.</div>';$('#lh').textContent=`Results for “${t}”`};
-  $('#sf').onsubmit=ev=>{ev.preventDefault();run()};$('#sq').oninput=()=>{clearTimeout(tmr);tmr=setTimeout(run,300)}}
+  <div class="sec"><h2>Fresh on the shelf</h2></div><div class="grid rows" id="latest">${items.slice(0,4).map(card).join('')||'<div class="empty">Nothing here yet. Add content from the admin page.</div>'}</div></div>
+  <div id="sres" class="sres" hidden></div>`;
+  wireSearch(()=>({type:'all'}),'#browse,#chips')}
 
 async function catPage(s){
   const c=cats.find(x=>x.slug===s);if(!c){app.innerHTML='<div class="empty">Section not found.</div>';return}
@@ -37,15 +34,15 @@ async function catPage(s){
   const fs=exs.length?await q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)):[];
   const tags=[...new Set(items.flatMap(i=>i.tags||[]))];let tg='',tx='';const k=KC[c.kind]||'#0e8f7e';
   app.innerHTML=crumbs([['Home','#/'],[c.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(c.icon)} ${e(c.name)}</h1><p>${e(c.description||'')}</p></div>
-  ${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder'),k)).join('')}</div>`:''}
+  ${sbar('Search in '+c.name+' — chapters, videos, tests…')}<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder'),k)).join('')}</div>`:''}
   ${items.length||as.length?`<div class="sec"><h2>${exs.length?'Other content':'All content'}</h2></div>
-  ${items.length>4?`<div class="search" style="margin:0 0 12px"><input id="cq" type="search" placeholder="Filter…" aria-label="Filter"></div>`:''}
   ${tags.length?`<div class="tags" id="tg">${tags.map(t=>`<span class="tag" tabindex="0" data-t="${e(t)}">${e(t)}</span>`).join('')}</div>`:''}<div class="grid rows" id="list"></div>`:''}
-  ${exs.length||items.length||as.length?'':'<div class="empty">Nothing in this section yet. Check back soon.</div>'}`;
+  ${exs.length||items.length||as.length?'':'<div class="empty">Nothing in this section yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;
+  wireSearch(()=>({type:'cat',cat:c.id,exams:exs.map(x=>x.id),label:c.name}),'#browse');
   if(!$('#list'))return;
   const draw=()=>{const f=items.filter(i=>(!tg||(i.tags||[]).includes(tg))&&(!tx||(i.title+(i.description||'')).toLowerCase().includes(tx)));
     $('#list').innerHTML=(f.map(card).join('')+as.map(aCard).join(''))||'<div class="empty" style="grid-column:1/-1">No matches.</div>'};
-  draw();$('#cq')&&($('#cq').oninput=ev=>{tx=ev.target.value.toLowerCase();draw()});
+  draw();
   $('#tg')?.addEventListener('click',ev=>{const t=ev.target.closest('.tag');if(!t)return;tg=tg===t.dataset.t?'':t.dataset.t;document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('on',x.dataset.t===tg));draw()})}
 
 async function viewer(id){

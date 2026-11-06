@@ -25,7 +25,8 @@ async function examPage(id){
   const fs=await q(sb.from('folders').select('*').eq('exam_id',id).order('sort_order').order('created_at'));
   const tops=fs.filter(f=>!f.parent_id),cnt=await direct(tops.map(f=>f.id));
   app.innerHTML=crumbs([['Home','#/'],...(c?[[c.name,'#/c/'+c.slug]]:[]),[x.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(x.icon)} ${e(x.name)}</h1><p>${e(x.description||'')}</p></div>
-  <div class="grid rows cats">${tops.map(f=>tile('#/f/'+f.id,f.icon||'📁',null,f.name,metaOf(fs.filter(z=>z.parent_id===f.id).length,cnt.i[f.id],cnt.a[f.id]),k)).join('')||'<div class="empty" style="grid-column:1/-1">Nothing has been added to this exam yet.</div>'}</div>`}
+  ${sbar('Search in '+x.name+' — chapters, videos, tests…')}<div id="browse"><div class="grid rows cats">${tops.map(f=>tile('#/f/'+f.id,f.icon||'📁',null,f.name,metaOf(fs.filter(z=>z.parent_id===f.id).length,cnt.i[f.id],cnt.a[f.id]),k)).join('')||'<div class="empty" style="grid-column:1/-1">Nothing has been added to this exam yet.</div>'}</div></div><div id="sres" class="sres" hidden></div>`;
+  wireSearch(()=>({type:'exam',exam:id,ids:fs.map(f=>f.id),label:x.name}),'#browse')}
 
 async function folderPage(id){
   const t=await folderTrail(id);
@@ -38,6 +39,8 @@ async function folderPage(id){
   const cnt=await direct(full.map(z=>z.id)),subs=full.length?await q(sb.from('folders').select('parent_id').in('parent_id',full.map(z=>z.id))):[];
   const content=items.map(card).join('')+as.map(aCard).join('');
   app.innerHTML=crumbs(t.crumbs)+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.6rem,5vw,2.6rem)">${e(f.icon||'📁')} ${e(f.name)}</h1></div>
-  ${full.length?`<div class="grid rows cats">${full.map(z=>tile('#/f/'+z.id,z.icon||'📁',null,z.name,metaOf(subs.filter(s=>s.parent_id===z.id).length,cnt.i[z.id],cnt.a[z.id]),k)).join('')}</div>`:''}
+  ${sbar('Search in '+f.name+'…')}<div id="browse">${full.length?`<div class="grid rows cats">${full.map(z=>tile('#/f/'+z.id,z.icon||'📁',null,z.name,metaOf(subs.filter(s=>s.parent_id===z.id).length,cnt.i[z.id],cnt.a[z.id]),k)).join('')}</div>`:''}
   ${content?`${full.length?'<div class="sec"><h2>In this folder</h2></div>':''}<div class="grid rows">${content}</div>`:''}
-  ${full.length||content?'':'<div class="empty">Nothing here yet. Check back soon.</div>'}`}
+  ${full.length||content?'':'<div class="empty">Nothing here yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;
+  const sub=subIds(t.all,id);
+  wireSearch(()=>({type:'folder',ids:sub,sub:sub.filter(x=>x!==id),label:f.name}),'#browse')}
