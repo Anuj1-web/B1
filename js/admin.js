@@ -11,7 +11,8 @@ async function dropFiles(urls){
   for(const p of ps)if(!await refCount(pubUrl(p)))gone.push(p);
   if(!gone.length)return;
   const{error}=await sb.storage.from(BK).remove(gone);
-  if(error)toast('Saved, but an old file could not be removed from storage: '+error.message,1)}
+  if(error)setTimeout(()=>toast('Saved, but an old file could not be removed from storage: '+error.message,1),350);
+  else setTimeout(()=>toast(`🗑 ${gone.length} old file${gone.length>1?'s':''} removed from storage`),350)}
 /* upload into the form field; a previous upload that was never saved is removed straight away */
 async function upFile(f,prefix,field){
   toast('Uploading…');const p=`${prefix}${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
