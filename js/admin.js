@@ -16,10 +16,32 @@ async function dropFiles(urls){
 /* upload into the form field; a previous upload that was never saved is removed straight away */
 async function upFile(f,prefix,field){
   toast('Uploading…');const p=`${prefix}${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
-  const{error}=await sb.storage.from(BK).upload(p,f);if(error){toast(error.message,1);return false}
+  const{error}=await sb.storage.from(BK).upload(p,f,{contentType:mimeOf(f),cacheControl:'31536000'});if(error){toast(error.message,1);return false}
   const old=field.value;field.value=pubUrl(p);
   if(PEND.has(old)){PEND.delete(old);dropFiles([old])}
   PEND.add(field.value);return true}
+
+/* ---------- video / media helpers ---------- */
+const MIME={mp4:'video/mp4',m4v:'video/mp4',mov:'video/mp4',webm:'video/webm',ogv:'video/ogg',pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif'};
+const extOf=n=>(String(n).split('.').pop()||'').toLowerCase();
+/* .mov is stored as video/mp4 so Chrome / Firefox will play it (they refuse video/quicktime) */
+const mimeOf=f=>MIME[extOf(f.name)]||f.type||'application/octet-stream';
+/* link -> format.  Only touches the file-like formats, never "article" / "link" */
+function guessType(u,cur){u=String(u||'').trim();if(!u||!['video','youtube','pdf'].includes(cur))return cur;
+  if(embedOf(u))return'youtube';const p=u.split(/[?#]/)[0].toLowerCase();
+  if(p.endsWith('.pdf'))return'pdf';if(/\.(mp4|m4v|webm|ogv|mov)$/.test(p))return'video';return cur}
+/* H.265 / HEVC is the usual reason a phone video shows a black picture: look for the codec tag in the file header / trailer */
+async function sniffCodec(f){const N=4*1024*1024,parts=[f.slice(0,N)];if(f.size>N)parts.push(f.slice(Math.max(N,f.size-N)));
+  const txt=(await Promise.all(parts.map(p=>p.arrayBuffer()))).map(b=>new TextDecoder('latin1').decode(new Uint8Array(b))).join('');return{hevc:/hvc1|hev1/.test(txt)}}
+/* open the file locally: can this browser read it?  how long is it?  grab a frame for the poster */
+function probeVideo(f){return new Promise(res=>{const u=URL.createObjectURL(f),v=document.createElement('video');v.muted=true;v.preload='metadata';v.playsInline=true;let done=false;
+  const fin=r=>{if(done)return;done=true;clearTimeout(t);URL.revokeObjectURL(u);v.removeAttribute('src');try{v.load()}catch{}res(r)},t=setTimeout(()=>fin({ok:null}),9000);
+  v.onerror=()=>fin({ok:false});
+  v.onloadedmetadata=()=>{const dur=v.duration,w=v.videoWidth,h=v.videoHeight;if(!w)return fin({ok:false,dur});
+    v.onseeked=()=>{try{const c=document.createElement('canvas'),s=Math.min(1,640/w);c.width=Math.round(w*s);c.height=Math.round(h*s);c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.toBlob(b=>fin({ok:true,dur,poster:b}),'image/jpeg',.82)}catch{fin({ok:true,dur})}};
+    v.currentTime=Math.min(1,(dur||1)/3)||.001};
+  v.src=u})}
+const lenLabel=s=>s>=3600?`${Math.floor(s/3600)} h ${Math.round(s%3600/60)} min`:s>=90?`${Math.round(s/60)} min`:`${Math.max(1,Math.round(s))} sec`;
 /* after save: drop whatever was uploaded but not kept.  after cancel / leaving the form: drop all unsaved uploads */
 const settle=async()=>{const l=[...PEND];PEND.clear();if(l.length)await dropFiles(l)};
 /* every uploaded file that sits under a category / exam / folders / quizzes (collected BEFORE the rows are deleted) */
@@ -66,14 +88,34 @@ async function aCats(){let ed=null;
 
 async function aItems(){let ed=null,fc='';
   const draw=async()=>{await settle();const list=await q((fc?sb.from('items').select('*').eq('category_id',fc):sb.from('items').select('*')).order('created_at',{ascending:false}).limit(200));
-    $('#ad').innerHTML=`<form class="panel f" id="if"><h3 class="full">${ed?'Edit':'Add'} content</h3>${sel('category_id','Category',cats.map(c=>[c.id,c.icon+' '+c.name]),ed?.category_id||fc)}${placeHTML(ed?.category_id||fc||cats[0]?.id,ed?.folder_id)}${sel('type','Format',[['video','Video file (mp4)'],['youtube','YouTube video'],['pdf','PDF notes / sheet'],['article','Written article'],['link','External link']],ed?.type)}${fl('title','Title',ed?.title,'text','required')}${fl('duration','Length label (e.g. 42 min, 18 pages)',ed?.duration)}${fl('sort_order','Position in folder (1 = first)',ed?.sort_order??0,'number')}${fl('tags','Tags (comma separated)',(ed?.tags||[]).join(', '))}
+    $('#ad').innerHTML=`<form class="panel f" id="if"><h3 class="full">${ed?'Edit':'Add'} content</h3>${sel('category_id','Category',cats.map(c=>[c.id,c.icon+' '+c.name]),ed?.category_id||fc)}${placeHTML(ed?.category_id||fc||cats[0]?.id,ed?.folder_id)}${sel('type','Format',[['video','Video file (mp4)'],['youtube','YouTube / Vimeo / Google Drive video link'],['pdf','PDF notes / sheet'],['article','Written article'],['link','External link']],ed?.type)}${fl('title','Title',ed?.title,'text','required')}${fl('duration','Length label (e.g. 42 min, 18 pages)',ed?.duration)}${fl('sort_order','Position in folder (1 = first)',ed?.sort_order??0,'number')}${fl('tags','Tags (comma separated)',(ed?.tags||[]).join(', '))}
     <label class="full">URL (paste, or upload below)<input name="url" id="uurl" value="${e(ed?.url)}" placeholder="https://…"></label><label>Upload file (video / PDF)<input type="file" id="upf" accept="video/*,application/pdf"></label>${fl('thumbnail_url','Thumbnail URL',ed?.thumbnail_url)}<label>Upload thumbnail<input type="file" id="upt" accept="image/*"></label>
     <label class="full">Description<textarea name="description">${e(ed?.description)}</textarea></label><label class="full">Article text (for “Written article”)<textarea name="body" style="min-height:140px">${e(ed?.body)}</textarea></label><div class="full"><button class="btn acc">${ed?'Save changes':'Publish content'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>
     <div class="panel"><label>Filter list by category<select id="fc"><option value="">All</option>${cats.map(c=>`<option value="${c.id}" ${c.id==fc?'selected':''}>${e(c.name)}</option>`).join('')}</select></label><div class="tw"><table><tr><th>Title<th>Type<th>Location<th>♥<th>Live<th></tr>${list.map(i=>`<tr><td>${e(i.title)}<td>${i.type}<td>${loc(i.folder_id)}<td>${i.likes_count}<td><input type="checkbox" data-pub="${i.id}" ${i.is_published?'checked':''} style="width:auto"><td><button class="btn ghost sm" data-ed="${i.id}">Edit</button> <button class="btn red sm" data-del="${i.id}">Delete</button></tr>`).join('')}</table></div></div>`;
     const up=(inp,target)=>inp.onchange=async()=>{const f=inp.files[0];if(!f)return;if(await upFile(f,'',$(target)))toast('Uploaded — now press Publish (the old file is removed when you save)')};
-    bindPlace($('#if'));up($('#upf'),'#uurl');up($('#upt'),'[name=thumbnail_url]');
+    bindPlace($('#if'));up($('#upt'),'[name=thumbnail_url]');
+    const T=$('[name=type]'),U=$('#uurl'),TH=$('[name=thumbnail_url]');
+    /* pasting a link switches the Format automatically (a YouTube link under "Video file" used to give a black box) */
+    const autoType=()=>{const g=guessType(U.value,T.value);if(g!==T.value){T.value=g;toast('Format switched to “'+T.options[T.selectedIndex].text+'” to match the link')}};
+    U.addEventListener('input',autoType);U.addEventListener('change',autoType);
+    $('#upf').onchange=async ev=>{const inp=ev.target,f=inp.files[0];if(!f)return;
+      const x=extOf(f.name),isVid=f.type.startsWith('video/')||['mp4','m4v','mov','webm','ogv'].includes(x),isPdf=x==='pdf'||f.type==='application/pdf';
+      if(!isVid&&!isPdf){toast('Please choose an MP4 / WebM video or a PDF file',1);inp.value='';return}
+      let info=null;
+      if(isVid){toast('Checking the video…');const[sn,pr]=await Promise.all([sniffCodec(f),probeVideo(f)]);info=pr;
+        if(sn.hevc||pr.ok===false){
+          if(!confirm((sn.hevc?'This video is encoded as H.265 (HEVC).':'This browser could not read the picture of this video.')+'\n\nMany browsers and phones show a BLACK screen for this kind of file. Convert it to H.264 MP4 first (for example with HandBrake, preset “Fast 1080p30”) and upload that instead.\n\nUpload it anyway?')){inp.value='';return}}}
+      if(!await upFile(f,'',U))return;
+      T.value=isVid?'video':'pdf';
+      if(isVid){const D=$('[name=duration]');if(!D.value&&info?.dur)D.value=lenLabel(info.dur);
+        /* poster frame: fill an empty thumbnail, or replace one that was auto-made for the previous video */
+        if(info?.poster&&(!TH.value||(pathOf(TH.value)||'').startsWith('thumbs/')))await upFile(new File([info.poster],'poster.jpg',{type:'image/jpeg'}),'thumbs/',TH)}
+      toast(info?.poster?'Uploaded, thumbnail created — now press Publish':'Uploaded — now press Publish (the old file is removed when you save)')};
     $('#fc').onchange=ev=>{fc=ev.target.value;draw()};$('#cx')?.addEventListener('click',()=>{ed=null;draw()});
-    $('#if').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);if(!placeCheck(v))return;v.sort_order=+v.sort_order||0;v.duration=v.duration||null;v.tags=v.tags.split(',').map(t=>t.trim()).filter(Boolean);['url','thumbnail_url','body','description'].forEach(k=>v[k]=v[k]||null);
+    $('#if').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);if(!placeCheck(v))return;v.url=(v.url||'').trim();v.type=guessType(v.url,v.type);
+      if(['video','youtube','pdf'].includes(v.type)&&!v.url){toast(v.type==='pdf'?'Add a PDF link or upload a PDF first':'Add a video link or upload a video file first',1);return}
+      if(v.type==='youtube'&&!embedOf(v.url)){toast('That does not look like a YouTube, Vimeo or Google Drive video link',1);return}
+      v.sort_order=+v.sort_order||0;v.duration=v.duration||null;v.tags=v.tags.split(',').map(t=>t.trim()).filter(Boolean);['url','thumbnail_url','body','description'].forEach(k=>v[k]=v[k]||null);
       const old=ed?[ed.url,ed.thumbnail_url]:[];
       await q(ed?sb.from('items').update(v).eq('id',ed.id):sb.from('items').insert(v));
       const junk=[...old,...PEND];PEND.clear();await dropFiles(junk);toast('Saved');ed=null;draw()};

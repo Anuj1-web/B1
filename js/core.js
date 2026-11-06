@@ -10,7 +10,17 @@ let cats=[],sess=null,adminOK=false,tab='cats',openQ=null;
 function toast(m,err){const t=$('#toast');t.textContent=m;t.className=err?'err':'';t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',3200)}
 async function q(p){const{data,error}=await p;if(error){toast(error.message,1);throw error}return data}
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const yt=u=>(u||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
+const yt=u=>(u||'').match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/)?.[1];
+/* what kind of player a link needs: YouTube / Vimeo / Google Drive are embedded, everything else is a plain file */
+const ytStart=u=>{const m=String(u||'').match(/[?&#](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(\d+)?s?(?:&|#|$)/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0};
+function embedOf(u){u=String(u||'').trim();if(!u)return null;
+  const y=yt(u);if(y)return{kind:'youtube',id:y,start:ytStart(u),src:`https://www.youtube-nocookie.com/embed/${y}?rel=0&playsinline=1${ytStart(u)?'&start='+ytStart(u):''}`,watch:`https://www.youtube.com/watch?v=${y}`};
+  let m=u.match(/vimeo\.com\/(?:video\/|channels\/[\w-]+\/|groups\/[\w-]+\/videos\/)?(\d{6,})/);if(m)return{kind:'embed',src:`https://player.vimeo.com/video/${m[1]}`,watch:u};
+  m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/);if(m)return{kind:'embed',src:`https://drive.google.com/file/d/${m[1]}/preview`,watch:u};
+  return null}
+/* the player to use for an item: the LINK decides (so a YouTube link saved under "Video file" still works) */
+function mediaOf(i){const em=['video','youtube'].includes(i.type)?embedOf(i.url):null;if(em)return em;return{kind:i.type==='youtube'?'badlink':i.type}}
+const thumbOf=i=>i.thumbnail_url||(['video','youtube'].includes(i.type)&&yt(i.url)?`https://i.ytimg.com/vi/${yt(i.url)}/hqdefault.jpg`:'');
 const fd=f=>Object.fromEntries(new FormData(f));
 $('#theme').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;d.dataset.theme=dark?'light':'dark';ls.set('li_theme',d.dataset.theme)};
 if(ls.get('li_theme'))document.documentElement.dataset.theme=ls.get('li_theme');
