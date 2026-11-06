@@ -350,3 +350,10 @@ body.focus .quiz .ex-foot{position:sticky;bottom:0;max-width:none}
 .pfail{position:absolute;inset:0;z-index:2;display:grid;place-items:center;padding:18px;text-align:center;color:#e2e8f0;background:#0b1220}
 .pfail b{font-size:1.05rem;color:#fff}.pfail p{margin:8px auto 14px;max-width:46ch;font-size:.92rem;opacity:.85}
 .notice{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-left:4px solid #e8b100;border-radius:12px;background:var(--card);font-size:.92rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+
+/* --- upload status line in the admin form --- */
+.upst{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:.92rem;line-height:1.5}
+.upst.ok{border-color:#2e9e5b;background:rgba(46,158,91,.1)}
+.upst.bad{border-color:#e5484d;background:rgba(229,72,77,.1)}
+.upst.warn{border-color:#e8b100;background:rgba(232,177,0,.12)}
+button:disabled{opacity:.55;cursor:not-allowed}
