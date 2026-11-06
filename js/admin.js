@@ -15,8 +15,8 @@ async function dropFiles(urls){
   else setTimeout(()=>toast(`🗑 ${gone.length} old file${gone.length>1?'s':''} removed from storage`),350)}
 /* upload into the form field; a previous upload that was never saved is removed straight away */
 async function upFile(f,prefix,field){
-  toast('Uploading…');const p=`${prefix}${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
-  const{error}=await sb.storage.from(BK).upload(p,f,{contentType:mimeOf(f),cacheControl:'31536000'});if(error){toast(error.message,1);return false}
+  upFile.err='';toast('Uploading…');const p=`${prefix}${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
+  const{error}=await sb.storage.from(BK).upload(p,f,{contentType:mimeOf(f),cacheControl:'31536000'});if(error){upFile.err=error.message;toast(error.message,1);return false}
   const old=field.value;field.value=pubUrl(p);
   if(PEND.has(old)){PEND.delete(old);dropFiles([old])}
   PEND.add(field.value);return true}
@@ -35,13 +35,29 @@ async function sniffCodec(f){const N=4*1024*1024,parts=[f.slice(0,N)];if(f.size>
   const txt=(await Promise.all(parts.map(p=>p.arrayBuffer()))).map(b=>new TextDecoder('latin1').decode(new Uint8Array(b))).join('');return{hevc:/hvc1|hev1/.test(txt)}}
 /* open the file locally: can this browser read it?  how long is it?  grab a frame for the poster */
 function probeVideo(f){return new Promise(res=>{const u=URL.createObjectURL(f),v=document.createElement('video');v.muted=true;v.preload='metadata';v.playsInline=true;let done=false;
-  const fin=r=>{if(done)return;done=true;clearTimeout(t);URL.revokeObjectURL(u);v.removeAttribute('src');try{v.load()}catch{}res(r)},t=setTimeout(()=>fin({ok:null}),9000);
+  const fin=r=>{if(done)return;done=true;clearTimeout(t);URL.revokeObjectURL(u);v.removeAttribute('src');try{v.load()}catch{}res(r)},t=setTimeout(()=>fin({ok:null}),6000);
   v.onerror=()=>fin({ok:false});
   v.onloadedmetadata=()=>{const dur=v.duration,w=v.videoWidth,h=v.videoHeight;if(!w)return fin({ok:false,dur});
     v.onseeked=()=>{try{const c=document.createElement('canvas'),s=Math.min(1,640/w);c.width=Math.round(w*s);c.height=Math.round(h*s);c.getContext('2d').drawImage(v,0,0,c.width,c.height);c.toBlob(b=>fin({ok:true,dur,poster:b}),'image/jpeg',.82)}catch{fin({ok:true,dur})}};
     v.currentTime=Math.min(1,(dur||1)/3)||.001};
   v.src=u})}
 const lenLabel=s=>s>=3600?`${Math.floor(s/3600)} h ${Math.round(s%3600/60)} min`:s>=90?`${Math.round(s/60)} min`:`${Math.max(1,Math.round(s))} sec`;
+/* a save in progress must never be interrupted by the leave-page cleanup below */
+const SV={n:0};async function guarded(p){SV.n++;try{return await p}finally{SV.n--}}
+/* closing / reloading the tab with an unsaved upload: remove that upload (it is not attached to anything yet) */
+let TOK=null;try{sb.auth.getSession().then(({data})=>{TOK=data.session?.access_token||null});sb.auth.onAuthStateChange((_e,s)=>{TOK=s?.access_token||null})}catch{}
+addEventListener('pagehide',ev=>{if(ev.persisted||SV.n||!PEND.size||!TOK)return;const prefixes=[...PEND].map(pathOf).filter(Boolean);if(!prefixes.length)return;
+  try{fetch(`${CFG.url}/storage/v1/object/${BK}`,{method:'DELETE',keepalive:true,headers:{Authorization:'Bearer '+TOK,apikey:CFG.key,'Content-Type':'application/json'},body:JSON.stringify({prefixes})})}catch{}});
+/* "Clean unused files": delete bucket files that no item / exam / question points to (ignores files from the last 10 minutes) */
+async function sweepFiles(){
+  toast('Scanning storage…');const files=[];
+  for(const pre of['','covers','questions','thumbs']){const{data,error}=await sb.storage.from(BK).list(pre,{limit:1000});if(error)return toast(error.message,1);
+    (data||[]).filter(o=>o.id).forEach(o=>files.push({path:pre?pre+'/'+o.name:o.name,at:o.created_at,size:+(o.metadata?.size||0)}))}
+  const unused=[];for(const f of files.filter(f=>!f.at||Date.now()-new Date(f.at)>10*60*1000))if(!await refCount(pubUrl(f.path)))unused.push(f);
+  if(!unused.length)return toast(`✅ Storage is clean — ${files.length} file${files.length==1?'':'s'}, all in use`);
+  const mb=unused.reduce((n,f)=>n+f.size,0)/1048576;
+  if(!confirm(`Found ${unused.length} unused file${unused.length>1?'s':''} (${mb.toFixed(1)} MB) that nothing points to:\n\n${unused.map(f=>'• '+f.path).join('\n')}\n\nDelete ${unused.length>1?'them':'it'} from storage?`))return;
+  const{error}=await sb.storage.from(BK).remove(unused.map(f=>f.path));toast(error?error.message:`🗑 ${unused.length} unused file${unused.length>1?'s':''} deleted`,!!error)}
 /* after save: drop whatever was uploaded but not kept.  after cancel / leaving the form: drop all unsaved uploads */
 const settle=async()=>{const l=[...PEND];PEND.clear();if(l.length)await dropFiles(l)};
 /* every uploaded file that sits under a category / exam / folders / quizzes (collected BEFORE the rows are deleted) */
@@ -69,8 +85,8 @@ async function admin(){
   if(!adminOK){app.innerHTML=`<div class="panel" style="max-width:520px;margin:50px auto"><h2>No admin access yet</h2><p>You're signed in as <b>${e(sess.user.email)}</b>. If this is the first setup, claim the admin role. It works once, only while no admin exists.</p><button class="btn acc" id="cl">Claim admin</button> <button class="btn ghost" id="so">Sign out</button></div>`;
     $('#cl').onclick=async()=>{const ok=await q(sb.rpc('claim_first_admin'));toast(ok?'You are the admin':'An admin already exists',!ok);admin()};
     $('#so').onclick=async()=>{await sb.auth.signOut();admin()};return}
-  app.innerHTML=`<div class="sec"><h2>Admin panel</h2><button class="btn ghost sm" id="so">Sign out</button></div><div class="tabs">${[['cats','Categories'],['ex','Exams & Folders'],['items','Content'],['as','Quizzes & Tests']].map(([k,l])=>`<button class="btn ${tab===k?'':'ghost'} sm" data-tab="${k}">${l}</button>`).join('')}</div><div id="ad"></div>`;
-  $('#so').onclick=async()=>{await sb.auth.signOut();admin()};
+  app.innerHTML=`<div class="sec"><h2>Admin panel</h2><span><button class="btn ghost sm" id="sw" title="Delete files in storage that nothing uses">🧹 Clean unused files</button> <button class="btn ghost sm" id="so">Sign out</button></span></div><div class="tabs">${[['cats','Categories'],['ex','Exams & Folders'],['items','Content'],['as','Quizzes & Tests']].map(([k,l])=>`<button class="btn ${tab===k?'':'ghost'} sm" data-tab="${k}">${l}</button>`).join('')}</div><div id="ad"></div>`;
+  $('#so').onclick=async()=>{await sb.auth.signOut();admin()};$('#sw').onclick=sweepFiles;
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;admin()});
   await loadCats();await loadTree();({cats:aCats,ex:aEx,items:aItems,as:aAs})[tab]()}
 
@@ -89,8 +105,8 @@ async function aCats(){let ed=null;
 async function aItems(){let ed=null,fc='';
   const draw=async()=>{await settle();const list=await q((fc?sb.from('items').select('*').eq('category_id',fc):sb.from('items').select('*')).order('created_at',{ascending:false}).limit(200));
     $('#ad').innerHTML=`<form class="panel f" id="if"><h3 class="full">${ed?'Edit':'Add'} content</h3>${sel('category_id','Category',cats.map(c=>[c.id,c.icon+' '+c.name]),ed?.category_id||fc)}${placeHTML(ed?.category_id||fc||cats[0]?.id,ed?.folder_id)}${sel('type','Format',[['video','Video file (mp4)'],['youtube','YouTube / Vimeo / Google Drive video link'],['pdf','PDF notes / sheet'],['article','Written article'],['link','External link']],ed?.type)}${fl('title','Title',ed?.title,'text','required')}${fl('duration','Length label (e.g. 42 min, 18 pages)',ed?.duration)}${fl('sort_order','Position in folder (1 = first)',ed?.sort_order??0,'number')}${fl('tags','Tags (comma separated)',(ed?.tags||[]).join(', '))}
-    <label class="full">URL (paste, or upload below)<input name="url" id="uurl" value="${e(ed?.url)}" placeholder="https://…"></label><label>Upload file (video / PDF)<input type="file" id="upf" accept="video/*,application/pdf"></label>${fl('thumbnail_url','Thumbnail URL',ed?.thumbnail_url)}<label>Upload thumbnail<input type="file" id="upt" accept="image/*"></label>
-    <label class="full">Description<textarea name="description">${e(ed?.description)}</textarea></label><label class="full">Article text (for “Written article”)<textarea name="body" style="min-height:140px">${e(ed?.body)}</textarea></label><div class="full"><button class="btn acc">${ed?'Save changes':'Publish content'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>
+    <label class="full">URL (paste, or upload below)<input name="url" id="uurl" value="${e(ed?.url)}" placeholder="https://…"></label><label>Upload file (video / PDF)<input type="file" id="upf" accept="video/*,application/pdf"></label><div class="full upst" id="upst" role="status" aria-live="polite" hidden></div>${fl('thumbnail_url','Thumbnail URL',ed?.thumbnail_url)}<label>Upload thumbnail<input type="file" id="upt" accept="image/*"></label>
+    <label class="full">Description<textarea name="description">${e(ed?.description)}</textarea></label><label class="full">Article text (for “Written article”)<textarea name="body" style="min-height:140px">${e(ed?.body)}</textarea></label><div class="full"><button class="btn acc" id="pub">${ed?'Save changes':'Publish content'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>
     <div class="panel"><label>Filter list by category<select id="fc"><option value="">All</option>${cats.map(c=>`<option value="${c.id}" ${c.id==fc?'selected':''}>${e(c.name)}</option>`).join('')}</select></label><div class="tw"><table><tr><th>Title<th>Type<th>Location<th>♥<th>Live<th></tr>${list.map(i=>`<tr><td>${e(i.title)}<td>${i.type}<td>${loc(i.folder_id)}<td>${i.likes_count}<td><input type="checkbox" data-pub="${i.id}" ${i.is_published?'checked':''} style="width:auto"><td><button class="btn ghost sm" data-ed="${i.id}">Edit</button> <button class="btn red sm" data-del="${i.id}">Delete</button></tr>`).join('')}</table></div></div>`;
     const up=(inp,target)=>inp.onchange=async()=>{const f=inp.files[0];if(!f)return;if(await upFile(f,'',$(target)))toast('Uploaded — now press Publish (the old file is removed when you save)')};
     bindPlace($('#if'));up($('#upt'),'[name=thumbnail_url]');
@@ -98,26 +114,34 @@ async function aItems(){let ed=null,fc='';
     /* pasting a link switches the Format automatically (a YouTube link under "Video file" used to give a black box) */
     const autoType=()=>{const g=guessType(U.value,T.value);if(g!==T.value){T.value=g;toast('Format switched to “'+T.options[T.selectedIndex].text+'” to match the link')}};
     U.addEventListener('input',autoType);U.addEventListener('change',autoType);
+    /* the upload ALWAYS starts straight away; the video checks run alongside and only add notes (they never block or ask) */
     $('#upf').onchange=async ev=>{const inp=ev.target,f=inp.files[0];if(!f)return;
+      const st=(m,c='')=>{const bx=$('#upst');if(!bx)return;bx.hidden=!m;bx.className='full upst '+c;bx.innerHTML=m},pub=$('#pub');
       const x=extOf(f.name),isVid=f.type.startsWith('video/')||['mp4','m4v','mov','webm','ogv'].includes(x),isPdf=x==='pdf'||f.type==='application/pdf';
-      if(!isVid&&!isPdf){toast('Please choose an MP4 / WebM video or a PDF file',1);inp.value='';return}
-      let info=null;
-      if(isVid){toast('Checking the video…');const[sn,pr]=await Promise.all([sniffCodec(f),probeVideo(f)]);info=pr;
-        if(sn.hevc||pr.ok===false){
-          if(!confirm((sn.hevc?'This video is encoded as H.265 (HEVC).':'This browser could not read the picture of this video.')+'\n\nMany browsers and phones show a BLACK screen for this kind of file. Convert it to H.264 MP4 first (for example with HandBrake, preset “Fast 1080p30”) and upload that instead.\n\nUpload it anyway?')){inp.value='';return}}}
-      if(!await upFile(f,'',U))return;
-      T.value=isVid?'video':'pdf';
-      if(isVid){const D=$('[name=duration]');if(!D.value&&info?.dur)D.value=lenLabel(info.dur);
-        /* poster frame: fill an empty thumbnail, or replace one that was auto-made for the previous video */
-        if(info?.poster&&(!TH.value||(pathOf(TH.value)||'').startsWith('thumbs/')))await upFile(new File([info.poster],'poster.jpg',{type:'image/jpeg'}),'thumbs/',TH)}
-      toast(info?.poster?'Uploaded, thumbnail created — now press Publish':'Uploaded — now press Publish (the old file is removed when you save)')};
+      if(!isVid&&!isPdf){st('❌ Please choose an MP4 / WebM video or a PDF file.','bad');inp.value='';return}
+      const mb=(f.size/1048576).toFixed(1)+' MB',nm=e(f.name);let sec=0;
+      const checks=isVid?Promise.all([sniffCodec(f).catch(()=>({})),probeVideo(f).catch(()=>({ok:null}))]):null;
+      pub.disabled=true;st(`⏳ Uploading “${nm}” (${mb})… keep this page open.`);
+      const tick=setInterval(()=>st(`⏳ Uploading “${nm}” (${mb})… ${++sec}s — keep this page open.`),1000);
+      let ok=false;try{ok=await upFile(f,'',U)}catch(err){upFile.err=err.message||String(err)}
+      clearInterval(tick);pub.disabled=false;
+      if(!ok){st(`❌ Upload failed${upFile.err?': '+e(upFile.err):''}. ${f.size>50*1048576?'This file is over 50 MB, the default Supabase per-file limit. Compress it (HandBrake) or use a YouTube link.':'Check your connection and try again.'}`,'bad');inp.value='';return}
+      T.value=isVid?'video':'pdf';const mine=U.value;
+      const done=`✅ Uploaded “${nm}” (${mb}). Now press <b>${ed?'Save changes':'Publish content'}</b>.`;st(done,'ok');
+      if(!isVid)return;
+      const[sn,pr]=await Promise.race([checks,new Promise(r=>setTimeout(()=>r([{},{ok:null}]),7000))]);
+      if(!U.isConnected||U.value!==mine)return;   /* form was changed or reset while we were checking */
+      const D=$('[name=duration]');if(D&&!D.value&&pr.dur)D.value=lenLabel(pr.dur);
+      let made=false;if(pr.poster&&TH&&(!TH.value||(pathOf(TH.value)||'').startsWith('thumbs/')))made=await upFile(new File([pr.poster],'poster.jpg',{type:'image/jpeg'}),'thumbs/',TH);
+      const warn=(sn.hevc||pr.ok===false)?'<br>⚠ This video looks like H.265 (HEVC). Some phones and browsers show a black screen for it. If it does, convert it to H.264 MP4 (HandBrake preset “Fast 1080p30”) and choose it here again.':'';
+      st(done+(made?' A thumbnail was created from the video.':'')+warn,warn?'warn':'ok')};
     $('#fc').onchange=ev=>{fc=ev.target.value;draw()};$('#cx')?.addEventListener('click',()=>{ed=null;draw()});
     $('#if').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);if(!placeCheck(v))return;v.url=(v.url||'').trim();v.type=guessType(v.url,v.type);
       if(['video','youtube','pdf'].includes(v.type)&&!v.url){toast(v.type==='pdf'?'Add a PDF link or upload a PDF first':'Add a video link or upload a video file first',1);return}
       if(v.type==='youtube'&&!embedOf(v.url)){toast('That does not look like a YouTube, Vimeo or Google Drive video link',1);return}
       v.sort_order=+v.sort_order||0;v.duration=v.duration||null;v.tags=v.tags.split(',').map(t=>t.trim()).filter(Boolean);['url','thumbnail_url','body','description'].forEach(k=>v[k]=v[k]||null);
       const old=ed?[ed.url,ed.thumbnail_url]:[];
-      await q(ed?sb.from('items').update(v).eq('id',ed.id):sb.from('items').insert(v));
+      await guarded(q(ed?sb.from('items').update(v).eq('id',ed.id):sb.from('items').insert(v)));
       const junk=[...old,...PEND];PEND.clear();await dropFiles(junk);toast('Saved');ed=null;draw()};
     document.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{ed=list.find(i=>i.id===b.dataset.ed);draw();scrollTo(0,0)});
     document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('items').update({is_published:b.checked}).eq('id',b.dataset.pub)));

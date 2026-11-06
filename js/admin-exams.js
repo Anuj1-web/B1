@@ -57,8 +57,8 @@ async function aEx(){
     $('#xe')?.addEventListener('click',()=>{edE=null;draw()});$('#xf')?.addEventListener('click',()=>{edF=null;fParent='';draw()});
     $('#cvf').onchange=async()=>{const f=$('#cvf').files[0];if(!f)return;if(await upFile(f,'covers/',$('#cvu')))toast('Uploaded — now save the exam (the old cover is removed when you save)')};
     $('#ef').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);Object.assign(v,{sort_order:+v.sort_order||0,description:v.description||null,cover_url:v.cover_url||null});
-      if(E){await q(sb.from('exams').update(v).eq('id',E.id));const junk=[E.cover_url,...PEND];PEND.clear();await dropFiles(junk);edE=null;again('Exam saved')}
-      else{const[r]=await q(sb.from('exams').insert({...v,category_id:exCat}).select('id'));const junk=[...PEND];PEND.clear();await dropFiles(junk);exOpen=r.id;again('Exam added — now add its folders below')}};
+      if(E){await guarded(q(sb.from('exams').update(v).eq('id',E.id)));const junk=[E.cover_url,...PEND];PEND.clear();await dropFiles(junk);edE=null;again('Exam saved')}
+      else{const[r]=await guarded(q(sb.from('exams').insert({...v,category_id:exCat}).select('id')));const junk=[...PEND];PEND.clear();await dropFiles(junk);exOpen=r.id;again('Exam added — now add its folders below')}};
     B('[data-xpub]',b=>b.onchange=()=>q(sb.from('exams').update({is_published:b.checked}).eq('id',b.dataset.xpub)));
     B('[data-xm]',b=>b.onclick=()=>{exOpen=exOpen===b.dataset.xm?null:b.dataset.xm;edF=null;fParent='';draw()});
     B('[data-xe]',b=>b.onclick=()=>{edE=list.find(x=>x.id===b.dataset.xe);draw();scrollTo(0,0)});

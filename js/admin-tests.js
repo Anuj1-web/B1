@@ -69,8 +69,8 @@ async function manage(a,redraw){
   $('#qf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target),raw=[0,1,2,3,4,5].map(i=>(v['o'+i]||'').trim()),opts=raw.filter(Boolean);
     if(!raw[+v.c])return toast('The correct answer points to an empty option',1);
     const row={assessment_id:a.id,section_id:v.section_id||null,image_url:(v.image_url||'').trim()||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:opts.indexOf(raw[+v.c]),explanation:v.explanation||null};
-    if(E){await q(sb.from('questions').update(row).eq('id',E.id));await q(sb.from('question_keys').upsert({question_id:E.id,...key}))}
-    else{const[r]=await q(sb.from('questions').insert({...row,sort_order:qd.length}).select('id'));await q(sb.from('question_keys').insert({question_id:r.id,...key}))}
+    await guarded((async()=>{if(E){await q(sb.from('questions').update(row).eq('id',E.id));await q(sb.from('question_keys').upsert({question_id:E.id,...key}))}
+    else{const[r]=await q(sb.from('questions').insert({...row,sort_order:qd.length}).select('id'));await q(sb.from('question_keys').insert({question_id:r.id,...key}))}})());
     const junk=[E?.image_url,...PEND];PEND.clear();await dropFiles(junk);
     edQ=null;done('Question saved')};
   const prev=()=>{const u=$('#qimg').value.trim();$('#qprev').innerHTML=u?`<img class="qthumb" src="${e(u)}" alt="Preview">`:''};$('#qimg').oninput=prev;
