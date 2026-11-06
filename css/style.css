@@ -341,3 +341,12 @@ body.focus .quiz .ex-foot{position:sticky;bottom:0;max-width:none}
 .res .acts .btn{flex:0 1 auto}
 @media(max-width:480px){.pacts .btn{font-size:.9rem}.res .acts .btn{flex:1 1 140px;text-align:center}}
 @media(max-width:860px){body.focus .ex-pal{align-self:auto;top:0;bottom:0;height:100vh;height:100dvh;max-height:none}}
+
+/* --- video player: visible fallbacks instead of a silent black box --- */
+.player{position:relative}
+.player iframe,.player video{position:relative;z-index:1;background:#000}
+.pnote{position:absolute;inset:0;z-index:0;display:grid;place-items:center;align-content:center;padding:16px;text-align:center;color:#cbd5e1;font-size:.92rem}
+.pnote a{color:#fff;text-decoration:underline}
+.pfail{position:absolute;inset:0;z-index:2;display:grid;place-items:center;padding:18px;text-align:center;color:#e2e8f0;background:#0b1220}
+.pfail b{font-size:1.05rem;color:#fff}.pfail p{margin:8px auto 14px;max-width:46ch;font-size:.92rem;opacity:.85}
+.notice{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-left:4px solid #e8b100;border-radius:12px;background:var(--card);font-size:.92rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
