@@ -31,7 +31,7 @@ const countText=c=>`${c.folders} folder(s), ${c.items} content item(s) and ${c.t
 let exCat='',exOpen=null,edE=null,edF=null,fParent='';
 async function aEx(){
   const draw=async()=>{
-    await loadTree();if(!exCat||!cats.some(c=>c.id===exCat))exCat=cats[0]?.id||'';
+    await settle();await loadTree();if(!exCat||!cats.some(c=>c.id===exCat))exCat=cats[0]?.id||'';
     const list=AD.exams.filter(x=>x.category_id===exCat),E=edE,open=list.find(x=>x.id===exOpen),F=edF;
     let ci={},ca={},rows='';
     if(open){const ids=AD.folders.filter(f=>f.exam_id===open.id).map(f=>f.id);
@@ -55,15 +55,17 @@ async function aEx(){
     const B=(s,f)=>document.querySelectorAll(s).forEach(f),again=m=>{toast(m);draw()};
     $('#xc').onchange=ev=>{exCat=ev.target.value;exOpen=null;edE=edF=null;draw()};
     $('#xe')?.addEventListener('click',()=>{edE=null;draw()});$('#xf')?.addEventListener('click',()=>{edF=null;fParent='';draw()});
-    $('#cvf').onchange=async()=>{const f=$('#cvf').files[0];if(!f)return;toast('Uploading…');const p=`covers/${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;const{error}=await sb.storage.from('content').upload(p,f);if(error)return toast(error.message,1);$('#cvu').value=sb.storage.from('content').getPublicUrl(p).data.publicUrl;toast('Uploaded — now save the exam')};
+    $('#cvf').onchange=async()=>{const f=$('#cvf').files[0];if(!f)return;if(await upFile(f,'covers/',$('#cvu')))toast('Uploaded — now save the exam (the old cover is removed when you save)')};
     $('#ef').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);Object.assign(v,{sort_order:+v.sort_order||0,description:v.description||null,cover_url:v.cover_url||null});
-      if(E){await q(sb.from('exams').update(v).eq('id',E.id));edE=null;again('Exam saved')}
-      else{const[r]=await q(sb.from('exams').insert({...v,category_id:exCat}).select('id'));exOpen=r.id;again('Exam added — now add its folders below')}};
+      if(E){await q(sb.from('exams').update(v).eq('id',E.id));const junk=[E.cover_url,...PEND];PEND.clear();await dropFiles(junk);edE=null;again('Exam saved')}
+      else{const[r]=await q(sb.from('exams').insert({...v,category_id:exCat}).select('id'));const junk=[...PEND];PEND.clear();await dropFiles(junk);exOpen=r.id;again('Exam added — now add its folders below')}};
     B('[data-xpub]',b=>b.onchange=()=>q(sb.from('exams').update({is_published:b.checked}).eq('id',b.dataset.xpub)));
     B('[data-xm]',b=>b.onclick=()=>{exOpen=exOpen===b.dataset.xm?null:b.dataset.xm;edF=null;fParent='';draw()});
     B('[data-xe]',b=>b.onclick=()=>{edE=list.find(x=>x.id===b.dataset.xe);draw();scrollTo(0,0)});
     B('[data-xd]',b=>b.onclick=async()=>{const x=list.find(z=>z.id===b.dataset.xd),c=await underCounts(x.id);
-      if(!confirm(`Delete the exam “${x.name}”?\n\nThis permanently removes ${countText(c)} inside it.`))return;await q(sb.from('exams').delete().eq('id',x.id));if(exOpen===x.id)exOpen=null;again('Exam deleted')});
+      if(!confirm(`Delete the exam “${x.name}”?\n\nThis permanently removes ${countText(c)} inside it, together with their uploaded files.`))return;
+      const urls=await filesUnder({exams:[x.id],folders:AD.folders.filter(f=>f.exam_id===x.id).map(f=>f.id)});
+      await q(sb.from('exams').delete().eq('id',x.id));await dropFiles(urls);if(exOpen===x.id)exOpen=null;again('Exam deleted')});
     B('[data-cp]',s=>s.onchange=async()=>{if(!s.value)return;const t=cats.find(c=>c.id===s.value),x=list.find(z=>z.id===s.dataset.cp);
       if(!confirm(`Copy the folder structure of “${x.name}” to ${t.name}? Only the empty folders are copied, not the content.`)){s.value='';return}
       await q(sb.rpc('copy_exam',{p_exam:x.id,p_category:t.id}));s.value='';again(`Structure copied to ${t.name}`)});
@@ -75,7 +77,8 @@ async function aEx(){
       B('[data-fe]',b=>b.onclick=()=>{edF=AD.folders.find(x=>x.id===b.dataset.fe);draw();$('#fm')?.scrollIntoView({behavior:'smooth'})});
       B('[data-fsub]',b=>b.onclick=()=>{edF=null;fParent=b.dataset.fsub;draw().then(()=>{$('#ff')?.scrollIntoView({behavior:'smooth'});$('#ff [name=name]')?.focus()})});
       B('[data-fd]',b=>b.onclick=async()=>{const f=AD.folders.find(x=>x.id===b.dataset.fd),c=await underCounts(open.id,f.id);
-        if(!confirm(`Delete the folder “${f.name}”?\n\nThis permanently removes ${countText(c)} inside it.`))return;await q(sb.from('folders').delete().eq('id',f.id));again('Folder deleted')});
+        if(!confirm(`Delete the folder “${f.name}”?\n\nThis permanently removes ${countText(c)} inside it, together with their uploaded files.`))return;
+        const urls=await filesUnder({folders:[...descOf(f.id)]});await q(sb.from('folders').delete().eq('id',f.id));await dropFiles(urls);again('Folder deleted')});
       const swap=async(id,dir)=>{const f=AD.folders.find(x=>x.id===id),sib=AD.folders.filter(x=>x.exam_id===f.exam_id&&(x.parent_id||null)===(f.parent_id||null)).sort(cmp),i=sib.findIndex(x=>x.id===id),j=i+dir;if(j<0||j>=sib.length)return;
         [sib[i],sib[j]]=[sib[j],sib[i]];await Promise.all(sib.map((x,n)=>x.sort_order===n?null:q(sb.from('folders').update({sort_order:n}).eq('id',x.id))).filter(Boolean));draw()};
       B('[data-fup]',b=>b.onclick=()=>swap(b.dataset.fup,-1));B('[data-fdn]',b=>b.onclick=()=>swap(b.dataset.fdn,1))}};

@@ -6,7 +6,7 @@ const OLB='ABCDEF';
 
 async function aAs(){
   const draw=async()=>{
-    const list=await q(sb.from('assessments').select('*,questions(count),sections(count)').order('created_at',{ascending:false}));
+    await settle();const list=await q(sb.from('assessments').select('*,questions(count),sections(count)').order('created_at',{ascending:false}));
     const qc=cats.filter(c=>['quizzes','tests'].includes(c.kind)),A=edA;
     $('#ad').innerHTML=`<form class="panel f" id="af"><h3 class="full">${A?'Edit settings':'New quiz or test'}</h3>
     ${sel('category_id','Category',(qc.length?qc:cats).map(c=>[c.id,c.icon+' '+c.name]),A?.category_id)}${placeHTML(A?.category_id||(qc[0]||cats[0])?.id,A?.folder_id)}
@@ -31,7 +31,8 @@ async function aAs(){
     $('#xa')?.addEventListener('click',()=>{edA=null;draw()});
     document.querySelectorAll('[data-pub]').forEach(b=>b.onchange=()=>q(sb.from('assessments').update({is_published:b.checked}).eq('id',b.dataset.pub)));
     document.querySelectorAll('[data-ea]').forEach(b=>b.onclick=()=>{edA=list.find(a=>a.id===b.dataset.ea);draw();scrollTo(0,0)});
-    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this and all its sections and questions?'))return;await q(sb.from('assessments').delete().eq('id',b.dataset.del));if(openQ===b.dataset.del)openQ=null;draw()});
+    document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this and all its sections, questions and question images?'))return;
+      const urls=await filesUnder({assess:[b.dataset.del]});await q(sb.from('assessments').delete().eq('id',b.dataset.del));await dropFiles(urls);if(openQ===b.dataset.del)openQ=null;draw()});
     document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{openQ=openQ===b.dataset.m?null:b.dataset.m;edQ=null;draw()});
     const open=list.find(a=>a.id===openQ);if(open)manage(open,draw)};
   draw()}
@@ -70,17 +71,17 @@ async function manage(a,redraw){
     const row={assessment_id:a.id,section_id:v.section_id||null,image_url:(v.image_url||'').trim()||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:opts.indexOf(raw[+v.c]),explanation:v.explanation||null};
     if(E){await q(sb.from('questions').update(row).eq('id',E.id));await q(sb.from('question_keys').upsert({question_id:E.id,...key}))}
     else{const[r]=await q(sb.from('questions').insert({...row,sort_order:qd.length}).select('id'));await q(sb.from('question_keys').insert({question_id:r.id,...key}))}
+    const junk=[E?.image_url,...PEND];PEND.clear();await dropFiles(junk);
     edQ=null;done('Question saved')};
   const prev=()=>{const u=$('#qimg').value.trim();$('#qprev').innerHTML=u?`<img class="qthumb" src="${e(u)}" alt="Preview">`:''};$('#qimg').oninput=prev;
-  $('#qup').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;toast('Uploading image…');const p=`questions/${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;
-    const{error}=await sb.storage.from('content').upload(p,f);if(error)return toast(error.message,1);$('#qimg').value=sb.storage.from('content').getPublicUrl(p).data.publicUrl;prev();toast('Image uploaded — now save the question')};
+  $('#qup').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;if(await upFile(f,'questions/',$('#qimg'))){prev();toast('Image uploaded — now save the question (the old image is removed when you save)')}};
   $('#xq')?.addEventListener('click',()=>{edQ=null;redraw()});
   $('#sf')&&($('#sf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);await q(sb.from('sections').insert({assessment_id:a.id,title:v.title,duration_minutes:+v.duration_minutes||null,sort_order:sc.length}));done('Section added')});
   const swap=async(id,d)=>{const i=sc.findIndex(s=>s.id===id),o=sc[i+d];if(!o)return;await q(sb.from('sections').update({sort_order:d>0?i+1:i-1}).eq('id',id));await q(sb.from('sections').update({sort_order:i}).eq('id',o.id));redraw()};
   box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>swap(b.dataset.up,-1));box.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>swap(b.dataset.dn,1));
   box.querySelectorAll('[data-ds]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this section? Its questions stay but lose their section.'))return;await q(sb.from('sections').delete().eq('id',b.dataset.ds));done('Section deleted')});
   box.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{edQ=b.dataset.eq;redraw();setTimeout(()=>$('#qf')?.scrollIntoView({behavior:'smooth'}),300)});
-  box.querySelectorAll('[data-dq]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this question?'))return;await q(sb.from('questions').delete().eq('id',b.dataset.dq));done('Question deleted')});
+  box.querySelectorAll('[data-dq]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this question and its image?'))return;const x=qd.find(z=>z.id===b.dataset.dq);await q(sb.from('questions').delete().eq('id',b.dataset.dq));await dropFiles([x?.image_url]);done('Question deleted')});
   $('#bb').onclick=async()=>{const rows=$('#bulk').value.split('\n').map(l=>l.split('|').map(s=>s.trim())).filter(r=>r.length>=6&&r[0]);if(!rows.length)return toast('No valid lines found',1);
     const qs=rows.map((r,i)=>({assessment_id:a.id,section_id:sc.find(s=>s.title.toLowerCase()===(r[7]||'').toLowerCase())?.id||null,question:r[0],options:r.slice(1,5).filter(Boolean),marks:1,sort_order:qd.length+i}));
     const ins=await q(sb.from('questions').insert(qs).select('id,sort_order'));ins.sort((x,y)=>x.sort_order-y.sort_order);
