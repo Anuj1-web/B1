@@ -439,3 +439,40 @@ img[data-b]{background:linear-gradient(100deg,var(--line) 30%,var(--bg) 50%,var(
 img.lqbad{min-height:60px;min-width:90px;background:repeating-linear-gradient(45deg,var(--line) 0 6px,var(--bg) 6px 12px)}
 @keyframes shim{to{background-position:-200% 0}}
 @media(prefers-reduced-motion:reduce){img[data-b]{animation:none}}
+
+/* ===== UPDATE v9 — maths, Hindi, language switch, strips ===== */
+/* maths drawn from the question library's markup (fractions, roots, overlines) */
+.mf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .2em;line-height:1.3;font-size:.95em}
+.mf>.mn{border-bottom:1.5px solid currentColor;padding:0 .28em .06em}.mf>.md{padding:.06em .28em 0}
+.mo{text-decoration:overline;text-decoration-thickness:1.5px;text-underline-offset:0}
+.ms{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .12em}
+.ms>.mr{width:.9em;min-height:1.25em;flex:none;align-self:stretch;overflow:visible}
+.ms>.mb{border-top:1.5px solid currentColor;padding:.06em .18em 0 .12em;display:inline-block}
+.ms>.mi{font-size:.62em;align-self:flex-start;margin-right:-.55em;position:relative;top:.05em}
+.qt sup,.opt sup,.fb sup{line-height:0}
+/* Hindi text: a proper Devanagari font and a little more line height */
+:lang(hi),[lang=hi] .qt,[lang=hi] .opt,[lang=hi] .psg,[lang=hi] .fb{font-family:'Noto Sans Devanagari','Nirmala UI','Mangal','Kohinoor Devanagari',system-ui,sans-serif}
+[lang=hi] .qt,[lang=hi] .opt .ot,[lang=hi] .psg .pt,[lang=hi] .fb{line-height:1.75}
+/* language switch (test window, quiz, review, instructions) */
+.lgsel{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 30px 6px 12px;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;max-width:150px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+.ex-top .lgsel{background-color:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.28)}.ex-top .lgsel option{color:#111;background:#fff}
+.langpick{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.langpick label{font-weight:700}.langpick select{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:inherit;background:var(--card);color:var(--ink)}
+/* the Tests / Quizzes category pages: banner + strips */
+.hub-ban.cat{margin-top:6px;border-radius:24px}
+a.tcard{color:inherit;text-decoration:none}a.tcard:hover h3{color:var(--acc)}
+@media(max-width:860px){.hub-ban.cat{border-radius:20px}}
+.sec+.hub-list{margin-top:6px}
+.xcard{grid-template-columns:auto 1fr auto;grid-template-areas:"logo head go" "logo meta go" "foot foot foot"}
+.xlogo{grid-area:logo;width:54px;height:54px;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-size:1.6rem;overflow:hidden;align-self:center}
+.xlogo img{width:100%;height:100%;object-fit:cover}
+.xcard .tc-go{align-self:center}
+.tabsum{display:inline-flex;gap:4px 10px;flex-wrap:wrap}
+@media(max-width:860px){
+  .xcard{grid-template-areas:"logo head go" "logo meta go" "foot foot foot";gap:6px 12px}
+  .xlogo{width:46px;height:46px;font-size:1.35rem;border-radius:12px}
+  .xcard .tc-head{flex-direction:row;align-items:center}
+}
+/* admin: Hindi side of a question */
+.lqhi{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}.lqhi small{color:var(--mute);font-weight:700}
+.lqhi .lqt,.lqhi .lqo{font-family:'Noto Sans Devanagari','Nirmala UI',system-ui,sans-serif}
