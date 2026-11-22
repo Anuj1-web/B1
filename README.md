@@ -30,3 +30,12 @@ Host on GitHub Pages / Netlify. In Supabase → Authentication → URL configura
 - Search on home and inside every category, exam and folder page; results replace the page content while searching.
 - Footer is pinned to the bottom of the screen on short pages.
 - Database: `search_trigram_indexes` migration (pg_trgm indexes on items / folders / exams / assessments).
+
+## Update v8 — Tests hub + library import
+- **Tests categories** (`kind = tests`): opening an exam shows a banner, a tab switch (Full Test / Sectional / PYQ / AI Generated / Topic-wise …), section chips and one horizontal card per test (`js/hub.js`). Exams that have no tests yet still show their folders.
+- **Admin → Tests Hub** (`js/admin-hub.js`): exam banner + defaults (time, marks, negative marking), tabs (rename, order, live ✓, add / delete), section list with test counts and a live ✓, every test (tab, minutes, free, live ✓, questions, delete) and editable exam **presets**.
+- **Admin → Library import** (`js/admin-library.js`): reads the Test-wise question library on the admin's PC through the read-only **Website Bridge** (`qbank_bridge.py`), previews / edits every question with its pictures, then publishes the test as one Full test and / or one Sectional test per section. Pictures are uploaded once (compressed to WebP), and everything is undone if anything fails.
+- Questions can have several pictures, picture options, a passage, a solution picture and **bold / italic / underline** (`[b] [i] [u]` tags). Pictures are shown in the test window, quiz and review.
+- Database: migrations `tests_hub_upgrade_v1` and `tests_hub_marks_defaults` (exam presets, `exam_tabs`, new columns on `exams`, `assessments`, `questions`, `question_keys`, counters kept by triggers, `submit_attempt` returns the solution picture).
+- 🧹 *Clean unused files* now walks every folder of the bucket and checks all picture columns.
+- New files: `js/hub.js`, `js/admin-hub.js`, `js/admin-library.js`.
