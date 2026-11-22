@@ -39,3 +39,10 @@ Host on GitHub Pages / Netlify. In Supabase → Authentication → URL configura
 - Database: migrations `tests_hub_upgrade_v1` and `tests_hub_marks_defaults` (exam presets, `exam_tabs`, new columns on `exams`, `assessments`, `questions`, `question_keys`, counters kept by triggers, `submit_attempt` returns the solution picture).
 - 🧹 *Clean unused files* now walks every folder of the bucket and checks all picture columns.
 - New files: `js/hub.js`, `js/admin-hub.js`, `js/admin-library.js`.
+
+## Update v9
+- Quizzes and Tests category pages: gradient header + horizontal strips (exams / quizzes); phones get the same strips stacked.
+- Question text: bold / italic / underline and the library's maths markup (fractions, roots, overlines, powers) are drawn properly.
+- Hindi: language picker on the instructions page and a language dropdown in the test, quiz and review windows (Noto Sans Devanagari).
+- Pictures are preloaded so questions open without a gap.
+- No default pass mark any more (migration `no_pass_marks_and_hindi`).

@@ -1,7 +1,7 @@
 # Little Info — Project Notes
 
 Paste this file into a new chat (or add it to a Claude Project) so work can continue without re-explaining anything.
-Last updated: 22 Nov 2026. Current asset version: `?v=8`.
+Last updated: 22 Nov 2026. Current asset version: `?v=9`.
 
 ---
 
@@ -47,13 +47,13 @@ Category → Exam → Folders (nested, "batch / chapter") → Items and Assessme
   - `type='youtube'` is also used for Vimeo and Google Drive embeds ("online video link").
   - Items inside folders also carry the category's `category_id`.
 - **assessments:** kind quiz/test, `mode` (mixed / single_timer / sectional_timer), `pass_percent`, `negative_marking`, `duration_minutes`, `folder_id`, `category_id`. **New:** `exam_id` (a test can hang straight under an exam), `tab_id`, `section_name`, `is_free`, `exam_date`, `shift`, `languages`, `syllabus`, `source_key` (`lib:<CODE>:<testkey>[:<section>]`, unique per exam, used to find / replace library-published tests), `question_count`, `total_marks` (both kept by triggers on `questions`). Published = live.
-- **exams:** also `code`, `tagline`, `theme` (indigo / purple / teal / rose / amber / slate), `languages`, `default_full_minutes`, `default_sectional_minutes` (null = proportional to question count), `default_marks`, `default_negative`, `default_pass_percent`. A before-insert trigger fills the defaults from `exam_presets`; an after-insert trigger creates the 5 default tabs.
+- **exams:** also `code`, `tagline`, `theme` (indigo / purple / teal / rose / amber / slate), `languages`, `default_full_minutes`, `default_sectional_minutes` (null = proportional to question count), `default_marks`, `default_negative`. (There is **no default pass mark** any more: `assessments.pass_percent` is null unless the admin types one on a hand-made test; `exam_presets.pass_percent` and `exams.default_pass_percent` were dropped.) A before-insert trigger fills the defaults from `exam_presets`; an after-insert trigger creates the 5 default tabs.
 - **exam_tabs** (`exam_id`, `key`, `label`, `sort_order`, `is_visible`): the Full / Sectional / PYQ / AI / Topic switch. Visible tabs only show once they hold a live test. **exam_presets**: admin-editable defaults by exam keyword (`match_words`), with a `verified` flag. CGL and CHSL are verified (60 min full, 15 min sectional, −0.5, 2 marks); NTPC, ALP, Group D, GD, CPO are from memory.
-- **questions / question_keys:** questions are public; correct answers live in `question_keys` (not readable by visitors). **New on questions:** `images` (extra pictures; `image_url` stays the first), `option_images` (jsonb array of 4 URLs/nulls), `passage`, `passage_image_url`, `qbank_uid`. `question` may be `''` when the whole question is a picture; options may then be `''` too. Text supports `[b]…[/b] [i]…[/i] [u]…[/u]`. **New on question_keys:** `solution_image_url`.
+- **questions / question_keys:** questions are public; correct answers live in `question_keys` (not readable by visitors). **New on questions:** `images` (extra pictures; `image_url` stays the first), `option_images` (jsonb array of 4 URLs/nulls), `passage`, `passage_image_url`, `qbank_uid`. `question` may be `''` when the whole question is a picture; options may then be `''` too. Text supports `[b]…[/b] [i]…[/i] [u]…[/u]`. **New on question_keys:** `solution_image_url`, `explanation_hi`. **Hindi:** `questions.question_hi`, `options_hi` (jsonb, 4 items; a blank item falls back to the English option), `passage_hi`; English stays in the original columns.
 - **sections, attempts, item_likes, admins, categories, exams, folders** also exist. RLS is enabled on every table.
 
 ### Database functions (RPC)
-`submit_attempt` (grades a test, returns score + per-question review with correct index, explanation and `solution_image`), `check_answer` (quiz instant check), `claim_first_admin` (works once, while no admin exists), `is_admin()` (used by policies), `exam_preset_for(name)` (best matching preset), `copy_exam` (also copies exam settings + tabs).
+`submit_attempt` (grades a test, returns score + per-question review with correct index, `explanation`, `explanation_hi` and `solution_image`; `pass` is null when the test has no pass mark), `check_answer` (quiz; also returns `explanation_hi`), `check_answer` (quiz instant check), `claim_first_admin` (works once, while no admin exists), `is_admin()` (used by policies), `exam_preset_for(name)` (best matching preset), `copy_exam` (also copies exam settings + tabs).
 
 ### Delete rules
 Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/assessments, exam → folders/exam_tabs/**assessments**, folder → items/assessments, assessment → questions/sections). Deleting a tab only sets its tests' `tab_id` to null (they show under “Other tests”).
@@ -63,6 +63,7 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 
 - `tests_hub_upgrade_v1`: exam_presets, exam_tabs, new columns, triggers (defaults, seed tabs, question counters), `submit_attempt`, `copy_exam`.
 - `tests_hub_marks_defaults`: `marks_per_question` on presets, `default_marks` on exams.
+- `no_pass_marks_and_hindi`: pass marks removed (all existing tests set to null), Hindi columns, `submit_attempt` / `check_answer` / `copy_exam` / `exam_fill_defaults` updated.
 
 ### Files that can be referenced (all columns are checked before any file is removed)
 `items.url`, `items.thumbnail_url`, `exams.cover_url`, `questions.image_url`, `questions.images[]`, `questions.option_images[]`, `questions.passage_image_url`, `question_keys.solution_image_url`.
@@ -76,6 +77,13 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 - Publishing: pictures are uploaded once to `tests/<code>/<testkey>/` (WebP, ≤1100 px, 4 at a time, 3 tries); then assessment → sections → questions → keys. Tests already published from the same library test are taken off the site first and deleted only after the new ones succeed. **Any failure undoes everything** (new tests, a newly created exam, uploaded files) and restores the old versions. Library data is never changed.
 - Defaults: full test = `single_timer` (or `sectional_timer` with per-section minutes); sectional tests = `mixed` with one timer. Full-test sort order = library test number; sectional = number × 100 + section index.
 - Chrome may ask once to allow access to devices on the local network: choose Allow.
+
+## 4c. v9 additions
+- **Quizzes and Tests category pages** (`catStrips` in `site.js`): same gradient header as the exam hub (colour by category kind), then one horizontal strip per exam (logo, name, test count, languages, “2 Full Test · 12 Sectional”, View tests) or per quiz / loose test. Phones get the RRB-ALP style (same strips, stacked). Other categories are unchanged. Shared helpers live in `site.js`: `banner()`, `tcardHTML()`, `wireShare()`, `HIC`, `HUB_THEME`.
+- **Question text** (`rich()` in `core.js`): understands `[b] [i] [u]`, plain `<b> <i> <u> <sub> <sup> <br>`, the library's invisible style marks, and the library's maths markup `\frac{a}{b}`, `\sqrt{x}`, `\sqrt[n]{x}`, `\overline{x}`, `x^{2}`, `x_{1}` (drawn as real fractions / roots with CSS + inline SVG, no external library). Anything else is escaped, unbalanced tags are closed. Used for questions, options, passages, explanations and the admin preview.
+- **Hindi**: if a question has a Hindi version the test shows a language picker on the instructions page (default = last choice, kept in `li_lang`) and a dropdown in the test window, quiz and review. The choice stays until it is switched back; a question without a Hindi version shows English. Text is marked `lang="hi"` and uses Noto Sans Devanagari (Google Fonts link in `index.html`, Nirmala UI fallback). Bridge: uses `stem_hi, oa_hi … od_hi, sol_hi` (+ `passages.text_hi`) when the library has those columns; otherwise it splits text that holds both languages by script (line by line, or where the script changes inside a line: `Dog / कुत्ता`). A pure-Hindi sentence with an English word is not split. The qbank app itself has no Hindi columns today. Admin: preview shows both languages, the question editor (Library import and Tests Hub → Questions) has a “हिन्दी version” block. The published test's `languages` is “English, Hindi” only when Hindi exists.
+- **Pictures** are fetched and decoded ahead of time (`preloadImgs` in `engine.js`, starts while the instructions are shown, 4 at a time, kept in `PRE`), so a question opens with its figure already there.
+- No default pass mark: no “To pass” / “Passed” on test pages unless a hand-made test sets one.
 
 ## 5. Features built so far
 **Home / browsing**
@@ -140,6 +148,7 @@ Headless Chromium (Playwright, Python) with a stubbed Supabase client: viewer ca
 3. `little-info-b1-video-fix.zip`: link-driven player, YouTube/Vimeo/Drive, fallbacks, admin auto format, codec warning, poster + duration.
 4. `little-info-b1-upload-fix.zip`: non-blocking upload with status line, leave-page cleanup, guarded saves, 🧹 Clean unused files (`?v=7`).
 
+6. `little-info-b1-v9.zip` (`?v=9`): Quizzes / Tests category headers and strips, maths + formatting renderer, Hindi + language switch, no default pass mark, picture preloading.
 5. `little-info-b1-tests-hub.zip` (+ `qbank_bridge.py`, patched `qbank_app.py`, `start_bridge.bat`): Tests hub, tabs, presets, Library import, picture / passage questions (`?v=8`).
 
 ## 11. Open ideas (not done)
