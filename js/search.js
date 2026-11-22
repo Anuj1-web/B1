@@ -9,6 +9,8 @@ async function searchAll(t,sc){
   if(!z)return'';
   const pat='%'+z+'%',tx=`title.ilike.${pat},description.ilike.${pat}`,ids=sc.ids||[];
   const scoped=b=>sc.type==='all'?b:sc.type==='cat'?b.eq('category_id',sc.cat):ids.length?b.in('folder_id',ids):null;
+  /* tests: also the ones attached straight to the exam (Tests hub), not only the ones inside its folders */
+  const scopedA=b=>sc.type==='exam'?b.or(`exam_id.eq.${sc.exam}${ids.length?`,folder_id.in.(${ids.join(',')})`:''}`):scoped(b);
   const go=b=>b?q(b):Promise.resolve([]);
   const exB=sc.type==='all'?sb.from('exams').select('*').ilike('name',pat).limit(20):sc.type==='cat'?sb.from('exams').select('*').eq('category_id',sc.cat).ilike('name',pat).limit(20):null;
   const foB=sc.type==='all'?sb.from('folders').select('*').ilike('name',pat).limit(40)
@@ -17,7 +19,7 @@ async function searchAll(t,sc){
     :(sc.sub.length?sb.from('folders').select('*').in('id',sc.sub).ilike('name',pat).limit(40):null);
   const[items,as,exs,fs]=await Promise.all([
     go(scoped(sb.from('items').select(ICOLS).or(tx).order('created_at',{ascending:false}).limit(40))),
-    go(scoped(sb.from('assessments').select('*,questions(count)').or(tx).limit(30))),
+    go(scopedA(sb.from('assessments').select('*,questions(count)').or(tx).limit(30))),
     go(exB),go(foB)]);
   /* where each matching folder lives: Exam › Batch › … */
   const exIds=[...new Set(fs.map(f=>f.exam_id))];

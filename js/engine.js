@@ -24,13 +24,18 @@ function ask(title,msg,ok='OK',cancel='Cancel',danger){
 function lightbox(src){const d=document.createElement('div');d.className='lb';d.innerHTML=`<img src="${e(src)}" alt="Enlarged figure"><button aria-label="Close">✕</button>`;d.onclick=()=>d.remove();document.body.appendChild(d)}
 document.addEventListener('click',ev=>{const i=ev.target.closest('[data-zoom]');if(i)lightbox(i.src)});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){document.querySelector('.lb')?.remove();document.body.classList.remove('pal-open')}});
-const figure=x=>x.image_url?`<figure class="qimg"><img src="${e(x.image_url)}" alt="Figure for this question" data-zoom loading="lazy"><figcaption>Tap the figure to enlarge</figcaption></figure>`:'';
+const figs=x=>[...new Set([x.image_url,...(x.images||[])].filter(Boolean))];
+const figure=x=>{const f=figs(x);return f.length?`<figure class="qimg">${f.map(u=>`<img src="${e(u)}" alt="Figure for this question" data-zoom loading="lazy">`).join('')}<figcaption>Tap a figure to enlarge</figcaption></figure>`:''};
+/* a comprehension passage that belongs to the question */
+const passage=x=>x.passage||x.passage_image_url?`<div class="psg"><b>Read the passage</b>${x.passage?`<div class="pt">${rich(x.passage)}</div>`:''}${x.passage_image_url?`<img src="${e(x.passage_image_url)}" alt="Passage figure" data-zoom loading="lazy">`:''}</div>`:'';
+/* an option can be text, a picture, both, or neither (then the whole question picture already shows the choices) */
+const optBody=(x,k,o)=>{const im=x.option_images?.[k];return `<span class="ot">${o?`<span>${rich(o)}</span>`:''}${im?`<img class="oimg" src="${e(im)}" alt="Option ${OL[k]}" data-zoom loading="lazy">`:''}${!o&&!im?`<span class="oem">Option ${OL[k]}</span>`:''}</span>`};
 
 async function exam(id){
   const a=(await q(sb.from('assessments').select('*').eq('id',id).limit(1)))[0];
   if(!a){app.innerHTML='<div class="empty">This quiz or test was not found, or is not live yet.</div>';return}
   const [secs,qs]=await Promise.all([q(sb.from('sections').select('*').eq('assessment_id',id).order('sort_order')),
-    q(sb.from('questions').select('id,section_id,question,options,marks,sort_order,image_url').eq('assessment_id',id).order('sort_order'))]);
+    q(sb.from('questions').select('id,section_id,question,options,marks,sort_order,image_url,images,option_images,passage,passage_image_url').eq('assessment_id',id).order('sort_order'))]);
   if(!qs.length){app.innerHTML='<div class="empty">No questions have been added yet. Check back soon.</div>';return}
   intro(a,secs,qs)}
 
@@ -55,7 +60,7 @@ function intro(a,secs,qs){
     m==='sectional_timer'?'Every section has its own timer. When it ends you move on automatically and cannot go back.':'',
     m==='single_timer'?'One timer runs for the whole test. You can switch between sections freely.':'',
     saved?'':'',a.instructions||''].filter(Boolean);
-  app.innerHTML=`<p><a href="${a.folder_id?'#/f/'+a.folder_id:'#/'}">← Back</a></p><div class="panel" style="max-width:760px;margin:10px auto"><h1 style="font-size:clamp(1.6rem,4vw,2.4rem)">${e(a.title)}</h1><p style="color:var(--mute)">${e(a.description)}</p>
+  app.innerHTML=`<p><a href="${backOf(a)}">← Back</a></p><div class="panel" style="max-width:760px;margin:10px auto"><h1 style="font-size:clamp(1.6rem,4vw,2.4rem)">${e(a.title)}</h1><p style="color:var(--mute)">${e(a.description)}</p>${a.section_name||a.exam_date?`<div class="tags">${a.section_name?`<span class="tag">${e(a.section_name)}</span>`:''}${a.exam_date?`<span class="tag">${e(fmtDate(a.exam_date))}${a.shift?', Shift '+e(a.shift):''}</span>`:''}</div>`:''}
   <div class="stats"><div><b>${Q.length}</b>Questions</div><div><b>${+tot.toFixed(2)}</b>Total marks</div><div><b>${e(time)}</b>Time</div><div><b>${a.pass_percent}%</b>To pass</div></div>
   ${S.length>1?`<div class="tw"><table><tr><th>Section<th>Questions<th>Time</tr>${S.map(s=>`<tr><td>${e(s.title)}<td>${s.qs.length}<td>${m==='sectional_timer'?(s.dur?s.dur+' min':'No limit'):'—'}</tr>`).join('')}</table></div>`:''}
   <h3 style="margin:16px 0 6px">Before you begin</h3><ul>${rules.map(r=>`<li>${e(r)}</li>`).join('')}</ul>
@@ -101,8 +106,8 @@ function paint(keepScroll){
   const i=st.cur,x=st.Q[i],s=st.S[x.si],{lo,hi}=rangeOf();st.vis.add(x.id);
   $('#tabs').innerHTML=st.S.length>1?st.S.map((t,si)=>`<button class="stab${si===x.si?' on':''}" data-s="${si}" ${st.m==='sectional_timer'&&si!==x.si?'disabled':''}>${st.m==='sectional_timer'&&si<x.si?'🔒 ':''}${e(t.title)}</button>`).join(''):'';
   const neg=st.a.negative_marking>0?` / −${st.a.negative_marking}`:'';
-  $('#qa').innerHTML=`<div class="qh"><span>Question ${i-lo+1} of ${hi-lo}${st.S.length>1?' · '+e(s.title):''}</span><span class="mk">+${x.marks}${neg}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
-  <div class="opts">${x.options.map((o,k)=>`<label class="opt${st.ans[x.id]===k?' sel':''}"><input type="radio" name="o" value="${k}" ${st.ans[x.id]===k?'checked':''}><span class="ol">${OL[k]}</span><span>${e(o)}</span></label>`).join('')}</div>`;
+  $('#qa').innerHTML=`<div class="qh"><span>Question ${i-lo+1} of ${hi-lo}${st.S.length>1?' · '+e(s.title):''}</span><span class="mk">+${x.marks}${neg}</span></div>${passage(x)}${x.question?`<div class="qt">${rich(x.question)}</div>`:''}${figure(x)}
+  <div class="opts${x.option_images?' pics':''}">${x.options.map((o,k)=>`<label class="opt${st.ans[x.id]===k?' sel':''}"><input type="radio" name="o" value="${k}" ${st.ans[x.id]===k?'checked':''}><span class="ol">${OL[k]}</span>${optBody(x,k,o)}</label>`).join('')}</div>`;
   const cnt={nv:0,na:0,a:0,mr:0,amr:0};let pal='';
   for(let j=lo;j<hi;j++){const t=stat(j);cnt[t]++;pal+=`<button class="pn p-${t}${j===i?' cur':''}" data-j="${j}" aria-label="Question ${j-lo+1}: ${SN[t]}">${j-lo+1}</button>`}
   $('#pal').innerHTML=pal;
@@ -122,7 +127,7 @@ async function submitAsk(){
   if(await ask('Submit test?',`Answered: ${n}\nNot answered: ${t-n}\nMarked for review: ${st.mark.size}`,'Submit test','Keep working'))finish(false)}
 async function quitTest(){
   if(!await ask('Quit this test?','Your answers will NOT be submitted and this attempt will be discarded.','Quit test','Keep going',true))return;
-  if(!st)return;const a=st.a;ls.set('li_ex_'+a.id,null);exCleanup();location.hash=a.folder_id?'#/f/'+a.folder_id:'#/'}
+  if(!st)return;const a=st.a;ls.set('li_ex_'+a.id,null);exCleanup();location.hash=backOf(a)}
 
 /* ---------- quiz window ---------- */
 function quizUI(){
@@ -138,9 +143,9 @@ function quizUI(){
 function qpaint(){
   const i=st.cur,x=st.Q[i],fb=st.fb[x.id],ch=st.ans[x.id],score=Object.values(st.fb).filter(f=>f.correct).length;
   $('#pb').style.width=(i/st.Q.length*100)+'%';
-  $('#qa').innerHTML=`<div class="qh"><span>Question ${i+1} of ${st.Q.length}</span><span class="mk">Correct so far: ${score}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
-  <div class="opts">${x.options.map((o,k)=>`<button class="opt${fb?(k===fb.correct_index?' ok':k===ch?' bad':''):''}" data-k="${k}" ${fb?'disabled':''}><span class="ol">${OL[k]}</span><span>${e(o)}</span></button>`).join('')}</div>
-  ${fb?`<div class="fb ${fb.correct?'ok':'bad'}"><b>${fb.correct===null?'Answer saved.':fb.correct?'Correct!':'Not quite.'}</b>${fb.explanation?'<br>'+e(fb.explanation):''}</div>`:''}`;
+  $('#qa').innerHTML=`<div class="qh"><span>Question ${i+1} of ${st.Q.length}</span><span class="mk">Correct so far: ${score}</span></div>${passage(x)}${x.question?`<div class="qt">${rich(x.question)}</div>`:''}${figure(x)}
+  <div class="opts${x.option_images?' pics':''}">${x.options.map((o,k)=>`<button class="opt${fb?(k===fb.correct_index?' ok':k===ch?' bad':''):''}" data-k="${k}" ${fb?'disabled':''}><span class="ol">${OL[k]}</span>${optBody(x,k,o)}</button>`).join('')}</div>
+  ${fb?`<div class="fb ${fb.correct?'ok':'bad'}"><b>${fb.correct===null?'Answer saved.':fb.correct?'Correct!':'Not quite.'}</b>${fb.explanation?'<br>'+rich(fb.explanation):''}</div>`:''}`;
   $('#ft').innerHTML=`<span></span><button class="btn acc" data-act="next">${fb?(i<st.Q.length-1?'Next question':'See results'):(i<st.Q.length-1?'Skip':'Finish')}</button>`;
   scrollTo(0,0)}
 
@@ -157,12 +162,13 @@ function result(r,took){
   document.body.classList.remove('focus','pal-open');st.res={r,took};
   const a=st.a,rev=Object.fromEntries(r.review.map(x=>[x.id,x])),pct=r.total?Math.max(0,r.score/r.total*100):0,acc=r.correct+r.wrong?Math.round(r.correct/(r.correct+r.wrong)*100):0;
   const neg=+a.negative_marking||0;
+  {const b=ls.get('li_best_'+a.id,null),p=Math.round(pct);if(!b||p>b.pct)ls.set('li_best_'+a.id,{pct:p,at:Date.now()})}   /* shown on the test card, on this device only */
   const secRows=st.S.length>1?st.S.map(s=>{let c=0,w=0,k=0,sc=0,pos=0;s.qs.forEach(x=>{const v=rev[x.id];pos+=+x.marks;if(v.chosen==null)k++;else if(v.chosen===v.correct_index){c++;sc+=+x.marks}else{w++;sc-=neg}});
     return `<tr><td>${e(s.title)}<td>${c}<td>${w}<td>${k}<td>${+sc.toFixed(2)} / ${+pos.toFixed(2)}</tr>`}).join(''):'';
   app.innerHTML=`<div class="panel res"><div class="badge2 ${r.pass?'pass':'fail'}">${r.pass?'Passed':'Not passed yet'}</div><h1>${+r.score.toFixed(2)} <small>/ ${+r.total.toFixed(2)}</small></h1><p style="color:var(--mute)">${e(a.title)} · ${Math.round(pct)}% (pass mark ${a.pass_percent}%)</p>
   <div class="stats"><div><b>${r.correct}</b>Correct</div><div><b>${r.wrong}</b>Wrong</div><div><b>${r.skipped}</b>Skipped</div><div><b>${acc}%</b>Accuracy</div><div><b>${mmss(took)}</b>Time taken</div></div>
   ${secRows?`<div class="tw"><table><tr><th>Section<th>Correct<th>Wrong<th>Skipped<th>Marks</tr>${secRows}</table></div>`:''}
-  <div class="acts"><button class="btn acc" id="again">Try again</button><button class="btn ghost" id="rvw">Review your answers</button><a class="btn ghost" href="${a.folder_id?'#/f/'+a.folder_id:'#/'}">Back</a></div></div>`;
+  <div class="acts"><button class="btn acc" id="again">Try again</button><button class="btn ghost" id="rvw">Review your answers</button><a class="btn ghost" href="${backOf(a)}">Back</a></div></div>`;
   const id=a.id;$('#again').onclick=()=>{exCleanup();exam(id)};$('#rvw').onclick=()=>review(r,took);scrollTo(0,0)}
 
 /* ---------- review mode: same layout as the test window, one question at a time ---------- */
@@ -184,11 +190,11 @@ function review(r,took,start=0){
     if(b.dataset.j!==undefined){pal(false);goTo(+b.dataset.j)}else if(b.dataset.act==='prev')goTo(cur-1);else if(b.dataset.act==='next')goTo(cur+1)};
   function draw(){
     const x=st.Q[cur],v=rev[x.id],t=kind(x),s=st.S[x.si],lo=secStart(x.si);
-    $('#qa').innerHTML=`<div class="qh"><span>Question ${cur-lo+1} of ${s.qs.length}${st.S.length>1?' · '+e(s.title):''}</span><span class="rst ${t}">${LAB[t]} · ${t==='right'?'+'+x.marks:t==='wrong'?'−'+neg:'0'}</span></div><div class="qt">${e(x.question)}</div>${figure(x)}
-    <div class="opts rvo">${x.options.map((o,k)=>{const ok=k===v.correct_index,mine=k===v.chosen;
-      return `<div class="opt${ok?' ok':mine?' bad':''}"><span class="ol">${ok?'✔':mine?'✕':OL[k]}</span><span>${e(o)}${ok?'<em class="you"> — correct answer</em>':''}${mine&&!ok?'<em class="you"> — your answer</em>':''}${mine&&ok?'<em class="you"> — your answer</em>':''}</span></div>`}).join('')}</div>
+    $('#qa').innerHTML=`<div class="qh"><span>Question ${cur-lo+1} of ${s.qs.length}${st.S.length>1?' · '+e(s.title):''}</span><span class="rst ${t}">${LAB[t]} · ${t==='right'?'+'+x.marks:t==='wrong'?'−'+neg:'0'}</span></div>${passage(x)}${x.question?`<div class="qt">${rich(x.question)}</div>`:''}${figure(x)}
+    <div class="opts rvo${x.option_images?' pics':''}">${x.options.map((o,k)=>{const ok=k===v.correct_index,mine=k===v.chosen;
+      return `<div class="opt${ok?' ok':mine?' bad':''}"><span class="ol">${ok?'✔':mine?'✕':OL[k]}</span><span class="ow">${optBody(x,k,o)}${ok?'<em class="you"> — correct answer</em>':''}${mine&&!ok?'<em class="you"> — your answer</em>':''}${mine&&ok?'<em class="you"> — your answer</em>':''}</span></div>`}).join('')}</div>
     ${t==='skip'?'<div class="fb">You did not answer this question.</div>':''}
-    <div class="fb ${t==='right'?'ok':t==='wrong'?'bad':''}" style="${v.explanation?'':'display:none'}"><b>Explanation</b><br>${e(v.explanation||'')}</div>`;
+    <div class="fb ${t==='right'?'ok':t==='wrong'?'bad':''}" style="${v.explanation||v.solution_image?'':'display:none'}"><b>Explanation</b>${v.explanation?'<br>'+rich(v.explanation):''}${v.solution_image?`<img class="solimg" src="${e(v.solution_image)}" alt="Solution" data-zoom loading="lazy">`:''}</div>`;
     let p='';st.S.forEach((sec,si)=>{const l0=secStart(si);if(st.S.length>1)p+=`<div class="pgh">${e(sec.title)}</div>`;
       p+='<div class="pal">'+sec.qs.map((q2,n)=>{const j=l0+n;return `<button class="pn p-${kind(q2)}${j===cur?' cur':''}" data-j="${j}" aria-label="Question ${n+1}: ${LAB[kind(q2)]}">${n+1}</button>`}).join('')+'</div>'});
     $('#pal').innerHTML=p;

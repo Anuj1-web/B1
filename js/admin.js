@@ -4,11 +4,15 @@
 const BK='content',PEND=new Set();
 const pubUrl=p=>sb.storage.from(BK).getPublicUrl(p).data.publicUrl;
 const pathOf=u=>{if(!u)return null;const b=pubUrl('x').slice(0,-1);if(!String(u).startsWith(b))return null;try{return decodeURIComponent(String(u).slice(b.length).split('?')[0])}catch{return null}};
-const REFS=[['items','url'],['items','thumbnail_url'],['exams','cover_url'],['questions','image_url']];
-async function refCount(u){const r=await Promise.all(REFS.map(([t,c])=>sb.from(t).select('id',{count:'exact',head:true}).eq(c,u)));return r.some(x=>x.error)?1:r.reduce((n,x)=>n+(x.count||0),0)}
+/* every place a file can be referenced from (a file is only removed when none of these still points at it) */
+const REFS=[['items','url'],['items','thumbnail_url'],['exams','cover_url'],['questions','image_url'],['questions','passage_image_url'],['question_keys','solution_image_url']];
+const head=t=>sb.from(t).select('*',{count:'exact',head:true});
+async function refCount(u){const r=await Promise.all([...REFS.map(([t,c])=>head(t).eq(c,u)),head('questions').contains('images',[u]),head('questions').contains('option_images',JSON.stringify([u]))]);return r.some(x=>x.error)?1:r.reduce((n,x)=>n+(x.count||0),0)}
+/* every uploaded-file URL found in one row of items / exams / questions / question_keys */
+const urlsOf=r=>[r.url,r.thumbnail_url,r.cover_url,r.image_url,r.passage_image_url,r.solution_image_url,...(r.images||[]),...(r.option_images||[])].filter(Boolean);
 async function dropFiles(urls){
   const ps=[...new Set(urls.map(pathOf).filter(Boolean))],gone=[];
-  for(const p of ps)if(!await refCount(pubUrl(p)))gone.push(p);
+  for(let i=0;i<ps.length;i+=8){const part=ps.slice(i,i+8),n=await Promise.all(part.map(p=>refCount(pubUrl(p))));part.forEach((p,j)=>{if(!n[j])gone.push(p)})}
   if(!gone.length)return;
   const{error}=await sb.storage.from(BK).remove(gone);
   if(error)setTimeout(()=>toast('Saved, but an old file could not be removed from storage: '+error.message,1),350);
@@ -48,21 +52,31 @@ const SV={n:0};async function guarded(p){SV.n++;try{return await p}finally{SV.n-
 let TOK=null;try{sb.auth.getSession().then(({data})=>{TOK=data.session?.access_token||null});sb.auth.onAuthStateChange((_e,s)=>{TOK=s?.access_token||null})}catch{}
 addEventListener('pagehide',ev=>{if(ev.persisted||SV.n||!PEND.size||!TOK)return;const prefixes=[...PEND].map(pathOf).filter(Boolean);if(!prefixes.length)return;
   try{fetch(`${CFG.url}/storage/v1/object/${BK}`,{method:'DELETE',keepalive:true,headers:{Authorization:'Bearer '+TOK,apikey:CFG.key,'Content-Type':'application/json'},body:JSON.stringify({prefixes})})}catch{}});
-/* "Clean unused files": delete bucket files that no item / exam / question points to (ignores files from the last 10 minutes) */
+/* "Clean unused files": delete bucket files that no item / exam / question points to (ignores files from the last 10 minutes).
+   Walks every folder of the bucket (covers/, questions/, thumbs/, tests/ …) and compares with what the database references. */
+async function walkBucket(pre,out){
+  for(let off=0;;off+=100){const{data,error}=await sb.storage.from(BK).list(pre,{limit:100,offset:off,sortBy:{column:'name',order:'asc'}});if(error)throw error;if(!data?.length)break;
+    for(const o of data){const p=pre?pre+'/'+o.name:o.name;if(o.id)out.push({path:p,at:o.created_at,size:+(o.metadata?.size||0)});else await walkBucket(p,out)}
+    if(data.length<100)break}}
+async function usedPaths(){
+  const used=new Set(),add=r=>r.forEach(x=>urlsOf(x).forEach(u=>{const p=pathOf(u);if(p)used.add(p)}));
+  const cols={items:'url,thumbnail_url',exams:'cover_url',questions:'image_url,images,option_images,passage_image_url',question_keys:'solution_image_url'};
+  for(const[t,c]of Object.entries(cols))for(let off=0;;off+=1000){const{data,error}=await sb.from(t).select(c).range(off,off+999);if(error)throw error;add(data||[]);if((data||[]).length<1000)break}
+  return used}
 async function sweepFiles(){
-  toast('Scanning storage…');const files=[];
-  for(const pre of['','covers','questions','thumbs']){const{data,error}=await sb.storage.from(BK).list(pre,{limit:1000});if(error)return toast(error.message,1);
-    (data||[]).filter(o=>o.id).forEach(o=>files.push({path:pre?pre+'/'+o.name:o.name,at:o.created_at,size:+(o.metadata?.size||0)}))}
-  const unused=[];for(const f of files.filter(f=>!f.at||Date.now()-new Date(f.at)>10*60*1000))if(!await refCount(pubUrl(f.path)))unused.push(f);
+  toast('Scanning storage…');const files=[];let used;
+  try{await walkBucket('',files);used=await usedPaths()}catch(err){return toast('Could not scan storage: '+(err.message||err),1)}
+  const unused=files.filter(f=>!used.has(f.path)&&(!f.at||Date.now()-new Date(f.at)>10*60*1000));
   if(!unused.length)return toast(`✅ Storage is clean — ${files.length} file${files.length==1?'':'s'}, all in use`);
-  const mb=unused.reduce((n,f)=>n+f.size,0)/1048576;
-  if(!confirm(`Found ${unused.length} unused file${unused.length>1?'s':''} (${mb.toFixed(1)} MB) that nothing points to:\n\n${unused.map(f=>'• '+f.path).join('\n')}\n\nDelete ${unused.length>1?'them':'it'} from storage?`))return;
-  const{error}=await sb.storage.from(BK).remove(unused.map(f=>f.path));toast(error?error.message:`🗑 ${unused.length} unused file${unused.length>1?'s':''} deleted`,!!error)}
+  const mb=unused.reduce((n,f)=>n+f.size,0)/1048576,shownList=unused.slice(0,25).map(f=>'• '+f.path).join('\n')+(unused.length>25?`\n… and ${unused.length-25} more`:'');
+  if(!confirm(`Found ${unused.length} unused file${unused.length>1?'s':''} (${mb.toFixed(1)} MB) that nothing points to:\n\n${shownList}\n\nDelete ${unused.length>1?'them':'it'} from storage?`))return;
+  let bad=null;for(const part of chunk(unused.map(f=>f.path),100)){const{error}=await sb.storage.from(BK).remove(part);if(error){bad=error;break}}
+  toast(bad?bad.message:`🗑 ${unused.length} unused file${unused.length>1?'s':''} deleted`,!!bad)}
 /* after save: drop whatever was uploaded but not kept.  after cancel / leaving the form: drop all unsaved uploads */
 const settle=async()=>{const l=[...PEND];PEND.clear();if(l.length)await dropFiles(l)};
 /* every uploaded file that sits under a category / exam / folders / quizzes (collected BEFORE the rows are deleted) */
 async function filesUnder({cat,exams=[],folders=[],assess=[]}){
-  const out=[],add=r=>r.forEach(x=>[x.url,x.thumbnail_url,x.image_url].forEach(u=>u&&out.push(u)));
+  const out=[],add=r=>r.forEach(x=>out.push(...urlsOf(x)));
   exams.forEach(id=>{const x=AD.exams.find(z=>z.id===id);if(x?.cover_url)out.push(x.cover_url)});
   const jobs=[];
   if(cat)jobs.push(q(sb.from('items').select('url,thumbnail_url').eq('category_id',cat)).then(add));
@@ -70,9 +84,12 @@ async function filesUnder({cat,exams=[],folders=[],assess=[]}){
   const aids=new Set(assess),aq=[];
   if(cat)aq.push(q(sb.from('assessments').select('id').eq('category_id',cat)));
   if(folders.length)aq.push(q(sb.from('assessments').select('id').in('folder_id',folders)));
+  if(exams.length)aq.push(q(sb.from('assessments').select('id').in('exam_id',exams)));   /* tests attached straight to an exam (Tests hub) */
   (await Promise.all([...aq,...jobs]).then(r=>r.slice(0,aq.length))).forEach(r=>r.forEach(x=>aids.add(x.id)));
-  if(aids.size)add(await q(sb.from('questions').select('image_url').in('assessment_id',[...aids])));
+  for(const part of chunk([...aids],40)){add(await q(sb.from('questions').select('image_url,images,option_images,passage_image_url').in('assessment_id',part).limit(5000)));
+    add(await q(sb.from('question_keys').select('solution_image_url,questions!inner(assessment_id)').in('questions.assessment_id',part).limit(5000)))}
   return out}
+const chunk=(a,n)=>{const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n));return o};
 const fl=(n,l,v='',t='text',x='')=>`<label>${l}<input name="${n}" type="${t}" value="${e(v)}" ${x}></label>`;
 const sel=(n,l,o,v='')=>`<label>${l}<select name="${n}">${o.map(([a,b])=>`<option value="${e(a)}" ${a==v?'selected':''}>${e(b)}</option>`).join('')}</select></label>`;
 async function checkAdmin(){const{data}=await sb.auth.getSession();sess=data.session;adminOK=false;
@@ -85,10 +102,10 @@ async function admin(){
   if(!adminOK){app.innerHTML=`<div class="panel" style="max-width:520px;margin:50px auto"><h2>No admin access yet</h2><p>You're signed in as <b>${e(sess.user.email)}</b>. If this is the first setup, claim the admin role. It works once, only while no admin exists.</p><button class="btn acc" id="cl">Claim admin</button> <button class="btn ghost" id="so">Sign out</button></div>`;
     $('#cl').onclick=async()=>{const ok=await q(sb.rpc('claim_first_admin'));toast(ok?'You are the admin':'An admin already exists',!ok);admin()};
     $('#so').onclick=async()=>{await sb.auth.signOut();admin()};return}
-  app.innerHTML=`<div class="sec"><h2>Admin panel</h2><span><button class="btn ghost sm" id="sw" title="Delete files in storage that nothing uses">🧹 Clean unused files</button> <button class="btn ghost sm" id="so">Sign out</button></span></div><div class="tabs">${[['cats','Categories'],['ex','Exams & Folders'],['items','Content'],['as','Quizzes & Tests']].map(([k,l])=>`<button class="btn ${tab===k?'':'ghost'} sm" data-tab="${k}">${l}</button>`).join('')}</div><div id="ad"></div>`;
+  app.innerHTML=`<div class="sec"><h2>Admin panel</h2><span><button class="btn ghost sm" id="sw" title="Delete files in storage that nothing uses">🧹 Clean unused files</button> <button class="btn ghost sm" id="so">Sign out</button></span></div><div class="tabs">${[['cats','Categories'],['ex','Exams & Folders'],['items','Content'],['as','Quizzes & Tests'],['hub','Tests Hub'],['lib','Library import']].map(([k,l])=>`<button class="btn ${tab===k?'':'ghost'} sm" data-tab="${k}">${l}</button>`).join('')}</div><div id="ad"></div>`;
   $('#so').onclick=async()=>{await sb.auth.signOut();admin()};$('#sw').onclick=sweepFiles;
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;admin()});
-  await loadCats();await loadTree();({cats:aCats,ex:aEx,items:aItems,as:aAs})[tab]()}
+  await loadCats();await loadTree();({cats:aCats,ex:aEx,items:aItems,as:aAs,hub:aHub,lib:aLib})[tab]()}
 
 async function aCats(){let ed=null;
   const draw=()=>{$('#ad').innerHTML=`<form class="panel f" id="cf"><h3 class="full">${ed?'Edit':'New'} category</h3>${fl('name','Name',ed?.name,'text','required')}${sel('kind','Type',['videos','notes','revision','articles','links','quizzes','tests'].map(x=>[x,x]),ed?.kind)}${fl('icon','Icon (emoji)',ed?.icon||'📚')}${fl('sort_order','Order',ed?.sort_order??cats.length+1,'number')}<label class="full">Description<input name="description" value="${e(ed?.description)}"></label><div class="full"><button class="btn acc">${ed?'Save changes':'Add category'}</button> ${ed?'<button type="button" class="btn ghost" id="cx">Cancel</button>':''}</div></form>

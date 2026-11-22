@@ -5,7 +5,7 @@ async function loadCats(){cats=await q(sb.from('categories').select('*').order('
 const KL={video:'Video',youtube:'Video',pdf:'PDF',article:'Article',link:'Link'},KA={video:'▶ Play',youtube:'▶ Play',pdf:'Open',article:'Read',link:'Open'};
 function card(i){const c=cats.find(x=>x.id===i.category_id),k=KC[c?.kind]||'#0e8f7e',mine=ls.get('li_liked',[]).includes(i.id)?'♥ Liked':ls.get('li_saved',[]).includes(i.id)?'🔖 Saved':'';
   return `<article class="card entry" tabindex="0" role="link" data-go="#/i/${i.id}" style="--k:${k}"><div class="th" style="${thumbOf(i)?`background-image:url('${e(thumbOf(i))}')`:''}">${thumbOf(i)?'':TI[i.type]}<span class="badge">${KL[i.type]}</span></div><div class="cb"><h3>${e(i.title)}</h3><p>${e(i.description)}</p><div class="meta"><span>${KL[i.type]}${i.duration?' · '+e(i.duration):''}</span><span>${mine}</span></div></div><span class="go chev">${KA[i.type]}</span></article>`}
-function aCard(a){const n=a.questions?.[0]?.count||0,k=a.kind==='test'?'#10243a':'#d9468f';
+function aCard(a){const n=a.question_count||a.questions?.[0]?.count||0,k=a.kind==='test'?'#10243a':'#d9468f';
   return `<article class="card entry" tabindex="0" role="link" data-go="#/exam/${a.id}" style="--k:${k}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>${a.kind==='test'&&a.mode==='sectional_timer'?'Sectional timers':a.kind==='test'&&a.mode==='single_timer'?'Sections':'Pass '+a.pass_percent+'%'}</span></div></div><span class="btn sm acc go">Start</span></article>`}
 app.addEventListener('click',ev=>{
   const g=ev.target.closest('[data-go]');if(g&&!ev.target.closest('button,a'))location.hash=g.dataset.go});
@@ -30,11 +30,12 @@ async function catPage(s){
   hl(s);
   const [exs,items,as]=await Promise.all([q(sb.from('exams').select('*').eq('category_id',c.id).order('sort_order')),
     q(sb.from('items').select(ICOLS).eq('category_id',c.id).is('folder_id',null).order('sort_order').order('created_at',{ascending:false})),
-    q(sb.from('assessments').select('*,questions(count)').eq('category_id',c.id).is('folder_id',null).order('sort_order').order('created_at',{ascending:false}))]);
-  const fs=exs.length?await q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)):[];
+    q(sb.from('assessments').select('*,questions(count)').eq('category_id',c.id).is('folder_id',null).is('exam_id',null).order('sort_order').order('created_at',{ascending:false}))]);
+  const[fs,tc]=exs.length?await Promise.all([q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)),q(sb.from('assessments').select('exam_id').in('exam_id',exs.map(x=>x.id)).limit(5000))]):[[],[]];
+  const tcount={};tc.forEach(a=>tcount[a.exam_id]=(tcount[a.exam_id]||0)+1);
   const tags=[...new Set(items.flatMap(i=>i.tags||[]))];let tg='',tx='';const k=KC[c.kind]||'#0e8f7e';
   app.innerHTML=crumbs([['Home','#/'],[c.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(c.icon)} ${e(c.name)}</h1><p>${e(c.description||'')}</p></div>
-  ${sbar('Search in '+c.name+' — chapters, videos, tests…')}<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder'),k)).join('')}</div>`:''}
+  ${sbar('Search in '+c.name+' — chapters, videos, tests…')}<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||(tcount[x.id]?plural(tcount[x.id],'test'):plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder')),k)).join('')}</div>`:''}
   ${items.length||as.length?`<div class="sec"><h2>${exs.length?'Other content':'All content'}</h2></div>
   ${tags.length?`<div class="tags" id="tg">${tags.map(t=>`<span class="tag" tabindex="0" data-t="${e(t)}">${e(t)}</span>`).join('')}</div>`:''}<div class="grid rows" id="list"></div>`:''}
   ${exs.length||items.length||as.length?'':'<div class="empty">Nothing in this section yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;

@@ -30,3 +30,10 @@ const need=src=>need.c[src]||(need.c[src]=new Promise((ok,no)=>{const s=document
 
 const ICOLS='id,category_id,folder_id,title,description,type,url,body,thumbnail_url,tags,is_published,created_at,duration,sort_order';
 const SK='<div class="sk-wrap"><div class="sk h"></div><div class="sk r"></div><div class="sk r"></div></div>';
+
+/* [b] [i] [u] tags (bold / italic / underline kept from the question library) -> safe HTML.  Everything else is escaped. */
+const rich=s=>{const o={b:0,i:0,u:0};let h=e(s).replace(/\[(\/?)([biu])\]/g,(m,c,t)=>{if(c){if(!o[t])return'';o[t]--;return`</${t}>`}o[t]++;return`<${t}>`});for(const t of'biu')while(o[t]>0){h+=`</${t}>`;o[t]--}return h};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtDate=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[3]} ${MON[+m[2]-1]} ${m[1]}`:''};
+/* where "back" goes from a test: its exam hub, else its folder, else home */
+const backOf=a=>a.exam_id?'#/x/'+a.exam_id:a.folder_id?'#/f/'+a.folder_id:'#/';
