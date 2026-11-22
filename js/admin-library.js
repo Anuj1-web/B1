@@ -28,7 +28,8 @@ const bimg=(u,cls='lqimg',alt='Question picture')=>`<img class="${cls}" src="${B
 const pool=async(items,n,fn)=>{let i=0,err=null;await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{while(i<items.length&&!err){const k=i++;try{await fn(items[k],k)}catch(x){err=x}}}));if(err)throw err};
 
 /* ---------- the question as the admin sees it: library data + the admin's own fixes ---------- */
-const qv=x=>{const d=LB.ed[x.uid]||{};return{...x,stem:d.stem??x.stem,options:d.options||x.options,answer:d.answer!==undefined?d.answer:x.answer,solution:d.solution??x.solution,marks:d.marks??null,exclude:!!d.exclude}};
+const qv=x=>{const d=LB.ed[x.uid]||{};return{...x,stem:d.stem??x.stem,options:d.options||x.options,answer:d.answer!==undefined?d.answer:x.answer,solution:d.solution??x.solution,hi:d.hi!==undefined?d.hi:x.hi,marks:d.marks??null,exclude:!!d.exclude}};
+const hiAny=h=>!!h&&!!((h.stem||'').trim()||(h.solution||'').trim()||(h.options||[]).some(o=>(o||'').trim()));
 const hasPic=x=>x.render||x.figures.some(f=>f.exists&&!f.option);
 const hasOptPic=x=>x.figures.some(f=>f.exists&&f.option);
 const qProblems=x=>{const v=qv(x),p=[];if(v.exclude)return p;
@@ -80,7 +81,7 @@ async function aLib(){
   async function loadTabs(){const id=LB.P.examId;LB.tabs=id&&id!=='__new'?await q(sb.from('exam_tabs').select('*').eq('exam_id',id).order('sort_order')):DEFTABS.map(([key,label],i)=>({id:key,key,label,sort_order:i}))}
   const tabKeyOk=k=>LB.tabs.some(t=>t.key===k);
   function applyExamDefaults(){const P=LB.P,X=AD.exams.find(x=>x.id===P.examId)||{};
-    P.fullMin=X.default_full_minutes||60;P.marks=X.default_marks??1;P.neg=X.default_negative??0;P.pass=X.default_pass_percent??40;P.langs=X.languages||'English, Hindi';P.secDefault=X.default_sectional_minutes||null;
+    P.fullMin=X.default_full_minutes||60;P.marks=X.default_marks??1;P.neg=X.default_negative??0;P.langs=(LB.test?.has_hindi||LB.test?.questions.some(q=>q.hi))?'English, Hindi':'English';P.secDefault=X.default_sectional_minutes||null;
     P.fullTab=tabKeyOk(ls.get('li_pub_fulltab','full'))?ls.get('li_pub_fulltab','full'):'full';P.secTab=tabKeyOk(ls.get('li_pub_sectab','sectional'))?ls.get('li_pub_sectab','sectional'):'sectional'}
   async function initPublish(){
     const t=LB.test,X=LB.libX,hasDate=!!t.date;
@@ -110,15 +111,20 @@ async function aLib(){
       ${[0,1,2,3].map(i=>`<label>Option ${'ABCD'[i]}<input name="o${i}" value="${e(v.options[i]||'')}">${opt('abcd'[i])?bimg(opt('abcd'[i]).url,'lqopt','Option '+'ABCD'[i]):''}</label>`).join('')}
       <label>Correct answer<select name="ans"><option value="">— choose —</option>${'ABCD'.split('').map((l,i)=>`<option value="${i}" ${v.answer===i?'selected':''}>${l}</option>`).join('')}</select></label><label>Marks (blank = default)<input name="marks" type="number" step="0.25" min="0" value="${v.marks??''}"></label>
       <label class="full">Solution / explanation<textarea name="sol" rows="2">${e(v.solution||'')}</textarea></label>
+      <details class="full" ${hiAny(v.hi)?'open':''}><summary><b>हिन्दी version</b> <small>(optional — students can switch language)</small></summary><div class="f" style="margin-top:8px">
+        <label class="full">प्रश्न<textarea name="hstem" rows="3" lang="hi">${e(v.hi?.stem||'')}</textarea></label>
+        ${[0,1,2,3].map(i=>`<label>विकल्प ${'ABCD'[i]}<input name="ho${i}" lang="hi" value="${e(v.hi?.options?.[i]||'')}"></label>`).join('')}
+        <label class="full">हल / स्पष्टीकरण<textarea name="hsol" rows="2" lang="hi">${e(v.hi?.solution||'')}</textarea></label></div></details>
       <div class="full"><button class="btn acc sm">Save question</button> <button type="button" class="btn ghost sm" data-c="1">Cancel</button> ${LB.ed[x.uid]?'<button type="button" class="btn ghost sm" data-r="1">Undo my changes</button>':''}</div></form></div>`;
     return `<div class="lq${v.exclude?' off':''}${prob.length?' bad':''}" data-u="${e(x.uid)}"><div class="lqh"><b>Q${x.pos}</b><small>${e(x.uid)}</small>${LB.ed[x.uid]?'<span class="tag">edited</span>':''}${x.status==='approved'?'<span class="tag" title="Proof-read in the library">✓ proof-read</span>':''}
       <span class="lqa"><button class="btn ghost sm" data-e="1">Edit</button><label class="lqx"><input type="checkbox" data-x="1" ${v.exclude?'checked':''}> Leave out</label></span></div>
       ${prob.map(p=>`<div class="lqp err">⚠ ${e(p)} — edit it, or leave the question out.</div>`).join('')}${warn.map(w=>`<div class="lqp">⚠ ${e(w)}</div>`).join('')}
-      ${x.passage?.text||x.passage?.figures?.length?`<div class="psg"><b>Passage</b><div class="pt">${rich(x.passage.text||'')}</div>${(x.passage.figures||[]).map(u=>bimg(u,'lqimg','Passage figure')).join('')}</div>`:''}
+      ${x.passage?.text||x.passage?.figures?.length?`<div class="psg"><b>Passage</b><div class="pt">${rich(x.passage.text||'')}</div>${x.passage.text_hi?`<div class="pt" lang="hi" style="margin-top:8px">${rich(x.passage.text_hi)}</div>`:''}${(x.passage.figures||[]).map(u=>bimg(u,'lqimg','Passage figure')).join('')}</div>`:''}
       ${x.render?.mode==='whole'&&!LB.ed[x.uid]?.stem?`<div class="lqp info">The whole question is a picture in the library, so it is shown as a picture.</div>${bimg(x.render.url)}`:`${v.stem?`<div class="lqt">${rich(v.stem)}</div>`:''}${x.render?bimg(x.render.url):''}`}
       ${fig.map(f=>bimg(f.url,'lqimg','Figure')).join('')}
       <ol type="A" class="lqo">${v.options.map((o,i)=>`<li class="${v.answer===i?'ok':''}">${o?rich(o):''}${opt('abcd'[i])?bimg(opt('abcd'[i]).url,'lqopt','Option '+'ABCD'[i]):''}${!o&&!opt('abcd'[i])?'<i class="oem">(shown in the picture)</i>':''}${v.answer===i?' ✔':''}</li>`).join('')}</ol>
-      ${v.solution?`<div class="note">💡 ${rich(v.solution)}</div>`:''}</div>`};
+      ${v.solution?`<div class="note">💡 ${rich(v.solution)}</div>`:''}
+      ${hiAny(v.hi)?`<div class="lqhi" lang="hi"><small>हिन्दी</small>${v.hi.stem?`<div class="lqt">${rich(v.hi.stem)}</div>`:''}${(v.hi.options||[]).some(Boolean)?`<ol type="A" class="lqo">${v.hi.options.map(o=>`<li>${rich(o)}</li>`).join('')}</ol>`:''}${v.hi.solution?`<div class="note">💡 ${rich(v.hi.solution)}</div>`:''}</div>`:''}</div>`};
   const planHTML=()=>{const P=LB.P,nTab=LB.tabs;
     return `<div class="lplan"><table><tr><th>Publish<th>What<th>Title on the website<th>Qs<th>Minutes<th>Tab</tr>${LB.plan.map(r=>`<tr class="${r.on?'':'off'}"><td><input type="checkbox" data-pon="${e(r.id)}" ${r.on?'checked':''} style="width:auto" aria-label="Publish ${e(r.title)}"><td>${r.kind==='full'?'<b>Full test</b>':`Sectional<br><input data-pl="${e(r.section)}" value="${e(labelOf(r.section))}" style="width:150px;margin-top:4px" aria-label="Section name on the website" title="Section name shown on the website">`}<td><input data-pt="${e(r.id)}" value="${e(r.title)}" style="min-width:260px"><td>${r.n}<td><input type="number" data-pm="${e(r.id)}" value="${r.minutes}" min="1" style="width:76px" aria-label="Minutes"><td><small>${e(nTab.find(t=>t.key===(r.kind==='full'?P.fullTab:P.secTab))?.label||'—')}</small></tr>`).join('')}</table></div>`};
 
@@ -135,7 +141,7 @@ async function aLib(){
       ${t.sections.length>1?`<div class="full lsc">${t.sections.map(s=>`<label class="chk"><input type="checkbox" data-si="${e(s.name)}" ${P.secInc[s.name]?'checked':''}><span>${e(s.name)} <small>(${qs.filter(x=>x.section===s.name&&!qv(x).exclude).length})</small></span></label>`).join('')}</div>`:''}
       <h3 class="full">2 · Time, marks and rules</h3>
       ${fl('fullMin','Full test time (minutes)',P.fullMin,'number','min=1')}${sel('timer','Full test timer',[['single_timer','One timer for the whole test'],['sectional_timer','Separate timer for each section']],P.timer)}
-      ${fl('marks','Marks per question',P.marks,'number','step=0.25 min=0')}${fl('neg','Negative marks per wrong answer',P.neg,'number','step=0.0001 min=0')}${fl('pass','Pass mark %',P.pass,'number','min=0 max=100')}${fl('langs','Languages shown',P.langs)}
+      ${fl('marks','Marks per question',P.marks,'number','step=0.25 min=0')}${fl('neg','Negative marks per wrong answer',P.neg,'number','step=0.0001 min=0')}${fl('langs','Languages shown',P.langs)}
       ${fl('date','Exam date',P.date,'date')}${fl('shift','Shift',P.shift)}
       <label class="full">Syllabus / note shown with the test (optional)<input name="syllabus" value="${e(P.syllabus)}"></label>
       <div class="full lhint">Times start from the exam's defaults (Tests Hub → Exam page &amp; defaults). Change them here for this test only, or per row in the plan below.</div></form>
@@ -155,7 +161,7 @@ async function aLib(){
     $('#lps').onchange=async ev=>{const n=ev.target.name,P=LB.P;if(!n)return;const v=ev.target.type==='checkbox'?ev.target.checked:ev.target.value;
       if(n==='examId'){P.examId=v;await loadTabs();applyExamDefaults();resetPlan();return refresh(true)}
       if(['full','sec'].includes(n)){P[n]=v;buildPlan();return refresh(true)}
-      if(['fullMin','marks','neg','pass'].includes(n)){P[n]=v===''?'':+v;if(n==='fullMin'){P.fullMin=+v||60;resetPlan()}else buildPlan();return refresh(true)}
+      if(['fullMin','marks','neg'].includes(n)){P[n]=v===''?'':+v;if(n==='fullMin'){P.fullMin=+v||60;resetPlan()}else buildPlan();return refresh(true)}
       if(n==='newName'||n==='newCat'){P[n]=v;if(n==='newName')resetPlan();return refresh(true)}
       if(n==='fullTab')ls.set('li_pub_fulltab',v);if(n==='secTab')ls.set('li_pub_sectab',v);
       P[n]=v;if(n==='date'||n==='shift')resetPlan();else buildPlan();refresh(true)};
@@ -174,7 +180,8 @@ async function aLib(){
       else if(ev.target.closest('[data-r]')){delete LB.ed[uid];LB.editing=null;redrawQ(x);buildPlan();refresh(true)}});
     W.addEventListener('change',ev=>{const cb=ev.target.closest('[data-x]');if(!cb)return;const card=cb.closest('.lq'),uid=card.dataset.u;(LB.ed[uid]=LB.ed[uid]||{}).exclude=cb.checked;buildPlan();refresh(true)});
     W.addEventListener('submit',ev=>{const f=ev.target.closest('.lqf');if(!f)return;ev.preventDefault();const uid=f.closest('.lq').dataset.u,x=LB.test.questions.find(z=>z.uid===uid),v=fd(f),d=LB.ed[uid]=LB.ed[uid]||{};
-      d.stem=v.stem;d.options=[v.o0,v.o1,v.o2,v.o3].map(s=>(s||'').trim());d.answer=v.ans===''?null:+v.ans;d.solution=(v.sol||'').trim();d.marks=v.marks===''?null:+v.marks;LB.editing=null;buildPlan();refresh(true)})}
+      d.stem=v.stem;d.options=[v.o0,v.o1,v.o2,v.o3].map(s=>(s||'').trim());d.answer=v.ans===''?null:+v.ans;d.solution=(v.sol||'').trim();d.marks=v.marks===''?null:+v.marks;
+      const hh={stem:(v.hstem||'').trim(),options:[v.ho0,v.ho1,v.ho2,v.ho3].map(z=>(z||'').trim()),solution:(v.hsol||'').trim()};d.hi=hiAny(hh)?hh:null;LB.editing=null;buildPlan();refresh(true)})}
     $('#lgo').onclick=()=>publish(true);$('#ldr').onclick=()=>publish(false)}
   const redrawQ=x=>{const old=document.querySelector(`.lq[data-u="${CSS.escape(x.uid)}"]`);if(!old)return;const n=document.createElement('div');n.innerHTML=qCard(x);old.replaceWith(n.firstElementChild);hydrate($('#lws'))};
   const updateProb=()=>{const prob=problems();$('#lgo').disabled=$('#ldr').disabled=!!prob.length;$('#lprob').innerHTML=prob.length?`<div class="warnb" role="alert"><b>Fix before publishing:</b><ul>${prob.slice(0,12).map(p=>`<li>${e(p)}</li>`).join('')}</ul></div>`:'<p class="sum" style="color:#2e9e5b">✓ Everything looks ready.</p>'};
@@ -191,7 +198,8 @@ async function aLib(){
     const imgs=[];if(x.render&&(wholeUsed||x.render.mode==='diagram'))imgs.push(x.render.url);x.figures.filter(f=>f.exists&&!f.option).forEach(f=>imgs.push(f.url));
     const opt=[null,null,null,null];x.figures.filter(f=>f.exists&&f.option).forEach(f=>{opt['abcd'.indexOf(f.option)]=f.url});
     const pimg=(x.passage?.figures||[])[0]||null;
-    return{v,wholeUsed,imgs,opt,pimg,text:wholeUsed?'':v.stem.trim()}};
+    const hi=hiAny(v.hi)?v.hi:null;
+    return{v,wholeUsed,imgs,opt,pimg,hi,text:wholeUsed?'':v.stem.trim()}};
 
   async function publish(live){
     if(LB.busy)return;const prob=problems();if(prob.length)return toast('Fix the problems listed first',1);
@@ -229,7 +237,7 @@ async function aLib(){
         const sectional=isFull&&P.timer==='sectional_timer',secMin=s=>{const row=LB.plan.find(z=>z.id==='sec:'+s.name);return row?.minutes||Math.max(1,Math.round(r.minutes*qs.filter(({x})=>x.section===s.name).length/Math.max(1,qs.length)))};
         const total=sectional?secList.reduce((n,s)=>n+secMin(s),0):+r.minutes;
         const row={category_id:exRow.category_id,exam_id:examId,tab_id:tabId(isFull?P.fullTab:P.secTab),kind:'test',title:r.title.trim(),mode:sectional?'sectional_timer':isFull?'single_timer':'mixed',duration_minutes:total,
-          pass_percent:+P.pass||0,negative_marking:+P.neg||0,is_published:live,is_free:P.free,section_name:isFull?null:labelOf(r.section),exam_date:P.date||null,shift:P.shift||null,languages:P.langs||null,syllabus:P.syllabus||null,
+          pass_percent:null,negative_marking:+P.neg||0,is_published:live,is_free:P.free,section_name:isFull?null:labelOf(r.section),exam_date:P.date||null,shift:P.shift||null,languages:P.langs||null,syllabus:P.syllabus||null,
           source_key:srcKey(code,t.key,isFull?null:r.section),sort_order:(+t.num||0)*100+(isFull?0:t.sections.findIndex(s=>s.name===r.section)+1),shuffle_questions:false};
         const[a]=await q(sb.from('assessments').insert(row).select('id'));made.push(a.id);
         const secId={};if(isFull&&secList.length){const ins=await q(sb.from('sections').insert(secList.map((s,i)=>({assessment_id:a.id,title:labelOf(s.name),duration_minutes:sectional?secMin(s):null,sort_order:i}))).select('id,sort_order'));ins.forEach(z=>secId[secList[z.sort_order].name]=z.id)}
@@ -237,9 +245,10 @@ async function aLib(){
         for(const part of chunk(ordered.map((o,i)=>({...o,i})),60)){
           const rows=part.map(({x,p,i})=>{const pub=u=>u?urlMap.get(u):null,im=p.imgs.map(pub).filter(Boolean),oi=p.opt.map(pub),opts=[0,1,2,3].map(k=>p.v.options[k]||'');
             return{assessment_id:a.id,section_id:isFull?(secId[x.section]||null):null,question:p.text,options:opts,marks:p.v.marks??(+P.marks||1),sort_order:i,
-              image_url:im[0]||null,images:im.slice(1),option_images:oi.some(Boolean)?oi:null,passage:x.passage?.text||null,passage_image_url:pub(p.pimg),qbank_uid:x.uid}});
+              image_url:im[0]||null,images:im.slice(1),option_images:oi.some(Boolean)?oi:null,passage:x.passage?.text||null,passage_image_url:pub(p.pimg),qbank_uid:x.uid,
+              question_hi:(p.hi?.stem&&!p.wholeUsed)?p.hi.stem:null,options_hi:p.hi?.options?.some(Boolean)?[0,1,2,3].map(k=>p.hi.options[k]||''):null,passage_hi:x.passage?.text_hi||null}});
           const ins=await q(sb.from('questions').insert(rows).select('id,sort_order'));const byOrd=Object.fromEntries(ins.map(z=>[z.sort_order,z.id]));
-          await q(sb.from('question_keys').insert(part.map(({x,p},k)=>({question_id:byOrd[rows[k].sort_order],correct_index:p.v.answer,explanation:(p.v.solution||'').trim()||null}))))}
+          await q(sb.from('question_keys').insert(part.map(({x,p},k)=>({question_id:byOrd[rows[k].sort_order],correct_index:p.v.answer,explanation:(p.v.solution||'').trim()||null,explanation_hi:(p.hi?.solution||'').trim()||null}))))}
         made_n++}
       /* 5. all good: the old versions can go */
       for(const s of retired){await q(sb.from('assessments').delete().eq('id',s.id))}

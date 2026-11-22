@@ -2,11 +2,40 @@ async function loadCats(){cats=await q(sb.from('categories').select('*').order('
   const links=cats.filter(c=>c.is_published).map(c=>`<a href="#/c/${e(c.slug)}" data-s="${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('');
   $('#nav').innerHTML=links;$('#mnav').innerHTML=`<a href="#/">🏠 Home</a>${links}<a href="#/saved">🔖 Saved</a>`}
 
+
+/* ---------- shared by the Tests hub, the Quizzes / Tests category pages and the search results ---------- */
+const HUB_THEME={indigo:['#1b1a63','#4f46e5'],purple:['#3a1873','#7c3aed'],teal:['#0a3a44','#0e9f8e'],rose:['#66122d','#e11d48'],amber:['#563706','#d97706'],slate:['#18212f','#475569']};
+const KIND_THEME={tests:'indigo',quizzes:'rose',videos:'rose',notes:'teal',revision:'amber',articles:'indigo',links:'purple'};
+const HIC={
+  q:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8"/><path d="M12 17h.01"/></svg>',
+  m:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  t:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>',
+  g:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+  d:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  s:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></svg>'};
+const SEC_COLORS=['#4f46e5','#0e9f8e','#e11d48','#d97706','#7c3aed','#0284c7','#16a34a','#c2410c'];
+const secColor=n=>{let h=0;for(const ch of String(n||''))h=(h*31+ch.charCodeAt(0))>>>0;return SEC_COLORS[h%SEC_COLORS.length]};
+const numFmt=n=>+(+n||0).toFixed(2);
+/* gradient header (logo, name, line, counts) — the same look for exam hubs and category pages */
+function banner(o){const th=HUB_THEME[o.theme]||HUB_THEME.indigo;
+  return `<section class="hub-ban${o.cat?' cat':''}" style="--h1:${th[0]};--h2:${th[1]}"><div class="hub-logo">${o.logo}</div><div class="hub-tt"><h1>${e(o.name)}</h1>${o.sub?`<p>${e(o.sub)}</p>`:''}</div>${(o.stats||[]).length?`<div class="hub-st">${o.stats.map(t=>`<div><b>${t.n}</b><span>${e(t.l)}</span></div>`).join('')}</div>`:''}</section>`}
+/* one horizontal strip for a test or quiz */
+function tcardHTML(a,k){
+  const saved=a.kind==='test'?ls.get('li_ex_'+a.id,null):null,best=ls.get('li_best_'+a.id,null),when=[fmtDate(a.exam_date),a.shift?'Shift '+a.shift:''].filter(Boolean).join(', ');
+  const n=a.question_count||a.questions?.[0]?.count||0,mins=a.duration_minutes?a.duration_minutes+' Mins':'No time limit';
+  return `<article class="tcard" style="--k:${k||'var(--acc)'}"><div class="tc-main"><div class="tc-head">${a.is_free!==false?'<span class="tfree">Free</span>':''}${a.is_published===false?'<span class="tdraft">Draft</span>':''}<h3>${e(a.title)}</h3></div>
+    <div class="tc-meta"><span>${HIC.q}${n} Questions</span>${+a.total_marks>0?`<span>${HIC.m}${numFmt(a.total_marks)} Marks</span>`:''}<span>${HIC.t}${e(mins)}</span>${best?`<span class="tbest" title="Your best score on this device">Best ${best.pct}%</span>`:''}</div></div>
+    <a class="btn ${saved?'ghost':'acc'} tc-go" href="#/exam/${a.id}">${saved?'Resume':'Start Now'}<i aria-hidden="true"> →</i></a>
+    <div class="tc-foot"><span class="tc-l">${a.languages?`<span>${HIC.g}${e(a.languages)}</span>`:''}${when?`<span>${HIC.d}${e(when)}</span>`:''}${!a.languages&&!when&&a.description?`<span>${e(a.description)}</span>`:''}</span><button type="button" class="tc-share" data-sh="${a.id}" aria-label="Share ${e(a.title)}">${HIC.s}Share</button></div></article>`}
+/* the Share button of a strip */
+function wireShare(root,list){root.addEventListener('click',async ev=>{const b=ev.target.closest('[data-sh]');if(!b)return;const a=list.find(z=>z.id===b.dataset.sh);if(!a)return;const u=location.href.split('#')[0]+'#/exam/'+a.id;
+  try{navigator.share?await navigator.share({title:a.title,url:u}):(await navigator.clipboard.writeText(u),toast('Test link copied'))}catch{}})}
+
 const KL={video:'Video',youtube:'Video',pdf:'PDF',article:'Article',link:'Link'},KA={video:'▶ Play',youtube:'▶ Play',pdf:'Open',article:'Read',link:'Open'};
 function card(i){const c=cats.find(x=>x.id===i.category_id),k=KC[c?.kind]||'#0e8f7e',mine=ls.get('li_liked',[]).includes(i.id)?'♥ Liked':ls.get('li_saved',[]).includes(i.id)?'🔖 Saved':'';
   return `<article class="card entry" tabindex="0" role="link" data-go="#/i/${i.id}" style="--k:${k}"><div class="th" style="${thumbOf(i)?`background-image:url('${e(thumbOf(i))}')`:''}">${thumbOf(i)?'':TI[i.type]}<span class="badge">${KL[i.type]}</span></div><div class="cb"><h3>${e(i.title)}</h3><p>${e(i.description)}</p><div class="meta"><span>${KL[i.type]}${i.duration?' · '+e(i.duration):''}</span><span>${mine}</span></div></div><span class="go chev">${KA[i.type]}</span></article>`}
 function aCard(a){const n=a.question_count||a.questions?.[0]?.count||0,k=a.kind==='test'?'#10243a':'#d9468f';
-  return `<article class="card entry" tabindex="0" role="link" data-go="#/exam/${a.id}" style="--k:${k}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>${a.kind==='test'&&a.mode==='sectional_timer'?'Sectional timers':a.kind==='test'&&a.mode==='single_timer'?'Sections':'Pass '+a.pass_percent+'%'}</span></div></div><span class="btn sm acc go">Start</span></article>`}
+  return `<article class="card entry" tabindex="0" role="link" data-go="#/exam/${a.id}" style="--k:${k}"><div class="th">${a.kind==='test'?'🏆':'🧠'}<span class="badge">${a.kind}</span></div><div class="cb"><h3>${e(a.title)}</h3><p>${e(a.description)}</p><div class="meta"><span>${n} questions${a.duration_minutes?` · ${a.duration_minutes} min`:''}</span><span>${a.kind==='test'&&a.mode==='sectional_timer'?'Sectional timers':a.kind==='test'&&a.mode==='single_timer'?'Sections':a.pass_percent!=null?'Pass '+a.pass_percent+'%':''}</span></div></div><span class="btn sm acc go">Start</span></article>`}
 app.addEventListener('click',ev=>{
   const g=ev.target.closest('[data-go]');if(g&&!ev.target.closest('button,a'))location.hash=g.dataset.go});
 app.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.dataset.go)location.hash=ev.target.dataset.go});
@@ -31,8 +60,9 @@ async function catPage(s){
   const [exs,items,as]=await Promise.all([q(sb.from('exams').select('*').eq('category_id',c.id).order('sort_order')),
     q(sb.from('items').select(ICOLS).eq('category_id',c.id).is('folder_id',null).order('sort_order').order('created_at',{ascending:false})),
     q(sb.from('assessments').select('*,questions(count)').eq('category_id',c.id).is('folder_id',null).is('exam_id',null).order('sort_order').order('created_at',{ascending:false}))]);
-  const[fs,tc]=exs.length?await Promise.all([q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)),q(sb.from('assessments').select('exam_id').in('exam_id',exs.map(x=>x.id)).limit(5000))]):[[],[]];
+  const[fs,tc]=exs.length?await Promise.all([q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)),q(sb.from('assessments').select('exam_id,tab_id').in('exam_id',exs.map(x=>x.id)).limit(5000))]):[[],[]];
   const tcount={};tc.forEach(a=>tcount[a.exam_id]=(tcount[a.exam_id]||0)+1);
+  if(c.kind==='tests'||c.kind==='quizzes')return catStrips(c,exs,items,as,fs,tc,tcount);
   const tags=[...new Set(items.flatMap(i=>i.tags||[]))];let tg='',tx='';const k=KC[c.kind]||'#0e8f7e';
   app.innerHTML=crumbs([['Home','#/'],[c.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(c.icon)} ${e(c.name)}</h1><p>${e(c.description||'')}</p></div>
   ${sbar('Search in '+c.name+' — chapters, videos, tests…')}<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||(tcount[x.id]?plural(tcount[x.id],'test'):plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder')),k)).join('')}</div>`:''}
@@ -45,6 +75,23 @@ async function catPage(s){
     $('#list').innerHTML=(f.map(card).join('')+as.map(aCard).join(''))||'<div class="empty" style="grid-column:1/-1">No matches.</div>'};
   draw();
   $('#tg')?.addEventListener('click',ev=>{const t=ev.target.closest('.tag');if(!t)return;tg=tg===t.dataset.t?'':t.dataset.t;document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('on',x.dataset.t===tg));draw()})}
+
+/* Quizzes / Tests pages: gradient header, then one horizontal strip per exam / quiz (phones get the same strips, stacked) */
+async function catStrips(c,exs,items,as,fs,tc,tcount){
+  const k=KC[c.kind]||'var(--acc)',tabs=exs.length?await q(sb.from('exam_tabs').select('id,exam_id,label,sort_order,is_visible').in('exam_id',exs.map(x=>x.id)).order('sort_order')):[];
+  const per={};tc.forEach(a=>{const p=per[a.exam_id]=per[a.exam_id]||{};p[a.tab_id||'_']=(p[a.tab_id||'_']||0)+1});
+  const xcard=x=>{const fn=fs.filter(f=>f.exam_id===x.id).length,n=tcount[x.id]||0,p=per[x.id]||{},
+      tsum=tabs.filter(t=>t.exam_id===x.id&&t.is_visible&&p[t.id]).map(t=>`<span>${p[t.id]} ${e(t.label)}</span>`).join('');
+    return `<a class="tcard xcard" href="#/x/${x.id}" style="--k:${k}"><span class="xlogo">${x.cover_url?`<img src="${e(x.cover_url)}" alt="" loading="lazy">`:e(x.icon||'🎯')}</span>
+      <div class="tc-head"><h3>${e(x.name)}</h3></div><div class="tc-meta">${n?`<span>${HIC.m}${plural(n,'test')}</span>`:`<span>${HIC.m}${plural(fn,'batch / folder')}</span>`}${n&&x.languages?`<span>${HIC.g}${e(x.languages)}</span>`:''}</div>
+      <span class="btn acc tc-go">View tests<i aria-hidden="true"> →</i></span>${tsum||x.description?`<div class="tc-foot"><span class="tc-l">${tsum?`<span class="tabsum">${tsum}</span>`:`<span>${e(x.description)}</span>`}</span></div>`:''}</a>`};
+  const totalTests=tc.length+as.length,stats=c.kind==='tests'?[...(exs.length?[{n:exs.length,l:exs.length===1?'Exam':'Exams'}]:[]),{n:totalTests,l:totalTests===1?'Test':'Tests'}]:[{n:as.length,l:as.length===1?'Quiz':'Quizzes'}];
+  app.innerHTML=crumbs([['Home','#/'],[c.name]])+banner({cat:1,logo:`<span>${e(c.icon)}</span>`,name:c.name,sub:c.description,stats,theme:KIND_THEME[c.kind]})+sbar('Search in '+c.name+' — exams, quizzes, tests…')+
+  `<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="hub-list">${exs.map(xcard).join('')}</div>`:''}
+  ${as.length?`<div class="sec"><h2>${exs.length?'Other tests':c.kind==='quizzes'?'All quizzes':'All tests'}</h2></div><div class="hub-list" id="aslist">${as.map(a=>tcardHTML(a,k)).join('')}</div>`:''}
+  ${items.length?`<div class="sec"><h2>Other content</h2></div><div class="grid rows">${items.map(card).join('')}</div>`:''}
+  ${exs.length||as.length||items.length?'':'<div class="empty">Nothing in this section yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;
+  wireSearch(()=>({type:'cat',cat:c.id,exams:exs.map(x=>x.id),label:c.name}),'#browse');wireShare($('#browse'),as)}
 
 async function viewer(id){
   const i=(await q(sb.from('items').select(ICOLS).eq('id',id).limit(1)))[0];if(!i){app.innerHTML='<div class="empty">Item not found.</div>';return}

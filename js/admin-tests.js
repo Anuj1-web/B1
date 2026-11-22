@@ -14,7 +14,7 @@ async function aAs(){
     ${fl('title','Title',A?.title,'text','required')}${fl('sort_order','Position in folder (1 = first)',A?.sort_order??0,'number')}
     ${sel('mode','Test format (tests only)',MODES,A?.mode)}
     ${fl('duration_minutes','Total time in minutes (blank = no limit)',A?.duration_minutes??'','number','min=1')}
-    ${fl('pass_percent','Pass mark %',A?.pass_percent??40,'number','min=0 max=100')}
+    ${fl('pass_percent','Pass mark % (optional — leave empty for none)',A?.pass_percent??'','number','min=0 max=100')}
     ${fl('negative_marking','Marks deducted per wrong answer',A?.negative_marking??0,'number','step=0.25 min=0')}
     ${sel('shuffle_questions','Shuffle question order',[['false','No'],['true','Yes']],String(!!A?.shuffle_questions))}
     <label class="full">Description<input name="description" value="${e(A?.description)}"></label>
@@ -24,7 +24,7 @@ async function aAs(){
     ${list.map(a=>`<div class="panel"><div class="ah"><div><b>${e(a.title)}</b> <span class="tag">${a.kind}</span> ${a.kind==='test'?`<span class="tag">${MLAB[a.mode]}</span>`:''} <small>${a.questions[0].count} questions${a.sections[0].count?` · ${a.sections[0].count} sections`:''}</small><br>${a.exam_id&&!a.folder_id?`<small>${e(AD.exams.find(z=>z.id===a.exam_id)?.name||'')} · Tests hub</small>`:loc(a.folder_id)}</div>
     <div class="acts" style="margin:0"><label style="display:inline"><input type="checkbox" data-pub="${a.id}" ${a.is_published?'checked':''} style="width:auto"> Live</label><button class="btn ghost sm" data-m="${a.id}">${openQ===a.id?'Close':'Manage'}</button><button class="btn ghost sm" data-ea="${a.id}">Settings</button><a class="btn ghost sm" href="#/exam/${a.id}" target="_blank">Preview</a><button class="btn red sm" data-del="${a.id}">Delete</button></div></div><div id="m${a.id}"></div></div>`).join('')||'<div class="empty">No quizzes or tests yet. Create one above.</div>'}`;
     $('#af').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target);if(!placeCheck(v))return;
-      Object.assign(v,{sort_order:+v.sort_order||0,duration_minutes:+v.duration_minutes||null,pass_percent:+v.pass_percent,negative_marking:+v.negative_marking||0,shuffle_questions:v.shuffle_questions==='true',description:v.description||null,instructions:v.instructions||null});
+      Object.assign(v,{sort_order:+v.sort_order||0,duration_minutes:+v.duration_minutes||null,pass_percent:v.pass_percent===''?null:+v.pass_percent,negative_marking:+v.negative_marking||0,shuffle_questions:v.shuffle_questions==='true',description:v.description||null,instructions:v.instructions||null});
       if(v.kind==='quiz')v.mode='mixed';
       await q(A?sb.from('assessments').update(v).eq('id',A.id):sb.from('assessments').insert(v));toast('Saved');edA=null;draw()};
     bindPlace($('#af'));
@@ -39,7 +39,7 @@ async function aAs(){
 
 async function manage(a,redraw){
   const box=$('#m'+a.id);if(!box)return;
-  const[qd,sc,at]=await Promise.all([q(sb.from('questions').select('*,question_keys(correct_index,explanation,solution_image_url)').eq('assessment_id',a.id).order('sort_order')),
+  const[qd,sc,at]=await Promise.all([q(sb.from('questions').select('*,question_keys(correct_index,explanation,explanation_hi,solution_image_url)').eq('assessment_id',a.id).order('sort_order')),
     q(sb.from('sections').select('*').eq('assessment_id',a.id).order('sort_order')),q(sb.from('attempts').select('score,total').eq('assessment_id',a.id))]);
   const key=x=>[].concat(x.question_keys)[0]||{},secOn=a.kind==='test'&&a.mode!=='mixed',timed=a.mode==='sectional_timer';
   const marks=qd.reduce((n,x)=>n+Number(x.marks),0),avg=at.length?Math.round(at.reduce((n,x)=>n+(x.total?x.score/x.total*100:0),0)/at.length):0;
@@ -61,6 +61,9 @@ async function manage(a,redraw){
   ${[0,1,2,3,4,5].map(i=>(picOpts&&i>3)?'':fl('o'+i,'Option '+OLB[i]+(i>1||picOpts?' (optional)':''),E?.options?.[i]||'','text',i<2&&!picOpts?'required':'')).join('')}${picOpts?'<p class="full" style="margin:0;color:var(--mute);font-size:.85rem">The options of this question are pictures, so the text boxes may stay empty. Only the correct answer matters.</p>':''}
   ${sel('c','Correct answer',OLB.split('').map((l,i)=>[i,l]),KEY(EK))}
   <label class="full">Explanation (shown in review and in quizzes)<textarea name="explanation">${e(EK.explanation)}</textarea></label>
+  <details class="full" ${E&&(E.question_hi||E.options_hi||EK.explanation_hi)?'open':''}><summary><b>हिन्दी version</b> <small>(optional — students can switch language in the test)</small></summary><div class="f" style="margin-top:8px">
+    <label class="full">प्रश्न<textarea name="question_hi" lang="hi">${e(E?.question_hi)}</textarea></label>${[0,1,2,3].map(i=>`<label>विकल्प ${OLB[i]}<input name="ho${i}" lang="hi" value="${e(E?.options_hi?.[i]||'')}"></label>`).join('')}
+    <label class="full">हल / स्पष्टीकरण<textarea name="explanation_hi" lang="hi">${e(EK.explanation_hi)}</textarea></label></div></details>
   <div class="full"><button class="btn acc sm">${E?'Save question':'Add question'}</button> ${E?'<button type="button" class="btn ghost sm" id="xq">Cancel</button>':''}</div></form>
   <details style="margin-top:12px"><summary>Bulk add (one per line)</summary><p><small>Question | A | B | C | D | correct letter | explanation | section name (optional)</small></p><textarea id="bulk"></textarea><button class="btn sm acc" id="bb">Import lines</button></details>
   <h4>Questions</h4>${groups.map(g=>`${secOn?`<div class="gh">${e(g.s?.title||'No section')} <small>${g.items.length} questions${timed&&g.s?` · ${g.s.duration_minutes||'no'} min`:''}</small></div>`:''}
@@ -68,7 +71,8 @@ async function manage(a,redraw){
   const done=m=>{toast(m);redraw()};
   $('#qf').onsubmit=async ev=>{ev.preventDefault();const v=fd(ev.target),raw=[0,1,2,3,4,5].map(i=>(v['o'+i]||'').trim()),opts=picOpts?raw.slice(0,4):raw.filter(Boolean);
     if(!picOpts&&!raw[+v.c])return toast('The correct answer points to an empty option',1);if(picOpts&&+v.c>3)return toast('Choose A, B, C or D as the correct answer',1);
-    const row={assessment_id:a.id,section_id:v.section_id||null,image_url:(v.image_url||'').trim()||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:picOpts?+v.c:opts.indexOf(raw[+v.c]),explanation:v.explanation||null};
+    const row={assessment_id:a.id,section_id:v.section_id||null,image_url:(v.image_url||'').trim()||null,question:v.question,options:opts,marks:+v.marks||1},key={correct_index:picOpts?+v.c:opts.indexOf(raw[+v.c]),explanation:v.explanation||null,explanation_hi:(v.explanation_hi||'').trim()||null};
+    {const ho=[v.ho0,v.ho1,v.ho2,v.ho3].map(z=>(z||'').trim());row.question_hi=(v.question_hi||'').trim()||null;row.options_hi=ho.some(Boolean)?ho:null}
     await guarded((async()=>{if(E){await q(sb.from('questions').update(row).eq('id',E.id));await q(sb.from('question_keys').upsert({question_id:E.id,...key}))}
     else{const[r]=await q(sb.from('questions').insert({...row,sort_order:qd.length}).select('id'));await q(sb.from('question_keys').insert({question_id:r.id,...key}))}})());
     const junk=[E?.image_url,...PEND];PEND.clear();await dropFiles(junk);

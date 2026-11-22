@@ -23,7 +23,7 @@ async function examPage(id){
   if(!x){app.innerHTML='<div class="empty">This exam was not found or is not live.</div>';return}
   const c=cats.find(k=>k.id===x.category_id),k=KC[c?.kind]||'#0e8f7e';hl(c?.slug);
   /* exams in a "tests" category open the Tests hub (tabs + test cards); if the exam has no tests yet its folders are shown as before */
-  if(c?.kind==='tests'){await need('js/hub.js?v=8');if(await hubPage(x,c))return}
+  if(c?.kind==='tests'){await need('js/hub.js?v=9');if(await hubPage(x,c))return}
   const fs=await q(sb.from('folders').select('*').eq('exam_id',id).order('sort_order').order('created_at'));
   const tops=fs.filter(f=>!f.parent_id),cnt=await direct(tops.map(f=>f.id));
   app.innerHTML=crumbs([['Home','#/'],...(c?[[c.name,'#/c/'+c.slug]]:[]),[x.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(x.icon)} ${e(x.name)}</h1><p>${e(x.description||'')}</p></div>
