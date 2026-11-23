@@ -4,7 +4,7 @@ const OL='ABCDEF';
 const SN={nv:'Not visited',na:'Not answered',a:'Answered',mr:'Marked for review',amr:'Answered & marked for review'};
 const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-window.exCleanup=()=>{if(st?.tick)clearInterval(st.tick);if(st?.rvKey)document.removeEventListener('keydown',st.rvKey);st=null;document.body.classList.remove('focus','pal-open');window.onbeforeunload=null;exitFS()};
+window.exCleanup=()=>{if(st?.tick)clearInterval(st.tick);if(st?.rvKey)document.removeEventListener('keydown',st.rvKey);st=null;document.body.classList.remove('focus','pal-open');window.onbeforeunload=null;fitOff();exitFS()};
 
 /* ---------- full screen (hides the browser bars where the browser allows it) ---------- */
 const FSE=document.documentElement,fsOK=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
@@ -41,6 +41,20 @@ const qOpts=x=>lang==='hi'&&x.options_hi?x.options.map((o,k)=>x.options_hi[k]||o
 const langSel=()=>st?.bi?`<select class="lgsel" id="lgsel" aria-label="Language" title="Language"><option value="en" ${lang==='en'?'selected':''}>English</option><option value="hi" ${lang==='hi'?'selected':''}>हिन्दी (Hindi)</option></select>`:'';
 const setLang=v=>{lang=v==='hi'?'hi':'en';ls.set('li_lang',lang)};
 const qLang=()=>lang==='hi'&&st?.bi?'hi':'en';
+
+/* ---------- phones: the window follows the real visible height (it changes when the browser bars hide or full screen starts),
+   and a swipe to the left / right moves to the next / previous question ---------- */
+const fitNow=()=>document.documentElement.style.setProperty('--eh',Math.round(window.visualViewport?.height||window.innerHeight)+'px');
+let fitTimers=[];
+const fitSoon=()=>{fitNow();fitTimers.forEach(clearTimeout);fitTimers=[60,200,500,1000,2000].map(ms=>setTimeout(fitNow,ms))};
+const FIT_EV=['resize','orientationchange'],FIT_DOC=['fullscreenchange','webkitfullscreenchange'];
+function fitOn(){fitNow();FIT_EV.forEach(v=>window.addEventListener(v,fitSoon));FIT_DOC.forEach(v=>document.addEventListener(v,fitSoon));window.visualViewport?.addEventListener('resize',fitSoon)}
+function fitOff(){fitTimers.forEach(clearTimeout);FIT_EV.forEach(v=>window.removeEventListener(v,fitSoon));FIT_DOC.forEach(v=>document.removeEventListener(v,fitSoon));window.visualViewport?.removeEventListener('resize',fitSoon);document.documentElement.style.removeProperty('--eh')}
+const hScroll=(el,stop)=>{for(let n=el;n&&n!==stop;n=n.parentElement){if(n.scrollWidth>n.clientWidth+4&&['auto','scroll'].includes(getComputedStyle(n).overflowX))return true}return false};
+function swipeNav(el,next,prev){let s=null;
+  el.addEventListener('touchstart',ev=>{if(ev.touches.length!==1||ev.target.closest('select,input,textarea,.ex-pal')||hScroll(ev.target,el)){s=null;return}const t=ev.touches[0];s={x:t.clientX,y:t.clientY,t:Date.now()}},{passive:true});
+  el.addEventListener('touchend',ev=>{if(!s)return;const t=ev.changedTouches[0],dx=t.clientX-s.x,dy=t.clientY-s.y,ok=Math.abs(dx)>70&&Math.abs(dx)>1.7*Math.abs(dy)&&Date.now()-s.t<800;s=null;
+    if(!ok||document.querySelector('.dlg'))return;(dx<0?next:prev)();const qa=$('#qa');if(qa){qa.classList.remove('swn','swp');void qa.offsetWidth;qa.classList.add(dx<0?'swn':'swp')}},{passive:true})}
 
 /* ---------- pictures are fetched ahead of time (decoded and kept), so a question never opens with a gap ---------- */
 const PRE=new Map();
@@ -95,7 +109,7 @@ function begin(a,secs,qs,resume){
   st={a,...build(a,secs,qs,saved),ans:{},vis:new Set(),mark:new Set(),cur:0,sec:0,start:Date.now(),end:null,secEnd:null,fb:{},done:false};st.bi=st.Q.some(hasHi);
   if(saved)Object.assign(st,{ans:saved.ans||{},mark:new Set(saved.mark),vis:new Set(saved.vis),cur:saved.cur,sec:saved.sec,start:saved.start,end:saved.end,secEnd:saved.secEnd});
   else{if(st.m!=='sectional_timer'&&a.duration_minutes)st.end=Date.now()+a.duration_minutes*60000;secTimer()}
-  document.body.classList.add('focus');window.onbeforeunload=()=>true;scrollTo(0,0);if(a.kind==='test')enterFS();
+  document.body.classList.add('focus');fitOn();window.onbeforeunload=()=>true;scrollTo(0,0);if(a.kind==='test'){enterFS();fitSoon()}
   a.kind==='quiz'?quizUI():testUI();st.tick=setInterval(tick,500);tick()}
 function persist(){if(st.a.kind!=='test')return;ls.set('li_ex_'+st.a.id,{order:st.Q.map(x=>x.id),ans:st.ans,mark:[...st.mark],vis:[...st.vis],cur:st.cur,sec:st.sec,start:st.start,end:st.end,secEnd:st.secEnd})}
 
@@ -110,6 +124,7 @@ function testUI(){
   app.innerHTML=`<div class="ex"><div class="ex-top"><b>${e(st.a.title)}</b><span id="tm" class="tm"></span>${langSel()}${fsOK?'<button class="ib fsb" id="fsb" aria-label="Toggle full screen" title="Full screen">⛶</button>':''}<button class="btn red sm" id="sub">Submit test</button><button class="ib pbtn" id="pbtn" aria-label="Open question palette" aria-expanded="false">☰</button></div><div class="ex-tabs" id="tabs"></div>
   <div class="ex-main"><section class="ex-q" id="qa"></section><aside class="ex-pal" id="xpal" aria-label="Question palette"><div class="phead"><b>Question palette</b><button class="ib" id="pclose" aria-label="Close palette">✕</button></div><div id="leg" class="leg"></div><div id="pal" class="pal"></div><div class="pacts"><button class="btn ghost" id="quit">Quit test</button><button class="btn red" id="sub2">Submit test</button></div></aside></div><div class="pscrim" id="pscrim"></div><div class="ex-foot" id="ft"></div></div>`;
   const root=$('.ex');
+  swipeNav($('.ex-main'),()=>{const r=rangeOf();if(st.cur+1<r.hi)go(st.cur+1)},()=>{const r=rangeOf();if(st.cur-1>=r.lo)go(st.cur-1)});
   const pal=o=>{document.body.classList.toggle('pal-open',o);$('#pbtn').setAttribute('aria-expanded',o)};
   $('#sub').onclick=$('#sub2').onclick=()=>{pal(false);submitAsk()};$('#quit').onclick=()=>{pal(false);quitTest()};if($('#fsb'))$('#fsb').onclick=toggleFS;$('#pbtn').onclick=()=>pal(true);$('#pclose').onclick=$('#pscrim').onclick=()=>pal(false);
   root.onchange=ev=>{if(ev.target.id==='lgsel'){setLang(ev.target.value);paint(true);return}if(ev.target.name==='o'){st.ans[st.Q[st.cur].id]=+ev.target.value;persist();paint(true)}};
@@ -180,7 +195,7 @@ async function finish(auto){
   app.innerHTML=`<div class="load">${auto?'Time is up. ':''}Submitting your answers…</div>`;
   const{data,error}=await sb.rpc('submit_attempt',{p_assessment:st.a.id,p_answers:st.ans,p_time:took,p_client:cid});
   if(error||!data){app.innerHTML='<div class="empty"><p>We could not submit your answers. They are saved on this device.</p><button class="btn acc" id="rt">Try again</button></div>';st.done=false;$('#rt').onclick=()=>finish(false);return}
-  ls.set('li_ex_'+st.a.id,null);document.body.classList.remove('focus');result(data,took)}
+  ls.set('li_ex_'+st.a.id,null);document.body.classList.remove('focus');fitOff();result(data,took)}
 
 function result(r,took){
   document.body.classList.remove('focus','pal-open');st.res={r,took};
@@ -201,7 +216,7 @@ function review(r,took,start=0){
   const kind=x=>{const v=rev[x.id];return v.chosen==null?'skip':v.chosen===v.correct_index?'right':'wrong'};
   const LAB={right:'Correct',wrong:'Wrong',skip:'Not answered'};
   let cur=Math.min(Math.max(start,0),st.Q.length-1);
-  document.body.classList.add('focus');
+  document.body.classList.add('focus');fitOn();
   app.innerHTML=`<div class="ex rvw"><div class="ex-top"><b>${e(a.title)} · Review</b>${langSel()}<button class="ib" id="rvx">← Results</button><button class="ib pbtn" id="pbtn" aria-label="Open question palette" aria-expanded="false">☰</button></div>
   <div class="ex-main"><section class="ex-q" id="qa"></section><aside class="ex-pal" id="xpal" aria-label="Question palette"><div class="phead"><b>Question palette</b><button class="ib" id="pclose" aria-label="Close palette">✕</button></div><div class="leg" id="leg"></div><div id="pal"></div></aside></div><div class="pscrim" id="pscrim"></div><div class="ex-foot" id="ft"></div></div>`;
   const pal=o=>{document.body.classList.toggle('pal-open',o);$('#pbtn').setAttribute('aria-expanded',o)};
@@ -209,6 +224,7 @@ function review(r,took,start=0){
   const goTo=j=>{if(j<0||j>=st.Q.length)return;cur=j;draw();$('.ex-main').scrollTop=0};
   st.rvKey=ev=>{if(ev.target.closest&&ev.target.closest('.dlg'))return;if(ev.key==='ArrowRight')goTo(cur+1);else if(ev.key==='ArrowLeft')goTo(cur-1)};
   document.addEventListener('keydown',st.rvKey);
+  swipeNav($('.ex-main'),()=>goTo(cur+1),()=>goTo(cur-1));
   $('.rvw').addEventListener('change',ev=>{if(ev.target.id==='lgsel'){setLang(ev.target.value);draw()}});
   $('#rvx').onclick=leave;$('#pbtn').onclick=()=>pal(true);$('#pclose').onclick=$('#pscrim').onclick=()=>pal(false);
   $('.rvw').onclick=ev=>{const b=ev.target.closest('button');if(!b)return;

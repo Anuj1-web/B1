@@ -2,7 +2,7 @@
    Reads the TEST-WISE question library on the admin's PC through the read-only "Website Bridge" (qbank_bridge.py), lets the
    admin preview and fix every question, then publishes the test as one Full test and / or one Sectional test per section.
    Pictures are uploaded to the "content" bucket; if anything fails midway everything made so far is undone. */
-const LB={base:'http://127.0.0.1:8765',tok:ls.get('li_bridge_tok',''),ok:false,libs:null,libEx:ls.get('li_lib_ex',''),test:null,ed:{},editing:null,P:null,plan:[],tabs:[],pub:{},busy:false,imgs:new Map(),filt:''};
+const LB={base:'http://127.0.0.1:8765',tok:ls.get('li_bridge_tok',''),ok:false,libs:null,libEx:ls.get('li_lib_ex',''),test:null,ed:{},editing:null,P:null,plan:[],tabs:[],pub:{},busy:false,imgs:new Map(),filt:'',lang:'en',qlang:{}};
 const LBK=u=>LB.base+u;
 class BridgeError extends Error{constructor(kind,msg,status){super(msg);this.kind=kind;this.status=status}}
 async function bridge(path,blob){
@@ -32,6 +32,8 @@ const qv=x=>{const d=LB.ed[x.uid]||{};return{...x,stem:d.stem??x.stem,options:d.
 const hiAny=h=>!!h&&!!((h.stem||'').trim()||(h.solution||'').trim()||(h.options||[]).some(o=>(o||'').trim()));
 const hasPic=x=>x.render||x.figures.some(f=>f.exists&&!f.option);
 const hasOptPic=x=>x.figures.some(f=>f.exists&&f.option);
+/* the language a question is shown in while checking (a button on each question, and one for all questions) */
+const qLangOf=x=>hiAny(qv(x).hi)?(LB.qlang[x.uid]??LB.lang):'en';
 const qProblems=x=>{const v=qv(x),p=[];if(v.exclude)return p;
   if(v.answer==null)p.push('no correct answer chosen');
   if(!v.stem.trim()&&!hasPic(x))p.push('no question text or picture');
@@ -69,7 +71,7 @@ async function aLib(){
       bindOpen()}};
   const bindOpen=()=>{$('#lex').onchange=ev=>{LB.libEx=ev.target.value;ls.set('li_lib_ex',LB.libEx);draw()};$('#lfi').oninput=ev=>{LB.filt=ev.target.value.trim().toLowerCase();const pos=ev.target.selectionStart;$('#lbody').innerHTML=drawLib();const i=$('#lfi');i.focus();i.setSelectionRange(pos,pos);bindOpen()};
     root.querySelectorAll('[data-o]').forEach(b=>b.onclick=async()=>{b.disabled=true;b.textContent='Loading…';
-      try{LB.test=await bridge('/api/test/'+b.dataset.o);LB.ed={};LB.editing=null;LB.libX=LB.libs.find(x=>String(x.id)===String(LB.libEx));await initPublish();draw();scrollTo(0,0)}
+      try{LB.test=await bridge('/api/test/'+b.dataset.o);LB.ed={};LB.editing=null;LB.lang='en';LB.qlang={};LB.libX=LB.libs.find(x=>String(x.id)===String(LB.libEx));await initPublish();draw();scrollTo(0,0)}
       catch(err){toast(err.message||'Could not load the test',1);b.disabled=false;b.textContent='Preview & publish'}})};
 
   /* ======================= publish settings + plan ======================= */
@@ -106,7 +108,8 @@ async function aLib(){
     LB.plan.filter(r=>r.on).forEach(r=>{if(!r.title.trim())out.push('A title is empty.');if(!(+r.minutes>0))out.push(`“${r.title}” needs a time in minutes.`)});return out};
 
   /* ======================= workspace ======================= */
-  const qCard=x=>{const v=qv(x),prob=qProblems(x),warn=qWarn(x),ed=LB.editing===x.uid,fig=x.figures.filter(f=>f.exists&&!f.option),opt=l=>x.figures.find(f=>f.exists&&f.option===l);
+  const qCard=x=>{const v=qv(x),prob=qProblems(x),warn=qWarn(x),ed=LB.editing===x.uid,LB_hi=qLangOf(x)==='hi',H=v.hi||{},
+      stemT=LB_hi?(H.stem||v.stem):v.stem,optsT=LB_hi?v.options.map((o,i)=>(H.options?.[i])||o):v.options,solT=LB_hi?(H.solution||v.solution):v.solution,psgT=LB_hi&&x.passage?.text_hi?x.passage.text_hi:(x.passage?.text||''),fig=x.figures.filter(f=>f.exists&&!f.option),opt=l=>x.figures.find(f=>f.exists&&f.option===l);
     if(ed)return `<div class="lq editing" data-u="${e(x.uid)}"><form class="f lqf"><label class="full">Question (use [b]bold[/b] [i]italic[/i] [u]underline[/u])<textarea name="stem" rows="3">${e(v.stem)}</textarea></label>
       ${[0,1,2,3].map(i=>`<label>Option ${'ABCD'[i]}<input name="o${i}" value="${e(v.options[i]||'')}">${opt('abcd'[i])?bimg(opt('abcd'[i]).url,'lqopt','Option '+'ABCD'[i]):''}</label>`).join('')}
       <label>Correct answer<select name="ans"><option value="">— choose —</option>${'ABCD'.split('').map((l,i)=>`<option value="${i}" ${v.answer===i?'selected':''}>${l}</option>`).join('')}</select></label><label>Marks (blank = default)<input name="marks" type="number" step="0.25" min="0" value="${v.marks??''}"></label>
@@ -116,20 +119,22 @@ async function aLib(){
         ${[0,1,2,3].map(i=>`<label>विकल्प ${'ABCD'[i]}<input name="ho${i}" lang="hi" value="${e(v.hi?.options?.[i]||'')}"></label>`).join('')}
         <label class="full">हल / स्पष्टीकरण<textarea name="hsol" rows="2" lang="hi">${e(v.hi?.solution||'')}</textarea></label></div></details>
       <div class="full"><button class="btn acc sm">Save question</button> <button type="button" class="btn ghost sm" data-c="1">Cancel</button> ${LB.ed[x.uid]?'<button type="button" class="btn ghost sm" data-r="1">Undo my changes</button>':''}</div></form></div>`;
-    return `<div class="lq${v.exclude?' off':''}${prob.length?' bad':''}" data-u="${e(x.uid)}"><div class="lqh"><b>Q${x.pos}</b><small>${e(x.uid)}</small>${LB.ed[x.uid]?'<span class="tag">edited</span>':''}${x.status==='approved'?'<span class="tag" title="Proof-read in the library">✓ proof-read</span>':''}
-      <span class="lqa"><button class="btn ghost sm" data-e="1">Edit</button><label class="lqx"><input type="checkbox" data-x="1" ${v.exclude?'checked':''}> Leave out</label></span></div>
+    return `<div class="lq${v.exclude?' off':''}${prob.length?' bad':''}" data-u="${e(x.uid)}"${LB_hi?' lang="hi"':''}><div class="lqh"><b>Q${x.pos}</b><small>${e(x.uid)}</small>${LB.ed[x.uid]?'<span class="tag">edited</span>':''}${x.status==='approved'?'<span class="tag" title="Proof-read in the library">✓ proof-read</span>':''}
+      <span class="lqa">${hiAny(v.hi)?`<button class="btn ghost sm lqlg" data-lt="1" title="Show this question in the other language">${LB_hi?'English':'हिन्दी'}</button>`:''}<button class="btn ghost sm" data-e="1">Edit</button><label class="lqx"><input type="checkbox" data-x="1" ${v.exclude?'checked':''}> Leave out</label></span></div>
       ${prob.map(p=>`<div class="lqp err">⚠ ${e(p)} — edit it, or leave the question out.</div>`).join('')}${warn.map(w=>`<div class="lqp">⚠ ${e(w)}</div>`).join('')}
-      ${x.passage?.text||x.passage?.figures?.length?`<div class="psg"><b>Passage</b><div class="pt">${rich(x.passage.text||'')}</div>${x.passage.text_hi?`<div class="pt" lang="hi" style="margin-top:8px">${rich(x.passage.text_hi)}</div>`:''}${(x.passage.figures||[]).map(u=>bimg(u,'lqimg','Passage figure')).join('')}</div>`:''}
-      ${x.render?.mode==='whole'&&!LB.ed[x.uid]?.stem?`<div class="lqp info">The whole question is a picture in the library, so it is shown as a picture.</div>${bimg(x.render.url)}`:`${v.stem?`<div class="lqt">${rich(v.stem)}</div>`:''}${x.render?bimg(x.render.url):''}`}
+      ${x.passage?.text||x.passage?.figures?.length?`<div class="psg"><b>Passage</b><div class="pt">${rich(psgT)}</div>${(x.passage.figures||[]).map(u=>bimg(u,'lqimg','Passage figure')).join('')}</div>`:''}
+      ${x.render?.mode==='whole'&&!LB.ed[x.uid]?.stem?`<div class="lqp info">The whole question is a picture in the library, so it is shown as a picture.</div>${bimg(x.render.url)}`:`${stemT?`<div class="lqt">${rich(stemT)}</div>`:''}${x.render?bimg(x.render.url):''}`}
       ${fig.map(f=>bimg(f.url,'lqimg','Figure')).join('')}
-      <ol type="A" class="lqo">${v.options.map((o,i)=>`<li class="${v.answer===i?'ok':''}">${o?rich(o):''}${opt('abcd'[i])?bimg(opt('abcd'[i]).url,'lqopt','Option '+'ABCD'[i]):''}${!o&&!opt('abcd'[i])?'<i class="oem">(shown in the picture)</i>':''}${v.answer===i?' ✔':''}</li>`).join('')}</ol>
-      ${v.solution?`<div class="note">💡 ${rich(v.solution)}</div>`:''}
-      ${hiAny(v.hi)?`<div class="lqhi" lang="hi"><small>हिन्दी</small>${v.hi.stem?`<div class="lqt">${rich(v.hi.stem)}</div>`:''}${(v.hi.options||[]).some(Boolean)?`<ol type="A" class="lqo">${v.hi.options.map(o=>`<li>${rich(o)}</li>`).join('')}</ol>`:''}${v.hi.solution?`<div class="note">💡 ${rich(v.hi.solution)}</div>`:''}</div>`:''}</div>`};
+      <ol type="A" class="lqo">${optsT.map((o,i)=>`<li class="${v.answer===i?'ok':''}">${o?rich(o):''}${opt('abcd'[i])?bimg(opt('abcd'[i]).url,'lqopt','Option '+'ABCD'[i]):''}${!o&&!opt('abcd'[i])?'<i class="oem">(shown in the picture)</i>':''}${v.answer===i?' ✔':''}</li>`).join('')}</ol>
+      ${solT?`<div class="note">💡 ${rich(solT)}</div>`:''}</div>`};
   const planHTML=()=>{const P=LB.P,nTab=LB.tabs;
     return `<div class="lplan"><table><tr><th>Publish<th>What<th>Title on the website<th>Qs<th>Minutes<th>Tab</tr>${LB.plan.map(r=>`<tr class="${r.on?'':'off'}"><td><input type="checkbox" data-pon="${e(r.id)}" ${r.on?'checked':''} style="width:auto" aria-label="Publish ${e(r.title)}"><td>${r.kind==='full'?'<b>Full test</b>':`Sectional<br><input data-pl="${e(r.section)}" value="${e(labelOf(r.section))}" style="width:150px;margin-top:4px" aria-label="Section name on the website" title="Section name shown on the website">`}<td><input data-pt="${e(r.id)}" value="${e(r.title)}" style="min-width:260px"><td>${r.n}<td><input type="number" data-pm="${e(r.id)}" value="${r.minutes}" min="1" style="width:76px" aria-label="Minutes"><td><small>${e(nTab.find(t=>t.key===(r.kind==='full'?P.fullTab:P.secTab))?.label||'—')}</small></tr>`).join('')}</table></div>`};
 
   async function workspace(){
     const t=LB.test,P=LB.P,qs=t.questions,ex=siteExams(),nQ=liveQs().length,prob=problems(),catsT=cats.filter(c=>c.kind==='tests');
+    const nHi=qs.filter(x=>hiAny(qv(x).hi)).length,
+      hindiNote=nHi?`<p class="lhn ok">🈯 Hindi found for <b>${nHi}</b> of ${qs.length} questions (${e(t.hindi_source||'library')}). Use the <b>हिन्दी</b> button on a question, or <b>Show all in Hindi</b>. Students get a language switch in the test.</p>`
+        :`<div class="lhn"><b>No Hindi found for this test.</b> The test will be English only. <button type="button" class="btn ghost sm" id="ldiag">Why? Check the library</button><div id="ldiagout"></div></div>`;
     const secBlocks=t.sections.map(s=>`<details class="lsec" open><summary><b>${e(s.name)}</b> <small>${qs.filter(x=>x.section===s.name&&!qv(x).exclude).length} of ${s.questions} questions</small></summary>${qs.filter(x=>x.section===s.name).map(qCard).join('')}</details>`).join('');
     $('#lbody').innerHTML='';
     $('#lws').innerHTML=`<div class="panel"><div class="ah"><div><button class="btn ghost sm" id="lback">← Back to the library</button></div><div><b>${e(t.title)}</b> <small>${e(LB.libX?.name||'')} · ${qs.length} questions · ${t.sections.length} section${t.sections.length==1?'':'s'}</small></div></div></div>
@@ -146,7 +151,8 @@ async function aLib(){
       <label class="full">Syllabus / note shown with the test (optional)<input name="syllabus" value="${e(P.syllabus)}"></label>
       <div class="full lhint">Times start from the exam's defaults (Tests Hub → Exam page &amp; defaults). Change them here for this test only, or per row in the plan below.</div></form>
     <div class="panel"><h3>3 · What will be created</h3>${planHTML()}<div class="acts"><button class="btn ghost sm" id="lrp">Reset titles and times</button></div></div>
-    <div class="panel"><div class="ah"><h3>4 · Check the questions</h3><span class="sum" style="margin:0"><b>${nQ}</b> of ${qs.length} questions will be published${qs.length-nQ?` · ${qs.length-nQ} left out`:''}</span></div>
+    <div class="panel"><div class="ah"><h3>4 · Check the questions</h3><span class="acts" style="margin:0;align-items:center"><span class="sum" style="margin:0"><b>${nQ}</b> of ${qs.length} questions will be published${qs.length-nQ?` · ${qs.length-nQ} left out`:''}</span>${nHi?`<button class="btn ghost sm" id="lgall">${LB.lang==='hi'?'Show all in English':'Show all in Hindi (हिन्दी)'}</button>`:''}</span></div>
+      ${hindiNote}
       <p class="sum">Pictures and options come straight from your library. Use <b>Edit</b> to fix text or the answer, or <b>Leave out</b> to skip a question. Nothing in your library is changed.</p>${secBlocks}</div>
     <div class="panel lpub" id="lpub"><div id="lprob">${prob.length?`<div class="warnb" role="alert"><b>Fix before publishing:</b><ul>${prob.slice(0,12).map(p=>`<li>${e(p)}</li>`).join('')}${prob.length>12?`<li>…and ${prob.length-12} more</li>`:''}</ul></div>`:'<p class="sum" style="color:#2e9e5b">✓ Everything looks ready.</p>'}</div>
       <div class="f" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))"><label class="chk"><input type="checkbox" id="lfree" ${P.free?'checked':''}><span>Free test</span></label><label class="chk"><input type="checkbox" id="lcmp" ${P.compress?'checked':''}><span>Compress pictures (smaller, faster)</span></label></div>
@@ -171,12 +177,20 @@ async function aLib(){
     W.querySelectorAll('[data-pl]').forEach(i=>i.onchange=()=>{const sec=i.dataset.pl,old=labelOf(sec),v=i.value.trim()||sec;LB.P.secLabel[sec]=v;const r=LB.plan.find(x=>x.id==='sec:'+sec);if(r)r.title=r.title.split(old).join(v);refresh(true)});
     W.querySelectorAll('[data-pm]').forEach(i=>i.onchange=()=>{LB.plan.find(x=>x.id===i.dataset.pm).minutes=+i.value||0;updateProb()});
     $('#lrp').onclick=()=>{resetPlan();refresh(true)};
+    if($('#lgall'))$('#lgall').onclick=()=>{LB.lang=LB.lang==='hi'?'en':'hi';LB.qlang={};refresh(true)};
+    if($('#ldiag'))$('#ldiag').onclick=async ev=>{const b=ev.target,out=$('#ldiagout');b.disabled=true;out.innerHTML='<p class="sum">Checking the library…</p>';
+      try{const d=await bridge('/api/diag/'+LB.test.id),hits=d.scanned||[];
+        out.innerHTML=hits.length?`<p class="sum">Hindi text (Devanagari) exists in these places, but the bridge could not match it to the question's fields:</p><ul>${hits.slice(0,12).map(h=>`<li><code>${e(h.table)}.${e(h.column)}</code> — ${h.rows} rows, e.g. “${e(h.sample)}”</li>`).join('')}</ul><p class="sum">Copy the report below and send it to the developer; the bridge can be told in one line how to read these.</p>`
+          :`<p class="sum">No Hindi text was found in the rows of this test (${d.questions} questions checked). If the library app shows Hindi for it, the Hindi is stored somewhere the bridge cannot see — send the report below.</p>`;
+        out.innerHTML+=`<textarea readonly rows="8" style="width:100%;font:12px monospace" onclick="this.select()">${e(JSON.stringify({tables:d.tables,found:d.discovered,hindi_text_in:hits},null,1))}</textarea>`}
+      catch(err){out.innerHTML=`<p class="warnb">${e(err.message||'Could not read the report')}</p>`}b.disabled=false};
     $('#lfree').onchange=ev=>LB.P.free=ev.target.checked;$('#lcmp').onchange=ev=>LB.P.compress=ev.target.checked;
     /* per-question: edit / leave out / undo  (the workspace is redrawn often, the delegated listeners are attached once) */
     if(!W._bound){W._bound=true;
     W.addEventListener('click',ev=>{const card=ev.target.closest('.lq');if(!card)return;const uid=card.dataset.u,x=LB.test.questions.find(z=>z.uid===uid);
       if(ev.target.closest('[data-e]')){LB.editing=uid;redrawQ(x)}
       else if(ev.target.closest('[data-c]')){LB.editing=null;redrawQ(x)}
+      else if(ev.target.closest('[data-lt]')){LB.qlang[uid]=qLangOf(x)==='hi'?'en':'hi';redrawQ(x)}
       else if(ev.target.closest('[data-r]')){delete LB.ed[uid];LB.editing=null;redrawQ(x);buildPlan();refresh(true)}});
     W.addEventListener('change',ev=>{const cb=ev.target.closest('[data-x]');if(!cb)return;const card=cb.closest('.lq'),uid=card.dataset.u;(LB.ed[uid]=LB.ed[uid]||{}).exclude=cb.checked;buildPlan();refresh(true)});
     W.addEventListener('submit',ev=>{const f=ev.target.closest('.lqf');if(!f)return;ev.preventDefault();const uid=f.closest('.lq').dataset.u,x=LB.test.questions.find(z=>z.uid===uid),v=fd(f),d=LB.ed[uid]=LB.ed[uid]||{};

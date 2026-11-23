@@ -50,16 +50,15 @@ app.addEventListener('click',ev=>{
 app.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.dataset.go)location.hash=ev.target.dataset.go});
 
 async function home(){
-  const [items,as]=await Promise.all([q(sb.from('items').select(ICOLS).order('created_at',{ascending:false}).limit(60)),q(sb.from('assessments').select('category_id'))]);
+  const [items,as]=await Promise.all([q(sb.from('items').select('category_id').limit(5000)),q(sb.from('assessments').select('category_id').limit(5000))]);
   const cnt={};items.forEach(i=>cnt[i.category_id]=(cnt[i.category_id]||0)+1);as.forEach(a=>cnt[a.category_id]=(cnt[a.category_id]||0)+1);
   const live=cats.filter(c=>c.is_published);
-  /* “Fresh on the shelf”: 4 newest items are rendered; CSS shows 2 on phones and up to 4 on larger screens */
   app.innerHTML=`<section class="herobox"><span class="pill">✨ Free study hub</span><h1>Learn a little, <em>every day.</em></h1><p>Video lessons, notes, revision sheets, quizzes and tests — all in one calm place.</p>
   ${sbar('Search notes, videos, chapters, tests…',1)}
   <div class="chips" id="chips">${live.slice(0,6).map(c=>`<a class="chip" href="#/c/${e(c.slug)}">${e(c.icon)} ${e(c.name)}</a>`).join('')}</div></section>
   <div id="browse"><div class="sec"><h2>Explore</h2></div>
-  <div class="grid cats">${live.map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#4f46e5'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${e(c.description||'')}${c.description?' · ':''}${cnt[c.id]||0} items</small></a>`).join('')}</div>
-  <div class="sec"><h2>Fresh on the shelf</h2></div><div class="grid rows" id="latest">${items.slice(0,4).map(card).join('')||'<div class="empty">Nothing here yet. Add content from the admin page.</div>'}</div></div>
+  <div class="grid cats">${live.map(c=>`<a class="cat" style="--k:${KC[c.kind]||'#4f46e5'}" href="#/c/${e(c.slug)}"><div class="ic">${e(c.icon)}</div><h3>${e(c.name)}</h3><small>${c.description?`<span class="cd">${e(c.description)} · </span>`:''}${cnt[c.id]||0} item${(cnt[c.id]||0)===1?'':'s'}</small></a>`).join('')}</div>
+</div>
   <div id="sres" class="sres" hidden></div>`;
   wireSearch(()=>({type:'all'}),'#browse,#chips')}
 
