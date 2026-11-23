@@ -4,8 +4,10 @@ async function loadCats(){cats=await q(sb.from('categories').select('*').order('
 
 
 /* ---------- shared by the Tests hub, the Quizzes / Tests category pages and the search results ---------- */
-const HUB_THEME={indigo:['#1b1a63','#4f46e5'],purple:['#3a1873','#7c3aed'],teal:['#0a3a44','#0e9f8e'],rose:['#66122d','#e11d48'],amber:['#563706','#d97706'],slate:['#18212f','#475569']};
-const KIND_THEME={tests:'indigo',quizzes:'rose',videos:'rose',notes:'teal',revision:'amber',articles:'indigo',links:'purple'};
+const HUB_THEME={fuchsia:['#4a1259','#c026d3'],indigo:['#1b1a63','#4f46e5'],purple:['#3a1873','#7c3aed'],teal:['#0a3a44','#0e9f8e'],rose:['#66122d','#e11d48'],amber:['#563706','#d97706'],slate:['#18212f','#475569']};
+/* every section has its own header colour */
+const KIND_THEME={tests:'indigo',quizzes:'rose',videos:'fuchsia',notes:'teal',revision:'amber',articles:'slate',links:'purple'};
+const kindAccent=kind=>(HUB_THEME[KIND_THEME[kind]]||HUB_THEME.indigo)[1];
 const HIC={
   q:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8"/><path d="M12 17h.01"/></svg>',
   m:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
@@ -27,6 +29,13 @@ function tcardHTML(a,k){
     <div class="tc-meta"><span>${HIC.q}${n} Questions</span>${+a.total_marks>0?`<span>${HIC.m}${numFmt(a.total_marks)} Marks</span>`:''}<span>${HIC.t}${e(mins)}</span>${best?`<span class="tbest" title="Your best score on this device">Best ${best.pct}%</span>`:''}</div></div>
     <a class="btn ${saved?'ghost':'acc'} tc-go" href="#/exam/${a.id}">${saved?'Resume':'Start Now'}<i aria-hidden="true"> →</i></a>
     <div class="tc-foot"><span class="tc-l">${a.languages?`<span>${HIC.g}${e(a.languages)}</span>`:''}${when?`<span>${HIC.d}${e(when)}</span>`:''}${!a.languages&&!when&&a.description?`<span>${e(a.description)}</span>`:''}</span><button type="button" class="tc-share" data-sh="${a.id}" aria-label="Share ${e(a.title)}">${HIC.s}Share</button></div></article>`}
+/* one horizontal strip for a lesson / note / sheet / link (Video Lessons, Notes & PDFs, Revision Sheets) */
+const IGO={video:'Watch',youtube:'Watch',pdf:'Open PDF',article:'Read',link:'Open'};
+function istripHTML(i,k){const th=thumbOf(i),vid=['video','youtube'].includes(i.type);
+  return `<a class="tcard icard" href="#/i/${i.id}" style="--k:${k||'var(--acc)'}"><span class="ithumb${vid?' vid':''}"${th?` style="background-image:url('${e(th)}')"`:''} aria-hidden="true">${th?'':(TI[i.type]||'📄')}</span>
+    <div class="tc-head"><span class="itype">${KL[i.type]||'Item'}</span><h3>${e(i.title)}</h3></div>
+    <div class="tc-meta">${i.duration?`<span>${HIC.t}${e(i.duration)}</span>`:''}${i.description?`<span class="idesc">${e(i.description)}</span>`:''}</div>
+    <span class="btn acc tc-go">${IGO[i.type]||'Open'}<i aria-hidden="true"> →</i></span></a>`}
 /* the Share button of a strip */
 function wireShare(root,list){root.addEventListener('click',async ev=>{const b=ev.target.closest('[data-sh]');if(!b)return;const a=list.find(z=>z.id===b.dataset.sh);if(!a)return;const u=location.href.split('#')[0]+'#/exam/'+a.id;
   try{navigator.share?await navigator.share({title:a.title,url:u}):(await navigator.clipboard.writeText(u),toast('Test link copied'))}catch{}})}
@@ -60,9 +69,9 @@ async function catPage(s){
   const [exs,items,as]=await Promise.all([q(sb.from('exams').select('*').eq('category_id',c.id).order('sort_order')),
     q(sb.from('items').select(ICOLS).eq('category_id',c.id).is('folder_id',null).order('sort_order').order('created_at',{ascending:false})),
     q(sb.from('assessments').select('*,questions(count)').eq('category_id',c.id).is('folder_id',null).is('exam_id',null).order('sort_order').order('created_at',{ascending:false}))]);
-  const[fs,tc]=exs.length?await Promise.all([q(sb.from('folders').select('exam_id').in('exam_id',exs.map(x=>x.id)).is('parent_id',null)),q(sb.from('assessments').select('exam_id,tab_id').in('exam_id',exs.map(x=>x.id)).limit(5000))]):[[],[]];
+  const[fs,tc]=exs.length?await Promise.all([q(sb.from('folders').select('id,exam_id,name,sort_order').in('exam_id',exs.map(x=>x.id)).is('parent_id',null).order('sort_order')),q(sb.from('assessments').select('exam_id,tab_id').in('exam_id',exs.map(x=>x.id)).limit(5000))]):[[],[]];
   const tcount={};tc.forEach(a=>tcount[a.exam_id]=(tcount[a.exam_id]||0)+1);
-  if(c.kind==='tests'||c.kind==='quizzes')return catStrips(c,exs,items,as,fs,tc,tcount);
+  if(['tests','quizzes','videos','notes','revision'].includes(c.kind))return catStrips(c,exs,items,as,fs,tc,tcount);
   const tags=[...new Set(items.flatMap(i=>i.tags||[]))];let tg='',tx='';const k=KC[c.kind]||'#0e8f7e';
   app.innerHTML=crumbs([['Home','#/'],[c.name]])+`<div class="hero" style="padding:8px 0 10px"><h1 style="font-size:clamp(1.8rem,5vw,3rem)">${e(c.icon)} ${e(c.name)}</h1><p>${e(c.description||'')}</p></div>
   ${sbar('Search in '+c.name+' — chapters, videos, tests…')}<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="grid rows cats">${exs.map(x=>tile('#/x/'+x.id,x.icon||'🎯',x.cover_url,x.name,x.description||(tcount[x.id]?plural(tcount[x.id],'test'):plural(fs.filter(f=>f.exam_id===x.id).length,'batch / folder')),k)).join('')}</div>`:''}
@@ -76,25 +85,38 @@ async function catPage(s){
   draw();
   $('#tg')?.addEventListener('click',ev=>{const t=ev.target.closest('.tag');if(!t)return;tg=tg===t.dataset.t?'':t.dataset.t;document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('on',x.dataset.t===tg));draw()})}
 
-/* Quizzes / Tests pages: gradient header, then one horizontal strip per exam / quiz (phones get the same strips, stacked) */
+/* Category pages (Video Lessons, Notes & PDFs, Revision Sheets, Quizzes, Tests): gradient header in the section's own colour,
+   then one horizontal strip per exam / quiz (phones get the same strips, stacked) */
+const NOUN={videos:['video','videos'],notes:['note','notes'],revision:['sheet','sheets']};
 async function catStrips(c,exs,items,as,fs,tc,tcount){
-  const k=KC[c.kind]||'var(--acc)',tabs=exs.length?await q(sb.from('exam_tabs').select('id,exam_id,label,sort_order,is_visible').in('exam_id',exs.map(x=>x.id)).order('sort_order')):[];
-  const per={};tc.forEach(a=>{const p=per[a.exam_id]=per[a.exam_id]||{};p[a.tab_id||'_']=(p[a.tab_id||'_']||0)+1});
-  const xcard=x=>{const fn=fs.filter(f=>f.exam_id===x.id).length,n=tcount[x.id]||0,p=per[x.id]||{},
-      tsum=tabs.filter(t=>t.exam_id===x.id&&t.is_visible&&p[t.id]).map(t=>`<span>${p[t.id]} ${e(t.label)}</span>`).join('');
+  const k=kindAccent(c.kind),isC=!!NOUN[c.kind],exIds=exs.map(x=>x.id);
+  const[tabs,allF,allI]=await Promise.all([exs.length&&!isC?q(sb.from('exam_tabs').select('id,exam_id,label,sort_order,is_visible').in('exam_id',exIds).order('sort_order')):[],
+    exs.length&&isC?q(sb.from('folders').select('id,exam_id').in('exam_id',exIds).limit(5000)):[],
+    exs.length&&isC?q(sb.from('items').select('folder_id').eq('category_id',c.id).not('folder_id','is',null).limit(5000)):[]]);
+  const per={},ipe={},f2e=Object.fromEntries(allF.map(f=>[f.id,f.exam_id]));
+  tc.forEach(a=>{const p=per[a.exam_id]=per[a.exam_id]||{};p[a.tab_id||'_']=(p[a.tab_id||'_']||0)+1});
+  allI.forEach(i=>{const x=f2e[i.folder_id];if(x)ipe[x]=(ipe[x]||0)+1});
+  const shown=isC?exs.filter(x=>ipe[x.id]):exs;     /* an exam with nothing live yet is not shown */
+  const xcard=x=>{const fn=fs.filter(f=>f.exam_id===x.id),n=tcount[x.id]||0,p=per[x.id]||{},ni=ipe[x.id]||0,
+      tsum=tabs.filter(t=>t.exam_id===x.id&&t.is_visible&&p[t.id]).map(t=>`<span>${p[t.id]} ${e(t.label)}</span>`).join(''),
+      subj=fn.map(f=>f.name).join(' · ');
+    const meta=isC?`<span>${HIC.m}${ni} ${ni===1?NOUN[c.kind][0]:NOUN[c.kind][1]}</span>${fn.length?`<span>${plural(fn.length,'subject')}</span>`:''}`
+      :`${n?`<span>${HIC.m}${plural(n,'test')}</span>`:`<span>${HIC.m}${plural(fn.length,'batch / folder')}</span>`}${n&&x.languages?`<span>${HIC.g}${e(x.languages)}</span>`:''}`;
     return `<a class="tcard xcard" href="#/x/${x.id}" style="--k:${k}"><span class="xlogo">${x.cover_url?`<img src="${e(x.cover_url)}" alt="" loading="lazy">`:e(x.icon||'🎯')}</span>
-      <div class="tc-head"><h3>${e(x.name)}</h3></div><div class="tc-meta">${n?`<span>${HIC.m}${plural(n,'test')}</span>`:`<span>${HIC.m}${plural(fn,'batch / folder')}</span>`}${n&&x.languages?`<span>${HIC.g}${e(x.languages)}</span>`:''}</div>
-      <span class="btn acc tc-go">View tests<i aria-hidden="true"> →</i></span>${tsum||x.description?`<div class="tc-foot"><span class="tc-l">${tsum?`<span class="tabsum">${tsum}</span>`:`<span>${e(x.description)}</span>`}</span></div>`:''}</a>`};
-  const totalTests=tc.length+as.length,stats=c.kind==='tests'?[...(exs.length?[{n:exs.length,l:exs.length===1?'Exam':'Exams'}]:[]),{n:totalTests,l:totalTests===1?'Test':'Tests'}]:[{n:as.length,l:as.length===1?'Quiz':'Quizzes'}];
-  app.innerHTML=crumbs([['Home','#/'],[c.name]])+banner({cat:1,logo:`<span>${e(c.icon)}</span>`,name:c.name,sub:c.description,stats,theme:KIND_THEME[c.kind]})+sbar('Search in '+c.name+' — exams, quizzes, tests…')+
-  `<div id="browse">${exs.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="hub-list">${exs.map(xcard).join('')}</div>`:''}
+      <div class="tc-head"><h3>${e(x.name)}</h3></div><div class="tc-meta">${meta}</div>
+      <span class="btn acc tc-go">${isC?'Open':'View tests'}<i aria-hidden="true"> →</i></span>${(isC?subj:tsum)||x.description?`<div class="tc-foot"><span class="tc-l">${isC?(subj?`<span class="tabsum"><span>${e(subj)}</span></span>`:''):tsum?`<span class="tabsum">${tsum}</span>`:`<span>${e(x.description)}</span>`}</span></div>`:''}</a>`};
+  const totalI=Object.values(ipe).reduce((n,v)=>n+v,0)+items.length,totalTests=tc.length+as.length;
+  const stats=isC?[...(shown.length?[{n:shown.length,l:shown.length===1?'Exam':'Exams'}]:[]),{n:totalI,l:totalI===1?NOUN[c.kind][0][0].toUpperCase()+NOUN[c.kind][0].slice(1):NOUN[c.kind][1][0].toUpperCase()+NOUN[c.kind][1].slice(1)}]
+    :c.kind==='tests'?[...(exs.length?[{n:exs.length,l:exs.length===1?'Exam':'Exams'}]:[]),{n:totalTests,l:totalTests===1?'Test':'Tests'}]:[{n:as.length,l:as.length===1?'Quiz':'Quizzes'}];
+  app.innerHTML=crumbs([['Home','#/'],[c.name]])+banner({cat:1,logo:`<span>${e(c.icon)}</span>`,name:c.name,sub:c.description,stats,theme:KIND_THEME[c.kind]})+sbar('Search in '+c.name+' — exams, chapters, lessons…')+
+  `<div id="browse">${shown.length?`<div class="sec"><h2>Choose your exam</h2></div><div class="hub-list">${shown.map(xcard).join('')}</div>`:''}
   ${as.length?`<div class="sec"><h2>${exs.length?'Other tests':c.kind==='quizzes'?'All quizzes':'All tests'}</h2></div><div class="hub-list" id="aslist">${as.map(a=>tcardHTML(a,k)).join('')}</div>`:''}
-  ${items.length?`<div class="sec"><h2>Other content</h2></div><div class="grid rows">${items.map(card).join('')}</div>`:''}
-  ${exs.length||as.length||items.length?'':'<div class="empty">Nothing in this section yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;
+  ${items.length?`<div class="sec"><h2>${shown.length?'More to explore':'All '+(isC?NOUN[c.kind][1]:'content')}</h2></div><div class="hub-list">${items.map(i=>istripHTML(i,k)).join('')}</div>`:''}
+  ${shown.length||as.length||items.length?'':'<div class="empty">Nothing in this section is live yet. Check back soon.</div>'}</div><div id="sres" class="sres" hidden></div>`;
   wireSearch(()=>({type:'cat',cat:c.id,exams:exs.map(x=>x.id),label:c.name}),'#browse');wireShare($('#browse'),as)}
 
 async function viewer(id){
-  const i=(await q(sb.from('items').select(ICOLS).eq('id',id).limit(1)))[0];if(!i){app.innerHTML='<div class="empty">Item not found.</div>';return}
+  const i=(await q(rawFrom('items').select(ICOLS).eq('id',id).limit(1)))[0];if(!i){app.innerHTML='<div class="empty">Item not found.</div>';return}
   const c=cats.find(x=>x.id===i.category_id),trail=i.folder_id?await folderTrail(i.folder_id):null,rel=await q((i.folder_id?sb.from('items').select(ICOLS).eq('folder_id',i.folder_id):sb.from('items').select(ICOLS).eq('category_id',i.category_id)).neq('id',id).order('sort_order').limit(8));
   const rv=ls.get('li_recent',[]).filter(x=>x!==id);rv.unshift(id);ls.set('li_recent',rv.slice(0,20));
   let liked=ls.get('li_liked',[]).includes(id),saved=ls.get('li_saved',[]).includes(id);

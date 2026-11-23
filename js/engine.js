@@ -50,7 +50,7 @@ function preloadImgs(urls,conc=4){const list=[...new Set(urls.filter(Boolean))].
   for(let k=0;k<Math.min(conc,list.length);k++)next()}
 
 async function exam(id){
-  const a=(await q(sb.from('assessments').select('*').eq('id',id).limit(1)))[0];
+  const a=(await q(rawFrom('assessments').select('*').eq('id',id).limit(1)))[0];   /* direct link: the admin can preview a hidden test, students are blocked by the database */
   if(!a){app.innerHTML='<div class="empty">This quiz or test was not found, or is not live yet.</div>';return}
   const [secs,qs]=await Promise.all([q(sb.from('sections').select('*').eq('assessment_id',id).order('sort_order')),
     q(sb.from('questions').select('id,section_id,question,options,marks,sort_order,image_url,images,option_images,passage,passage_image_url,question_hi,options_hi,passage_hi').eq('assessment_id',id).order('sort_order'))]);

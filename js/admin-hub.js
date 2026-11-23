@@ -2,7 +2,7 @@
    Everything the student sees on an exam's test page is controlled here:
    the header look and defaults, which tabs exist and are live (✓), which sections have how many tests, and every test. */
 let hubEx='',hubTabF='all',hubPg=0;const HSEL=new Set(),HPER=40;
-const THEMES=[['indigo','Indigo'],['purple','Purple'],['teal','Teal'],['rose','Rose'],['amber','Amber'],['slate','Slate']];
+const THEMES=[['fuchsia','Fuchsia'],['indigo','Indigo'],['purple','Purple'],['teal','Teal'],['rose','Rose'],['amber','Amber'],['slate','Slate']];
 const HT_COLS='id,title,tab_id,section_name,is_free,is_published,question_count,total_marks,duration_minutes,mode,sort_order,exam_date,shift,source_key,created_at';
 const hubNum=n=>+(+n||0).toFixed(2);
 const num=v=>v===''||v==null||isNaN(+v)?null:+v;

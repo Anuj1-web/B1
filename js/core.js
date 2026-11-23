@@ -1,5 +1,11 @@
 const CFG={url:'https://qhqukohdvafmfavukknu.supabase.co',key:'sb_publishable_gMyJ6TfiY2d-Jh0Qk0btWA_vxlowVN0'};
 const sb=supabase.createClient(CFG.url,CFG.key);
+/* Public pages show only what is LIVE: categories, exams, folders, items, tests with Live ticked, and tabs marked live.
+   (An admin who is signed in sees everything inside #/admin; there PUBLIC_ONLY is off. Direct links used for preview use rawFrom.) */
+const rawFrom=sb.from.bind(sb);let PUBLIC_ONLY=true;
+const LIVE_COL={categories:'is_published',exams:'is_published',folders:'is_published',items:'is_published',assessments:'is_published',exam_tabs:'is_visible'};
+sb.from=t=>{const b=rawFrom(t),c=LIVE_COL[t];if(!PUBLIC_ONLY||!c)return b;
+  return new Proxy(b,{get(o,k){if(k==='select')return(...a)=>o.select(...a).eq(c,true);const v=o[k];return typeof v==='function'?v.bind(o):v}})};
 const $=s=>document.querySelector(s),app=$('#app');
 const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KC={videos:'#ef5b5b',notes:'#0e8f7e',revision:'#e8b100',articles:'#3b6fd4',links:'#7a5af8',quizzes:'#d9468f',tests:'#10243a'};
