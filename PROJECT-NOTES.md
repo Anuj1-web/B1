@@ -1,7 +1,7 @@
 # Little Info — Project Notes
 
 Paste this file into a new chat (or add it to a Claude Project) so work can continue without re-explaining anything.
-Last updated: 22 Nov 2026. Current asset version: `?v=10`.
+Last updated: 22 Nov 2026. Current asset version: `?v=11`.
 
 ---
 
@@ -92,6 +92,12 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 - **Video Lessons / Notes & PDFs / Revision Sheets category pages** use the same header + strips as Tests (`catStrips`): one strip per exam with “N videos · 3 subjects” and the subject names; an exam with nothing live is not listed.
 - **Exam page of those categories** (`shelf.js`): banner (counts of items and subjects), then the **subjects as tabs** (the exam's top-level folders, in the admin's order; empty subjects are hidden), chapter chips, and strips grouped **chapter by chapter** (chapters = folders inside the subject, sorted by `sort_order` then natural name so Chapter 1, 2, 10; items placed straight in the subject come first under “General”; deeper folders appear as “Chapter › Sub”). Strip = thumbnail (YouTube thumbnail automatic) / type tile, type tag, title, duration, description, Watch / Open PDF / Read / Open. 40 strips at a time, search box when a subject has more than 8 items, last subject remembered (`li_stab_<exam>`). Desktop = horizontal rows (mock101), phones = RRB-ALP cards. An exam without folders still falls back to the old folder tiles.
 
+## 4e. v11 additions
+- **Phone home page** (≤700px): compact banner (about 225 px tall, no category chips), then the categories as a plain **3-column icon grid** (icon, name, “N items”; 4th under the 1st, 5th under the 2nd, the 6th place stays free until a category is added). `body.is-home` (set by the router) lets `main` stretch so the banner + grid block is centred between header and footer — no big empty gap before the footer. “Fresh on the shelf” is gone from the home page (desktop and phone). Desktop home keeps the big banner and category cards.
+- **Test window on phones**: the window height follows the real visible height (`--eh` from `visualViewport`, re-measured on resize / full-screen change) so the ← → bar no longer disappears when full screen starts. **Swipe** left / right changes question in the test window and in the review (not in quizzes; not inside the palette, inputs or horizontally scrolling content). It stays inside the section, like the arrows.
+- **Hindi in the bridge** (`qbank_bridge.py`) no longer assumes a column name: `discover_hindi()` looks for Hindi columns on `questions` / `tw_qs` / `passages` (`stem_hi`, `oa_hi`, `hi_stem`, `hi_a`, `…_hindi`), for a translation table (a table with `qid` / `question_id` / `uid` and a `lang` column or a Hindi-like name or Hindi-like columns), for a JSON column (`hi_json` …, also zlib-compressed), and last for Hindi text inside the question (split by script). `/api/diag/<testid>` and `python qbank_bridge.py --inspect [testid]` print the library's tables and every place where Devanagari text sits for a test — send that when Hindi is not found. The test JSON carries `has_hindi`, `hindi_questions`, `hindi_source`.
+- **Library import preview**: each question has a language button (हिन्दी / English) when it has a Hindi version; **Show all in Hindi (हिन्दी)** above the questions switches all; a green note says how many questions have Hindi, otherwise “No Hindi found” with a **Why? Check the library** report. Published tests need to be (re)published from the library to get Hindi on the site (the test window / instructions page then show the language switch).
+
 ## 5. Features built so far
 **Home / browsing**
 - "Fresh on the shelf": 4 newest items rendered; CSS shows 2 on phones (≤860px), up to 4 on larger screens.
@@ -129,7 +135,7 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 
 ## 7. Release / deployment checklist
 1. Replace the changed files in the repo (keep the same folder structure).
-2. Bump `?v=N` in `index.html`, in the `need('js/....js?v=N')` calls in `js/app.js` and the `need('js/hub.js?v=N')` call in `js/browse.js` (one `sed`: `s/?v=10/?v=11/g` on those three files).
+2. Bump `?v=N` in `index.html`, in the `need('js/....js?v=N')` calls in `js/app.js` and the `need('js/hub.js?v=N')` call in `js/browse.js` (one `sed`: `s/?v=11/?v=12/g` on those three files).
 3. Hard-refresh (Ctrl+Shift+R; on phone clear site data). GitHub Pages can cache for ~10 minutes.
 4. Test: one YouTube link, one mp4 upload, one replace, one delete (look for the 🗑 toast), one test run + review. For v8 also: start the bridge, Library import → publish one test (Full + sections) → open the student page → run it → Tests Hub: toggle a tab / section / test.
 
@@ -155,6 +161,7 @@ Headless Chromium (Playwright, Python) with a stubbed Supabase client: viewer ca
 3. `little-info-b1-video-fix.zip`: link-driven player, YouTube/Vimeo/Drive, fallbacks, admin auto format, codec warning, poster + duration.
 4. `little-info-b1-upload-fix.zip`: non-blocking upload with status line, leave-page cleanup, guarded saves, 🧹 Clean unused files (`?v=7`).
 
+8. `little-info-b1-v11.zip` (`?v=11`): phone home grid, no “Fresh on the shelf”, full-screen footer fix, swipe between questions, Hindi discovery + preview toggles.
 7. `little-info-b1-v10.zip` (`?v=10`): subject / chapter pages and section headers for Video Lessons, Notes & PDFs and Revision Sheets, Live filter on all student pages.
 6. `little-info-b1-v9.zip` (`?v=9`): Quizzes / Tests category headers and strips, maths + formatting renderer, Hindi + language switch, no default pass mark, picture preloading.
 5. `little-info-b1-tests-hub.zip` (+ `qbank_bridge.py`, patched `qbank_app.py`, `start_bridge.bat`): Tests hub, tabs, presets, Library import, picture / passage questions (`?v=8`).

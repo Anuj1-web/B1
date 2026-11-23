@@ -50,3 +50,8 @@ Host on GitHub Pages / Netlify. In Supabase → Authentication → URL configura
 ## Update v10
 - Video Lessons, Notes & PDFs and Revision Sheets get the same header + strips as Tests (each section has its own colour); an exam opens with the **subjects as tabs** and the lessons / notes / sheets listed **chapter by chapter** (`js/shelf.js`).
 - Student pages show only what is Live: unticking Live on a category, exam, folder, item or test hides it everywhere (the admin panel still shows everything).
+
+## Update v11
+- Phone home page: compact banner + 3-column category grid; “Fresh on the shelf” removed.
+- Test window on phones: footer arrows stay visible in full screen; swipe left / right moves between questions (test and review).
+- Library import: Hindi toggles per question and for all questions, a Hindi report; the bridge finds Hindi in columns, translation tables, JSON or the text itself.
