@@ -46,3 +46,7 @@ Host on GitHub Pages / Netlify. In Supabase → Authentication → URL configura
 - Hindi: language picker on the instructions page and a language dropdown in the test, quiz and review windows (Noto Sans Devanagari).
 - Pictures are preloaded so questions open without a gap.
 - No default pass mark any more (migration `no_pass_marks_and_hindi`).
+
+## Update v10
+- Video Lessons, Notes & PDFs and Revision Sheets get the same header + strips as Tests (each section has its own colour); an exam opens with the **subjects as tabs** and the lessons / notes / sheets listed **chapter by chapter** (`js/shelf.js`).
+- Student pages show only what is Live: unticking Live on a category, exam, folder, item or test hides it everywhere (the admin panel still shows everything).

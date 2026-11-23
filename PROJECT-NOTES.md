@@ -1,7 +1,7 @@
 # Little Info — Project Notes
 
 Paste this file into a new chat (or add it to a Claude Project) so work can continue without re-explaining anything.
-Last updated: 22 Nov 2026. Current asset version: `?v=9`.
+Last updated: 22 Nov 2026. Current asset version: `?v=10`.
 
 ---
 
@@ -30,6 +30,7 @@ js/ui.js              header/menu/footer/misc UI
 js/admin.js           admin shell, storage-cleanup helpers, categories + content tabs
 js/admin-exams.js     Exams & Folders tab
 js/admin-tests.js     Quizzes & Tests tab (assessments, sections, questions)
+js/shelf.js           public subject page of an exam in Video Lessons / Notes & PDFs / Revision Sheets (subject tabs + chapter-wise strips)  [lazy]
 js/hub.js             public Tests hub page of one exam (banner, tab switch, section chips, test cards)  [lazy]
 js/admin-hub.js       admin Tests Hub manager (exam defaults, tabs, sections, tests, presets)  [lazy]
 js/admin-library.js   admin Library import (bridge connection, preview/edit, publish Full / Sectional, upload)  [lazy]
@@ -53,7 +54,7 @@ Category → Exam → Folders (nested, "batch / chapter") → Items and Assessme
 - **sections, attempts, item_likes, admins, categories, exams, folders** also exist. RLS is enabled on every table.
 
 ### Database functions (RPC)
-`submit_attempt` (grades a test, returns score + per-question review with correct index, `explanation`, `explanation_hi` and `solution_image`; `pass` is null when the test has no pass mark), `check_answer` (quiz; also returns `explanation_hi`), `check_answer` (quiz instant check), `claim_first_admin` (works once, while no admin exists), `is_admin()` (used by policies), `exam_preset_for(name)` (best matching preset), `copy_exam` (also copies exam settings + tabs).
+`submit_attempt` (grades a test, returns score + per-question review with correct index, `explanation`, `explanation_hi` and `solution_image`; `pass` is null when the test has no pass mark), `check_answer` (quiz instant check; also returns `explanation_hi`), `claim_first_admin` (works once, while no admin exists), `is_admin()` (used by policies), `exam_preset_for(name)` (best matching preset), `copy_exam` (also copies exam settings + tabs).
 
 ### Delete rules
 Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/assessments, exam → folders/exam_tabs/**assessments**, folder → items/assessments, assessment → questions/sections). Deleting a tab only sets its tests' `tab_id` to null (they show under “Other tests”).
@@ -84,6 +85,12 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 - **Hindi**: if a question has a Hindi version the test shows a language picker on the instructions page (default = last choice, kept in `li_lang`) and a dropdown in the test window, quiz and review. The choice stays until it is switched back; a question without a Hindi version shows English. Text is marked `lang="hi"` and uses Noto Sans Devanagari (Google Fonts link in `index.html`, Nirmala UI fallback). Bridge: uses `stem_hi, oa_hi … od_hi, sol_hi` (+ `passages.text_hi`) when the library has those columns; otherwise it splits text that holds both languages by script (line by line, or where the script changes inside a line: `Dog / कुत्ता`). A pure-Hindi sentence with an English word is not split. The qbank app itself has no Hindi columns today. Admin: preview shows both languages, the question editor (Library import and Tests Hub → Questions) has a “हिन्दी version” block. The published test's `languages` is “English, Hindi” only when Hindi exists.
 - **Pictures** are fetched and decoded ahead of time (`preloadImgs` in `engine.js`, starts while the instructions are shown, 4 at a time, kept in `PRE`), so a question opens with its figure already there.
 - No default pass mark: no “To pass” / “Passed” on test pages unless a hand-made test sets one.
+
+## 4d. v10 additions
+- **Only what is Live is shown on the student pages.** `core.js` wraps `sb.from()`: while `PUBLIC_ONLY` is true (every route except `#/admin`) each `select` on `categories, exams, folders, items, assessments` adds `is_published = true` and on `exam_tabs` adds `is_visible = true` — even when an admin is signed in. Inside `#/admin` the filter is off, so the admin still sees and edits hidden things. `rawFrom()` is the unfiltered client used for direct links (`#/exam/<id>`, `#/i/<id>`), so the admin can still preview a hidden test / item by its link; students are blocked by the database policies. Live ticks: categories, exams, folders and items in the normal admin tabs, tests in **Tests Hub → Live ✓** (also per tab and per section). A hidden folder hides everything under it.
+- **Section colours** (`KIND_THEME` in `site.js`): Tests indigo, Quizzes rose, Video Lessons fuchsia, Notes & PDFs teal, Revision Sheets amber. An exam may override its own banner colour (Tests Hub → Exam page & defaults).
+- **Video Lessons / Notes & PDFs / Revision Sheets category pages** use the same header + strips as Tests (`catStrips`): one strip per exam with “N videos · 3 subjects” and the subject names; an exam with nothing live is not listed.
+- **Exam page of those categories** (`shelf.js`): banner (counts of items and subjects), then the **subjects as tabs** (the exam's top-level folders, in the admin's order; empty subjects are hidden), chapter chips, and strips grouped **chapter by chapter** (chapters = folders inside the subject, sorted by `sort_order` then natural name so Chapter 1, 2, 10; items placed straight in the subject come first under “General”; deeper folders appear as “Chapter › Sub”). Strip = thumbnail (YouTube thumbnail automatic) / type tile, type tag, title, duration, description, Watch / Open PDF / Read / Open. 40 strips at a time, search box when a subject has more than 8 items, last subject remembered (`li_stab_<exam>`). Desktop = horizontal rows (mock101), phones = RRB-ALP cards. An exam without folders still falls back to the old folder tiles.
 
 ## 5. Features built so far
 **Home / browsing**
@@ -122,7 +129,7 @@ Parent → child foreign keys are `ON DELETE CASCADE` (category → exams/items/
 
 ## 7. Release / deployment checklist
 1. Replace the changed files in the repo (keep the same folder structure).
-2. Bump `?v=N` in `index.html`, in the `need('js/....js?v=N')` calls in `js/app.js` and the `need('js/hub.js?v=N')` call in `js/browse.js` (one `sed`: `s/?v=8/?v=9/g` on those three files).
+2. Bump `?v=N` in `index.html`, in the `need('js/....js?v=N')` calls in `js/app.js` and the `need('js/hub.js?v=N')` call in `js/browse.js` (one `sed`: `s/?v=10/?v=11/g` on those three files).
 3. Hard-refresh (Ctrl+Shift+R; on phone clear site data). GitHub Pages can cache for ~10 minutes.
 4. Test: one YouTube link, one mp4 upload, one replace, one delete (look for the 🗑 toast), one test run + review. For v8 also: start the bridge, Library import → publish one test (Full + sections) → open the student page → run it → Tests Hub: toggle a tab / section / test.
 
@@ -148,6 +155,7 @@ Headless Chromium (Playwright, Python) with a stubbed Supabase client: viewer ca
 3. `little-info-b1-video-fix.zip`: link-driven player, YouTube/Vimeo/Drive, fallbacks, admin auto format, codec warning, poster + duration.
 4. `little-info-b1-upload-fix.zip`: non-blocking upload with status line, leave-page cleanup, guarded saves, 🧹 Clean unused files (`?v=7`).
 
+7. `little-info-b1-v10.zip` (`?v=10`): subject / chapter pages and section headers for Video Lessons, Notes & PDFs and Revision Sheets, Live filter on all student pages.
 6. `little-info-b1-v9.zip` (`?v=9`): Quizzes / Tests category headers and strips, maths + formatting renderer, Hindi + language switch, no default pass mark, picture preloading.
 5. `little-info-b1-tests-hub.zip` (+ `qbank_bridge.py`, patched `qbank_app.py`, `start_bridge.bat`): Tests hub, tabs, presets, Library import, picture / passage questions (`?v=8`).
 
