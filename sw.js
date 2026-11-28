@@ -2,7 +2,7 @@
    - the files named with a hash (assets/…) are immutable: cache first
    - the page itself (index.html) is network first (so a new release is picked up) with a short wait, then the saved copy
    - data (Supabase) and everything on other websites is NOT touched here (the app has its own data cache) */
-const VER = 'mww1aw4g-f6226e60', PRE = ["./","index.html","assets/style.7ab5be19.css","assets/app.9d2879f2.js","assets/supabase.34035ac7.js","assets/inter-latin.f11d729b.woff2","assets/jakarta-latin.a389d97d.woff2","manifest.webmanifest"], KEEP = 2;
+const VER = 'mwx4rsyn-d3794bcf', PRE = ["./","index.html","assets/style.86861c55.css","assets/app.3fd01a8b.js","assets/supabase.34035ac7.js","assets/inter-latin.f11d729b.woff2","assets/jakarta-latin.a389d97d.woff2","manifest.webmanifest"], KEEP = 2;
 self.addEventListener('install', e => e.waitUntil(caches.open('li-' + VER).then(c => c.addAll(PRE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil((async () => {
   const mine = 'li-' + VER, all = (await caches.keys()).filter(k => k.startsWith('li-') && k !== mine).sort().reverse();

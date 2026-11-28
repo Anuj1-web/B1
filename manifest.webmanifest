@@ -1,13 +1,13 @@
 {
  "name": "The Little Info",
  "short_name": "Little Info",
- "description": "Free study hub: video lessons, notes, revision sheets, quizzes and tests.",
+ "description": "Learn a little, every day \u2014 video lessons, notes, revision sheets, quizzes and timed tests.",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
  "orientation": "any",
- "background_color": "#f5f6fb",
- "theme_color": "#4f46e5",
+ "background_color": "#f6f7fb",
+ "theme_color": "#f3f0ff",
  "icons": [
   {
    "src": "icons/icon-192.png",
@@ -24,6 +24,41 @@
    "sizes": "512x512",
    "type": "image/png",
    "purpose": "maskable"
+  }
+ ],
+ "id": "./",
+ "lang": "en",
+ "dir": "ltr",
+ "categories": [
+  "education"
+ ],
+ "display_override": [
+  "standalone",
+  "minimal-ui"
+ ],
+ "prefer_related_applications": false,
+ "shortcuts": [
+  {
+   "name": "Tests",
+   "short_name": "Tests",
+   "url": "./#/",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "My history",
+   "short_name": "History",
+   "url": "./#/me/h",
+   "icons": [
+    {
+     "src": "icons/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
   }
  ]
 }
