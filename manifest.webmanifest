@@ -41,18 +41,7 @@
   {
    "name": "Tests",
    "short_name": "Tests",
-   "url": "./#/",
-   "icons": [
-    {
-     "src": "icons/icon-192.png",
-     "sizes": "192x192"
-    }
-   ]
-  },
-  {
-   "name": "My history",
-   "short_name": "History",
-   "url": "./#/me/h",
+   "url": "./#/c/tests",
    "icons": [
     {
      "src": "icons/icon-192.png",
